@@ -110,7 +110,12 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 				
 			.Class                  = 0x02,
 			.SubClass               = 0x02,
+
+#ifdef AT_COMMANDS
 			.Protocol               = 0x01,
+#else
+			.Protocol               = 0x00,
+#endif
 				
 			.InterfaceStrIndex      = NO_DESCRIPTOR
 		},
@@ -127,8 +132,12 @@ USB_Descriptor_Configuration_t PROGMEM ConfigurationDescriptor =
 		{
 			.Header                 = {.Size = sizeof(CDC_FUNCTIONAL_DESCRIPTOR(2)), .Type = 0x24},
 			.SubType                = 0x01,
-			
+
+#ifdef AT_COMMANDS
 			.Data                   = {0x03, 0x01}
+#else
+			.Data                   = {0x00, 0x01}
+#endif
 		},
 
 	.CDC_Functional_AbstractControlManagement = 

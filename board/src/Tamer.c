@@ -144,6 +144,12 @@ nxt:
         //  CDC_Device_SendByte(&VirtualSerial_CDC_Interface, a);
 
 		/* Read bytes from the USART receive buffer into the USB IN endpoint */
+#if 0
+		while (USARTtoUSB_Buffer.Elements)
+			CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
+#endif
+
+#if 1
 		if (USARTtoUSB_Buffer.Elements)
         {
             uint8_t m;
@@ -172,7 +178,7 @@ nxt:
                 goto nxt;
             }
         }
-
+#endif
         TamerControlAux();
 		
 		/* Load bytes from the USART transmit buffer into the USART */
@@ -237,6 +243,8 @@ TRAP(TR_USB_DEVICE_CONFIGURATIONCHANGED)
 {
     if (!(CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)))
         LedClear();
+	else
+		VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS = 9600;
 }
 
 

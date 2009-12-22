@@ -28,15 +28,15 @@
 
 Register command
 
-PIN,LMK,EN,1
-PIN,LMX,GO,1
-PIN,LMX,SY,1
+PIN,LMK,ENB,1
+PIN,LMX,GOE,1
+PIN,LMX,SYN,1
 
-PIN,LED,,00                      PIN LED{xx}             8bit value
+PIN,LED,,00                       PIN LED{xx}             8bit value
 
-REG,LMK,,00234a0e                REG LMK{xx.xx.xx.xx}    32bit value
-REG,LMX,,003403                  REG LMX{xx.xx.xx}       24bit value
-REG,DAC,,0002                    REG DAC{xx.xx.xx}       16-24bit value
+REG,LMK,,x00234a0e                REG LMK{xx.xx.xx.xx}    32bit value
+REG,LMX,,x003403                  REG LMX{xx.xx.xx}       24bit value
+REG,DAC,,x0002                    REG DAC{xx.xx.xx}       16-24bit value
 
 SET,,OSC,10000200
 SET,,OUT,52000000
@@ -48,6 +48,7 @@ NFO
 */
 
 
+uint8_t IsCommandSeparator(uint8_t byte);
 
 typedef enum tamerCommandType
 {

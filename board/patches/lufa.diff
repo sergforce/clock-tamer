@@ -1,6 +1,6 @@
-diff -upr LUFA 091122/LUFA/Common/Common.h LUFA 091122-mod/LUFA/Common/Common.h
---- LUFA 091122/LUFA/Common/Common.h	2009-11-07 00:43:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Common/Common.h	2009-12-09 15:26:55.000000000 +0300
+diff -upr LUFA/LUFA/Common/Common.h LUFA-mod/LUFA/Common/Common.h
+--- LUFA/LUFA/Common/Common.h	2009-11-07 00:43:00.000000000 +0300
++++ LUFA-mod/LUFA/Common/Common.h	2009-12-09 15:26:55.000000000 +0300
 @@ -61,6 +61,20 @@
  		#include "FunctionAttributes.h"
  		#include "BoardTypes.h"
@@ -22,9 +22,9 @@ diff -upr LUFA 091122/LUFA/Common/Common.h LUFA 091122-mod/LUFA/Common/Common.h
  	/* Public Interface - May be used in end-application: */
  		/* Macros: */		
  			/** Macro for encasing other multi-statement macros. This should be used along with an opening brace
-diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/Events.h LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/Events.h
---- LUFA 091122/LUFA/Drivers/USB/HighLevel/Events.h	2009-11-16 16:45:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/Events.h	2009-12-02 15:40:35.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/HighLevel/Events.h LUFA-mod/LUFA/Drivers/USB/HighLevel/Events.h
+--- LUFA/LUFA/Drivers/USB/HighLevel/Events.h	2009-11-16 16:45:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/HighLevel/Events.h	2009-12-02 15:40:35.000000000 +0300
 @@ -282,7 +282,7 @@
  	#if !defined(__DOXYGEN__)
  		/* Function Prototypes: */
@@ -34,9 +34,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/Events.h LUFA 091122-mod/LUFA/D
  					
  				#if defined(USB_CAN_BE_BOTH)
  					void EVENT_USB_InitFailure(const uint8_t ErrorCode) ATTR_WEAK ATTR_ALIAS(USB_Event_Stub);
-diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.c LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.c
---- LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.c	2009-08-17 23:38:00.000000000 +0400
-+++ LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.c	2009-12-02 15:41:30.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/HighLevel/USBInterrupt.c LUFA-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.c
+--- LUFA/LUFA/Drivers/USB/HighLevel/USBInterrupt.c	2009-08-17 23:38:00.000000000 +0400
++++ LUFA-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.c	2009-12-02 15:41:30.000000000 +0300
 @@ -64,7 +64,7 @@ void USB_INT_ClearAllInterrupts(void)
  	#endif
  }
@@ -46,9 +46,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.c LUFA 091122-mod/
  {
  	#if defined(USB_CAN_BE_DEVICE)
  	#if defined(USB_SERIES_4_AVR) || defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR)
-diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.h LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.h
---- LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.h	2009-08-17 23:38:00.000000000 +0400
-+++ LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.h	2009-12-02 15:41:16.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/HighLevel/USBInterrupt.h LUFA-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.h
+--- LUFA/LUFA/Drivers/USB/HighLevel/USBInterrupt.h	2009-08-17 23:38:00.000000000 +0400
++++ LUFA-mod/LUFA/Drivers/USB/HighLevel/USBInterrupt.h	2009-12-02 15:41:16.000000000 +0300
 @@ -75,8 +75,8 @@
  			#define USB_INT_RXSTPI                           UEIENX, (1 << RXSTPE) , UEINTX, (1 << RXSTPI)
  	
@@ -60,9 +60,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBInterrupt.h LUFA 091122-mod/
  	#endif
  	
  	/* Disable C linkage for C++ Compilers: */
-diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.c LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBTask.c
---- LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.c	2009-08-05 17:36:00.000000000 +0400
-+++ LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBTask.c	2009-12-09 15:39:23.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/HighLevel/USBTask.c LUFA-mod/LUFA/Drivers/USB/HighLevel/USBTask.c
+--- LUFA/LUFA/Drivers/USB/HighLevel/USBTask.c	2009-08-05 17:36:00.000000000 +0400
++++ LUFA-mod/LUFA/Drivers/USB/HighLevel/USBTask.c	2009-12-09 15:39:23.000000000 +0300
 @@ -33,15 +33,15 @@
  #define  INCLUDE_FROM_USBTASK_C
  #include "USBTask.h"
@@ -82,9 +82,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.c LUFA 091122-mod/LUFA/
  #endif
  
  void USB_USBTask(void)
-diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.h LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBTask.h
---- LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.h	2009-11-16 16:45:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/HighLevel/USBTask.h	2009-12-02 15:42:29.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/HighLevel/USBTask.h LUFA-mod/LUFA/Drivers/USB/HighLevel/USBTask.h
+--- LUFA/LUFA/Drivers/USB/HighLevel/USBTask.h	2009-11-16 16:45:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/HighLevel/USBTask.h	2009-12-02 15:42:29.000000000 +0300
 @@ -159,7 +159,7 @@
  			 *
  			 *  \ingroup Group_USBManagement
@@ -103,9 +103,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/HighLevel/USBTask.h LUFA 091122-mod/LUFA/
  				#endif
  			#endif
  			
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.c LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.c
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.c	2009-11-11 20:09:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.c	2009-12-09 15:40:28.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/DevChapter9.c LUFA-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.c
+--- LUFA/LUFA/Drivers/USB/LowLevel/DevChapter9.c	2009-11-11 20:09:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.c	2009-12-09 15:40:28.000000000 +0300
 @@ -35,9 +35,9 @@
  #define  INCLUDE_FROM_DEVCHAPTER9_C
  #include "DevChapter9.h"
@@ -119,9 +119,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.c LUFA 091122-mod/LU
  
  void USB_Device_ProcessControlRequest(void)
  {
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.h LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.h
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.h	2009-08-05 17:36:00.000000000 +0400
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.h	2009-12-02 15:36:40.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/DevChapter9.h LUFA-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.h
+--- LUFA/LUFA/Drivers/USB/LowLevel/DevChapter9.h	2009-08-05 17:36:00.000000000 +0400
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/DevChapter9.h	2009-12-02 15:36:40.000000000 +0300
 @@ -113,15 +113,15 @@
  		#endif
  	
@@ -145,9 +145,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/DevChapter9.h LUFA 091122-mod/LU
  				
  				#if !defined(NO_INTERNAL_SERIAL) && (defined(USB_SERIES_6_AVR) || defined(USB_SERIES_7_AVR))
  					static char USB_Device_NibbleToASCII(uint8_t Nibble) ATTR_ALWAYS_INLINE;
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.c LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Endpoint.c
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.c	2009-11-10 22:24:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Endpoint.c	2009-12-12 01:43:56.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/Endpoint.c LUFA-mod/LUFA/Drivers/USB/LowLevel/Endpoint.c
+--- LUFA/LUFA/Drivers/USB/LowLevel/Endpoint.c	2009-11-10 22:24:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/Endpoint.c	2009-12-12 01:43:56.000000000 +0300
 @@ -35,8 +35,9 @@
  #define  INCLUDE_FROM_ENDPOINT_C
  #include "Endpoint.h"
@@ -167,9 +167,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.c LUFA 091122-mod/LUFA/
  
  #if !defined(CONTROL_ONLY_DEVICE)
  uint8_t Endpoint_WaitUntilReady(void)
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.h LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Endpoint.h
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.h	2009-11-10 22:24:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Endpoint.h	2009-12-09 01:14:14.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/Endpoint.h LUFA-mod/LUFA/Drivers/USB/LowLevel/Endpoint.h
+--- LUFA/LUFA/Drivers/USB/LowLevel/Endpoint.h	2009-11-10 22:24:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/Endpoint.h	2009-12-09 01:14:14.000000000 +0300
 @@ -750,7 +750,7 @@
  			 *  with respect to the data direction. This is a convenience function which can be used to
  			 *  simplify user control request handling.
@@ -201,9 +201,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/Endpoint.h LUFA 091122-mod/LUFA/
  			
  		/* Inline Functions: */
  			static inline uint8_t Endpoint_BytesToEPSizeMask(const uint16_t Bytes) ATTR_WARN_UNUSED_RESULT ATTR_CONST ATTR_ALWAYS_INLINE;
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/LowLevel.h LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/LowLevel.h
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/LowLevel.h	2009-11-16 00:09:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/LowLevel.h	2009-12-02 15:37:07.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/LowLevel.h LUFA-mod/LUFA/Drivers/USB/LowLevel/LowLevel.h
+--- LUFA/LUFA/Drivers/USB/LowLevel/LowLevel.h	2009-11-16 00:09:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/LowLevel.h	2009-12-02 15:37:07.000000000 +0300
 @@ -268,18 +268,18 @@
  			               #if !defined(USE_STATIC_OPTIONS) || defined(__DOXYGEN__)
  			               const uint8_t Options
@@ -226,9 +226,9 @@ diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/LowLevel.h LUFA 091122-mod/LUFA/
  
  		/* Enums: */
  			/** Enum for error codes relating to the powering on of the USB interface. These error codes are
-diff -upr LUFA 091122/LUFA/Drivers/USB/LowLevel/Pipe.h LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Pipe.h
---- LUFA 091122/LUFA/Drivers/USB/LowLevel/Pipe.h	2009-11-10 00:15:00.000000000 +0300
-+++ LUFA 091122-mod/LUFA/Drivers/USB/LowLevel/Pipe.h	2009-12-02 15:24:37.000000000 +0300
+diff -upr LUFA/LUFA/Drivers/USB/LowLevel/Pipe.h LUFA-mod/LUFA/Drivers/USB/LowLevel/Pipe.h
+--- LUFA/LUFA/Drivers/USB/LowLevel/Pipe.h	2009-11-10 00:15:00.000000000 +0300
++++ LUFA-mod/LUFA/Drivers/USB/LowLevel/Pipe.h	2009-12-02 15:24:37.000000000 +0300
 @@ -791,7 +791,7 @@
  			 *  \return Boolean true if the configuration is successful, false otherwise
  			 */

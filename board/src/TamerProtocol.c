@@ -129,6 +129,14 @@ static uint8_t ParseValue(uint8_t w1)
     return 0x10;
 }
 
+uint8_t IsCommandSeparator(uint8_t byte)
+{
+	if (byte == 0 || byte == '\r' || byte == '\n')
+    	return 1;
+
+	return 0;
+}
+
 uint8_t ParseCommand(void)
 {
     uint8_t byte;
@@ -159,7 +167,7 @@ uint8_t ParseCommand(void)
             continue;
         }
 
-        if (byte == 0 || byte == '\r' || byte == '\n')
+        if (IsCommandSeparator(byte))
             return 1;
 
 
@@ -167,6 +175,9 @@ uint8_t ParseCommand(void)
         {
             byte2 = getbyte();
             byte3 = getbyte();
+
+			if (IsCommandSeparator(byte2) || IsCommandSeparator(byte3))
+				return 0; 
 
             uint8_t* mem;
             switch (step)
@@ -218,7 +229,7 @@ uint8_t ParseCommand(void)
             }
             byte = getbyte();
         skip:
-            if (byte == 0 || byte == '\r' || byte == '\n')
+            if (IsCommandSeparator(byte))
                 return 1;
             return 0;
          }
