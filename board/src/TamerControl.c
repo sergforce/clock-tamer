@@ -408,6 +408,35 @@ void TrimClock(void)
 
 #endif
 
+
+extern uint8_t commands;
+extern RingBuff_t USBtoUSART_Buffer;
+extern RingBuff_t USARTtoUSB_Buffer;
+
+ISR(SPI_STC_vect, ISR_BLOCK)
+{
+//	if (USB_DeviceState != DEVICE_STATE_Configured)
+//	{
+		if (USARTtoUSB_Buffer.Elements)
+			SPDR = Buffer_GetElement(&USARTtoUSB_Buffer);
+		else
+			SPDR = 0xff;
+
+
+	   	uint8_t byte = SPDR;
+  	  	if (byte == '\n' || byte == '\r')
+   		 	commands++;
+
+		if ((byte != 0) && (byte != 0xff))
+			Buffer_StoreElement(&USBtoUSART_Buffer, byte);
+//	}
+//	else
+//	{
+//		SPDR = 0xff;
+//	}
+	
+}
+
 void TamerControlAux(void)
 {
 #ifdef PRESENT_GPS

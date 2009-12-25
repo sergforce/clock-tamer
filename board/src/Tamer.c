@@ -30,6 +30,7 @@
 
 #include <stdio.h>
 
+#define SPI_ENABLED
 
 extern bool RunBootloader;
 
@@ -80,6 +81,9 @@ void AutoStartControl(void);
 uint8_t resSyntax[] PROGMEM = "SYNTAX ERROR";
 uint8_t resErr[] PROGMEM = "CMD ERROR";
 
+
+uint8_t commands = 0;
+
 int main(void)
 {
     SetupHardware();
@@ -93,10 +97,8 @@ int main(void)
 
     //CDC_Device_CreateStream(&VirtualSerial_CDC_Interface, &USBSerialStream);
 
-    uint8_t commands = 0;
 	for (;;)
 	{
-
 		for (uint8_t DataBytesRem = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface); DataBytesRem != 0; DataBytesRem--)
 		{
 			if (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements))
@@ -118,10 +120,10 @@ int main(void)
             }
 		}
 
-
         // Clean up buffer if it's full and there're no commands
         if ((commands == 0) && (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements)))
               Buffer_GetElement(&USBtoUSART_Buffer);
+		
 
         for (;commands>0;commands--)
         {
@@ -141,9 +143,12 @@ int main(void)
         }
 
 
-		/* Read bytes from the USART receive buffer into the USB IN endpoint */
-		while (USARTtoUSB_Buffer.Elements)
-			CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
+		if (USB_DeviceState == DEVICE_STATE_Configured)
+		{
+			/* Read bytes from the USART receive buffer into the USB IN endpoint */
+			while (USARTtoUSB_Buffer.Elements)
+				CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
+		}
 
         TamerControlAux();
 		
@@ -155,7 +160,6 @@ int main(void)
 		
 		CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
 		USB_USBTask();
-
 	}
 }
 
@@ -179,24 +183,21 @@ void SetupHardware(void)
 #endif
 
     USB_Init();
-}
 
+#ifdef SPI_ENABLED
+	//Enable MISO
+	DDRB = (1<<PB3);
+
+	SPCR = (1<<SPIE) | (1<<SPE) | (1<<CPOL);
+	//SPDR = 0xff;
+#endif
+
+}
 
 
 DEFINE_USERTRAP()
 
 
-/** Event handler for the library USB Connection event. */
-TRAP(TR_USB_DEVICE_CONNECT)
-{
-    LedSet();
-}
-
-/** Event handler for the library USB Disconnection event. */
-TRAP(TR_USB_DEVICE_DISCONNECT)
-{
-    LedClear();
-}
 
 /** Event handler for the library USB Unhandled Control Request event. */
 TRAP(TR_USB_DEVICE_UNHANDLEDCONTROLREQUEST)
@@ -213,6 +214,19 @@ TRAP(TR_USB_DEVICE_CONFIGURATIONCHANGED)
 		VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS = 9600;
 }
 
+/** Event handler for the library USB Connection event. */
+TRAP(TR_USB_DEVICE_CONNECT)
+{
+    LedSet();
+	SPCR &=~(1<<SPE);
+}
+
+/** Event handler for the library USB Disconnection event. */
+TRAP(TR_USB_DEVICE_DISCONNECT)
+{
+    LedClear();
+	SPCR |= (1<<SPE);
+}
 
 uint16_t CALLBACK_NONDFU_USB_GetDescriptor(const uint16_t wValue, const uint8_t wIndex, void** const DescriptorAddress);
 
@@ -233,4 +247,6 @@ ISR(USART1_RX_vect, ISR_BLOCK)
 
 }
 */
+
+
 
