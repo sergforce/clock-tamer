@@ -107,9 +107,10 @@ FORMAT = ihex
 
 
 # Target file name (without extension).
-TARGET = Tamer
+TARGET_BASE = Tamer
+TARGET = $(TARGET_BASE)
 ifneq ($(SDK), 0)
-TARGET = Tamer-sdk-v$(SDK)
+TARGET = $(TARGET_BASE)-sdk-v$(SDK)
 endif
 
 
@@ -494,7 +495,7 @@ ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 all: begin gccversion sizebefore build checkinvalidevents showliboptions showtarget sizeafter end
 
 avreal:
-	sudo /home/serg/avreal/avreal64-1.27r3 -ab -p/dev/parport0 -o300kHz  +90usb162 -e -w Tamer.hex -v
+	sudo /home/serg/avreal/avreal64-1.27r3 -ab -p/dev/parport0 -o300kHz  +90usb162 -e -w $(TARGET_BASE).hex -v
 
 avreal-fuse:
 	sudo /home/serg/avreal/avreal64-1.27r3 -ab -p/dev/parport0 -o300kHz  +90usb162 -fBOOTRST=0 -w
@@ -737,17 +738,17 @@ $(OBJDIR)/%.o : %.S
 clean: begin clean_list clean_binary end
 
 clean_binary:
-	$(REMOVE) $(TARGET).hex
+	$(REMOVE) $(TARGET_BASE)*.hex
 	
 clean_list:
 	@echo $(MSG_CLEANING)
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET)eep.hex
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lss
+	$(REMOVE) $(TARGET_BASE)*.eep
+	$(REMOVE) $(TARGET_BASE)*eep.hex
+	$(REMOVE) $(TARGET_BASE)*.cof
+	$(REMOVE) $(TARGET_BASE)*.elf
+	$(REMOVE) $(TARGET_BASE)*.map
+	$(REMOVE) $(TARGET_BASE)*.sym
+	$(REMOVE) $(TARGET_BASE)*.lss
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.o)
 	$(REMOVE) $(SRC:%.c=$(OBJDIR)/%.lst)
 	$(REMOVE) $(ASRC:%.S=$(OBJDIR)/%.o)
