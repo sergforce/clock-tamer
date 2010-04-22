@@ -28,16 +28,19 @@
 #ifndef _SHARED_BOOT_H_
 #define _SHARED_BOOT_H_
 
-#define CONCAT2(x,y)      x ## y
-#define CONCAT(x,y)       CONCAT2(x,y)
-#define TRAP_NAME(x)      CONCAT(__bootstrap, x)
-
-#define TRAP(x)           void TRAP_NAME(x) (void)
-
-
 #define STRINGIFY2(x)     #x
 #define STRINGIFY(x)      STRINGIFY2(x)
 
+
+#define CONCAT2(x,y)      x ## y
+#define CONCAT(x,y)       CONCAT2(x,y)
+
+
+#ifndef NO_BOOTSHARED
+
+#define TRAP_NAME(x)      CONCAT(__bootstrap, x)
+
+#define TRAP(x)           void TRAP_NAME(x) (void)
 
 /** Trap for running the user code */
 #define TR_USERCODE                                 0
@@ -74,6 +77,17 @@
 #define CALL_TRAP(x)              __asm__ __volatile("call __bootstraps_start - 4*" STRINGIFY(x) ";\r\n")
 #define DEFINE_USERTRAP()         __attribute((naked)) TRAP(TR_USERCODE) { __asm__ __volatile("jmp 0x0000;\r\n"); }
 
+#else
+
+#define TRAP_NAME(x)      CONCAT(notused__bootstrap, x)
+
+#define TRAP(x)           void TRAP_NAME(x) (void)
+
+// Nothing
+#define DEFINE_USERTRAP()
+
+
+#endif //_SHARED_BOOT_H_
 
 //#define LUFA_SHARED_DATA_SECTION __attribute__ ((section (".shareddata")))
 

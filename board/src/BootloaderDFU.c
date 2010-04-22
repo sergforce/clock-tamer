@@ -28,6 +28,8 @@
   this software.
 */
 
+//#define NO_DFUUPLOAD
+
 /** \file
  *
  *  Main source file for the DFU class bootloader. This file contains the complete bootloader logic.
@@ -397,6 +399,7 @@ DFU_SECTION void DFU_EVENT_USB_Device_UnhandledControlRequest(void)
             Endpoint_ClearStatusStage();
 
             break;
+#ifndef NO_DFUUPLOAD
         case DFU_UPLOAD:
             Endpoint_ClearSETUP();
 
@@ -502,6 +505,8 @@ DFU_SECTION void DFU_EVENT_USB_Device_UnhandledControlRequest(void)
 
             Endpoint_ClearStatusStage();
             break;
+#endif
+
         case DFU_GETSTATUS:
             Endpoint_ClearSETUP();
 
@@ -610,9 +615,11 @@ DFU_SECTION static void ProcessBootloaderCommand(void)
         case COMMAND_PROG_START:
             ProcessMemProgCommand();
             break;
+#ifndef NO_DFUUPLOAD
         case COMMAND_DISP_DATA:
             ProcessMemReadCommand();
             break;
+#endif
         case COMMAND_WRITE:
             ProcessWriteCommand();
             break;
@@ -682,6 +689,8 @@ DFU_SECTION static void ProcessMemProgCommand(void)
     }
 }
 
+#ifndef NO_DFUUPLOAD
+
 /** Handler for a Memory Read command issued by the host. This routine handles the preparations needed
  *  to read subsequent data from the specified memory out to the host, as well as implementing the memory
  *  blank check command.
@@ -732,6 +741,7 @@ DFU_SECTION static void ProcessMemReadCommand(void)
         }
     }
 }
+#endif
 
 /** Handler for a Data Write command issued by the host. This routine handles non-programming commands such as
  *  bootloader exit (both via software jumps and hardware watchdog resets) and flash memory erasure.

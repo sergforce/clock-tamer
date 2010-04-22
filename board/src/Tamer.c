@@ -33,8 +33,6 @@
 
 #define SPI_ENABLED
 
-extern bool RunBootloader;
-
 
 /** Circular buffer to hold data from the host before it is sent to the device via the serial port. */
 RingBuff_t USBtoUSART_Buffer;
@@ -85,6 +83,10 @@ volatile uint8_t commands = 0;
 
 int main(void)
 {
+
+    INFOLED_DDR |=  (1 << INFOLED);
+    INFOLED_PORT |= (1 << INFOLED);
+
     SetupHardware();
     BoardInit();
 
@@ -199,13 +201,21 @@ DEFINE_USERTRAP()
 
 
 /** Event handler for the library USB Unhandled Control Request event. */
+#ifdef NO_BOOTSHARED
+void EVENT_USB_Device_UnhandledControlRequest(void)
+#else
 TRAP(TR_USB_DEVICE_UNHANDLEDCONTROLREQUEST)
+#endif
 {
     CDC_Device_ProcessControlRequest(&VirtualSerial_CDC_Interface);
 }
 
 /** Event handler for the library USB Configuration Changed event. */
+#ifdef NO_BOOTSHARED
+void EVENT_USB_Device_ConfigurationChanged(void)
+#else
 TRAP(TR_USB_DEVICE_CONFIGURATIONCHANGED)
+#endif
 {
     if (!(CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)))
         LedClear();
@@ -214,14 +224,22 @@ TRAP(TR_USB_DEVICE_CONFIGURATIONCHANGED)
 }
 
 /** Event handler for the library USB Connection event. */
+#ifdef NO_BOOTSHARED
+void EVENT_USB_Device_Connect(void)
+#else
 TRAP(TR_USB_DEVICE_CONNECT)
+#endif
 {
     LedSet();
 	SPCR &=~(1<<SPE);
 }
 
 /** Event handler for the library USB Disconnection event. */
+#ifdef NO_BOOTSHARED
+void EVENT_USB_Device_Disconnect(void)
+#else
 TRAP(TR_USB_DEVICE_DISCONNECT)
+#endif
 {
     LedClear();
 	SPCR |= (1<<SPE);

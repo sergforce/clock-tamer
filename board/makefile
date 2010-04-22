@@ -58,7 +58,7 @@
 # To rebuild project do "make clean" then "make all".
 #----------------------------------------------------------------------------
 
-
+NODFU?=0
 SDK?=1
 
 
@@ -112,7 +112,9 @@ TARGET = $(TARGET_BASE)
 ifneq ($(SDK), 0)
 TARGET = $(TARGET_BASE)-sdk-v$(SDK)
 endif
-
+ifeq ($(NODFU), 1)
+TARGET = $(TARGET_BASE)-nodfu
+endif
 
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
@@ -129,8 +131,10 @@ LUFA_OPTS  = -D USB_DEVICE_ONLY
 LUFA_OPTS += -D FIXED_NUM_CONFIGURATIONS=1
 LUFA_OPTS += -D USE_FLASH_DESCRIPTORS
 LUFA_OPTS += -D USE_STATIC_OPTIONS="(USB_DEVICE_OPT_FULLSPEED | USB_OPT_REG_ENABLED | USB_OPT_AUTO_PLL)"
+ifeq ($(NODFU), 0)
 ifneq ($(SDK), 0)
 LUFA_OPTS += -D LUFA_NODFU_ENDPOINT_CODE
+endif
 endif
 
 # List C source files here. (C dependencies are automatically generated.)
@@ -148,10 +152,19 @@ SRC = src/Tamer.c                                                 \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/Events.c            \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/ConfigDescriptor.c  \
 
+ifeq ($(NODFU), 1)
+SRC += \
+	  src/TamerHwistr.c                                           \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/DevChapter9.c        \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/LowLevel.c           \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/USBInterrupt.c      \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/HighLevel/USBTask.c           \
+
+else
 
 ifeq ($(SDK), 0)
 SRC += \
-	  src/TamerHwistr.c                                           \
+	  src/TamerHwistr.c					      \
 	  src/DescriptorsDFU.c                                        \
 	  src/BootloaderDFU.c                                         \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/LowLevel/DevChapter9.c        \
@@ -161,6 +174,7 @@ SRC += \
 
 endif
 
+endif
 
 # List C++ source files here. (C dependencies are automatically generated.)
 CPPSRC = 
@@ -174,10 +188,13 @@ CPPSRC =
 #     it will preserve the spelling of the filenames, and gcc itself does
 #     care about how the name is spelled on its command-line.
 
+
+ifeq ($(NODFU), 0)
 ASRC =	  src/bootstrap.S
 
 ifeq ($(SDK), 0)
 ASRC +=	  src/gbootcrt1.S
+endif
 endif
 
 
@@ -249,10 +266,18 @@ CFLAGS += -Wundef
 CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+ifeq ($(NODFU), 0)
 CFLAGS += -D LUFA_DFU_DEVICE_SECTION="__attribute__ ((section (\".bootloader\")))"
 CFLAGS += -D LUFA_SHARED_DATA_SECTION="__attribute__ ((section (\".shareddata\")))"
+else
+CFLAGS += -DCALLBACK_USB_GetDescriptor="CALLBACK_NONDFU_USB_GetDescriptor"
+CFLAGS += -DNO_BOOTSHARED
+CFLAGS += -DLUFA_DFU_DEVICE_SECTION=""
+CFLAGS += -DLUFA_SHARED_DATA_SECTION=""
+endif
 CFLAGS += -D HWIEEMEM="__attribute__ ((section (\".hwieeprom\")))" -DHWISTR=$(HWISTR)
 CFLAGS += -D SAFE_EEPROM_ADDRESS=412
+#CFLAGS += -mcall-prologues
 
 #---------------- Compiler Options C++ ----------------
 #  -g*:          generate debugging information
@@ -351,11 +376,16 @@ LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
 LDFLAGS += -Wl,--relax 
 LDFLAGS += -Wl,--gc-sections
 LDFLAGS += -Wl,--section-start=.bootloader=$(BOOT_START)
+ifeq ($(NODFU), 1)
+LDFLAGS += -Wl,--section-start=.hwieeprom=0x81009B
+else
 ifeq ($(SDK), 0)
 LDFLAGS += -Wl,--script=avr3sharedboot.x
 else
 LDFLAGS += -Wl,--script=sdk-v$(SDK)/avr3-sdk.x
 endif
+endif
+
 LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(patsubst %,-L%,$(EXTRALIBDIRS))
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)

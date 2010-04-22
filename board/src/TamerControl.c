@@ -34,6 +34,15 @@
 #include <avr/eeprom.h>
 
 
+//#define VCO_FIXED
+//#define NO_VERSION
+//#define NO_HWINFO
+//#define NO_CMDINFO
+//#define NO_CMDPIN
+//#define NO_CMDREG
+//#define NO_CMDEELOAD
+#define UNROLL_MACROSS_LMX2531
+
 //#define DEBUG_REGS
 
 
@@ -64,7 +73,7 @@ void FillResultNoNewLinePM(uint8_t* res)
     }
 }
 
-void FillHead(uint8_t* res, uint8_t idx)
+static void FillHead(uint8_t* res, uint8_t idx)
 {
     uint8_t byte;
     uint8_t i;
@@ -88,7 +97,7 @@ extern uint8_t pCmd[];
 extern uint8_t pTrg[];
 extern uint8_t pDet[];
 
-void FillCmd(void)
+static void FillCmd(void)
 {
     if (command.cmd > 0)
         FillHead(pCmd, command.cmd - 1);
@@ -101,7 +110,7 @@ void FillCmd(void)
     Buffer_StoreElement(&USARTtoUSB_Buffer, ',');
 }
 
-void FillUint32(uint32_t val)
+static void FillUint32(uint32_t val)
 {
     uint32_t stv = 1000000000;
     uint8_t f = 0;
@@ -121,7 +130,7 @@ void FillUint32(uint32_t val)
 }
 
 #ifdef FILL_UINT16
-void FillUint16(uint16_t val)
+static void FillUint16(uint16_t val)
 {
     uint16_t stv = 10000;
     uint8_t f = 0;
@@ -146,7 +155,10 @@ void FillUint16(uint16_t val)
 
 uint8_t resOk[] PROGMEM = "OK";
 
+#ifndef NO_VERSION
 uint8_t resVersion[] PROGMEM = "ClockTamer SW=1.0 API=1";
+#endif
+
 uint8_t resBadRange[] PROGMEM = "Bad tuning range";
 
 
@@ -164,9 +176,17 @@ uint8_t resBadRange[] PROGMEM = "Bad tuning range";
 #else
 uint32_t Fosc = DEF_Fosc;
 uint32_t Fout = DEF_Fout;
+
+#ifdef VCO_FIXED
+#define  VCO_MIN   DEF_VCO_MIN
+#define  VCO_MAX   DEF_VCO_MAX
+#define  VCO_Kbit  DEF_VCO_Kbit
+
+#else
 uint16_t VCO_MIN =  DEF_VCO_MIN;
 uint16_t VCO_MAX =  DEF_VCO_MAX;
 uint16_t VCO_Kbit = DEF_VCO_Kbit;
+#endif
 #endif
 
 
@@ -210,9 +230,17 @@ uint32_t tmp_lmk;
 
 uint32_t eeFosc         EEMEM = DEF_Fosc;
 uint32_t eeFout         EEMEM = DEF_Fout;
+
+#ifndef VCO_FIXED
 uint16_t eeVCO_MIN      EEMEM = DEF_VCO_MIN;
 uint16_t eeVCO_MAX      EEMEM = DEF_VCO_MAX;
 uint16_t eeVCO_Kbit     EEMEM = DEF_VCO_Kbit;
+#else
+uint16_t unused_eeVCO_MIN      EEMEM = DEF_VCO_MIN;
+uint16_t unused_eeVCO_MAX      EEMEM = DEF_VCO_MAX;
+uint16_t unused_eeVCO_Kbit     EEMEM = DEF_VCO_Kbit;
+#endif
+
 uint8_t  eeLMK_OutMask  EEMEM = DEF_OUT_MASK_LMK;
 uint8_t  eeAutoFreq     EEMEM = 1;
 
@@ -220,14 +248,16 @@ uint16_t eeDacValue     EEMEM = 2048;
 
 uint8_t  eeAutoGPSSync  EEMEM = 1;
 
-void LoadEEPROM(void)
+static void LoadEEPROM(void)
 {
     Fosc = eeprom_read_dword(&eeFosc);
     Fout = eeprom_read_dword(&eeFout);
 
+#ifndef VCO_FIXED
     VCO_MIN = eeprom_read_word(&eeVCO_MIN);
     VCO_MAX = eeprom_read_word(&eeVCO_MAX);
     VCO_Kbit = eeprom_read_word(&eeVCO_Kbit);
+#endif
 
     LMK_OutMask = eeprom_read_byte(&eeLMK_OutMask);
     AutoFreq = eeprom_read_byte(&eeAutoFreq);
@@ -241,15 +271,16 @@ void LoadEEPROM(void)
 #endif
 }
 
-void StoreEEPROM(void)
+static void StoreEEPROM(void)
 {
     eeprom_write_dword(&eeFosc, Fosc);
     eeprom_write_dword(&eeFout, Fout);
 
+#ifndef VCO_FIXED
     eeprom_write_word(&eeVCO_MIN, VCO_MIN);
     eeprom_write_word(&eeVCO_MAX, VCO_MAX);
     eeprom_write_word(&eeVCO_Kbit, VCO_Kbit);
-
+#endif
     eeprom_write_byte(&eeLMK_OutMask, LMK_OutMask);
     eeprom_write_byte(&eeAutoFreq, AutoFreq);
 
@@ -262,7 +293,7 @@ void StoreEEPROM(void)
 #endif
 }
 
-void LoadHwInfo(void)
+static void LoadHwInfo(void)
 {
     int i;
     for (i=0; i<HWI_LEN; i++)
@@ -457,13 +488,45 @@ void InitLMK(void)
 #define DIVIDER_MAX_FREQ        1500
 //#define DIVIDER_MAX_FREQ        1590
 
+inline static void SetLMX2531_R7(uint16_t fosc)
+{
+#ifdef UNROLL_MACROSS_LMX2531
+
+  uint16_t xtlman = (0x3ffc & ((((uint32_t)fosc)<<6)/(VCO_Kbit))) ;
+  uint8_t xdiv = ( (fosc) < 40000 ? (((fosc) / 20000)+1) : 3);
+
+
+  write_reg_LMX2531(xtlman >> 8, (uint8_t)xtlman | xdiv, 7);
+#else
+  LMX2531_WRITE( MAKE_R7(VCO_Kbit, fosc) );
+#endif
+}
+
+inline static void SetLMX2531_R1_R0(uint32_t num, uint16_t n)
+{
+#ifdef UNROLL_MACROSS_LMX2531
+    uint16_t numh = num>>12;
+    uint8_t nh = n>>8;
+
+    write_reg_LMX2531(0x20 | (ICP_1X<<1) | (nh>>2)  , (nh<<6) |  (numh >> 4) , (numh << 4) | 0x1);
+
+    uint16_t nt = num;
+    nt <<= 4;
+    write_reg_LMX2531(n, nt >>8, (uint8_t)nt);
+
+#else
+    LMX2531_WRITE( MAKE_R1(ICP_1X, n >> 8, num >> 12) );
+    LMX2531_WRITE( MAKE_R0(n & 0xFF, num & 0xFFF) );
+#endif
+}
+
 
 uint8_t SetLMX2531(uint8_t tuneOnly)
 {
     uint32_t num;
 
     uint8_t r = 1;
-    if (Fosc > 14000)
+    if (Fosc > 14000000ul)
        r = 2;
 
     uint16_t vco;
@@ -474,7 +537,7 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
         return 0;
 
     uint16_t i;
-
+#ifdef VCO_FIXED
     if (VCO_MAX > DIVIDER_MAX_FREQ)
     {
         i = (((uint16_t)10*(VCO_MIN + VCO_MAX) / 8) / (foutmhz)) * 4;
@@ -493,6 +556,23 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
       else
           i+=2;
     }
+#else
+
+    uint8_t kk = 1;
+    if (VCO_MAX > DIVIDER_MAX_FREQ)
+    {
+      kk++;
+    }
+
+    i = (((uint16_t)10*(VCO_MIN + VCO_MAX) >> (kk+1)) / (foutmhz)) << kk;
+    vco = (i + 1<<kk) * (foutmhz);
+    if (vco > 10*VCO_MAX)
+      vco = i * (foutmhz);
+    else
+      i += 1<<kk;
+
+#endif
+
     if (vco < 10*VCO_MIN)
     {
         return 0;
@@ -510,26 +590,36 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
     num = ((uint64_t)den * rem_n) / ((Fosc));
 
 #else
-    uint32_t dev1 = (rem_n ) / ((Fosc / r));
-    uint32_t rem1 = (rem_n ) % ((Fosc / r));
-    num = dev1;
-
-    uint8_t t;
-    for (t = 0; t < den_bit; t++)
     {
-        rem1 <<= 1;
-        num <<= 1;
+    uint32_t dev1;
+    uint32_t rem1 = rem_n;
+    uint8_t t;
+    for (t = 0; t <= den_bit; t++)
+    {
+        if (t != 0)
+        {
+            rem1 <<= 1;
+            num <<= 1;
+        }
 
         dev1 = (rem1) / ((Fosc / r));
         rem1 = (rem1) % ((Fosc / r));
 
-        if (dev1 & 1)
+        if (t == 0)
+            num = dev1;
+        else if (dev1 & 1)
             num |= 1;
+
+    }
+
     }
 #endif
 
-
+#ifdef VCO_FIXED
     if (VCO_MAX > DIVIDER_MAX_FREQ)
+#else
+    if (kk == 2)
+#endif
         i /= 2;
 
     if (i > 510)
@@ -538,7 +628,9 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
     if (!tuneOnly)
     {
         LMX2531_WRITE( MAKE_R8(LOCKMODE_LINEAR, Fosc/1000) );
-        LMX2531_WRITE( MAKE_R7(VCO_Kbit, Fosc/1000) );
+        //LMX2531_WRITE( MAKE_R7(VCO_Kbit, Fosc/1000) );
+        SetLMX2531_R7(Fosc/1000);
+
         LMX2531_WRITE( MAKE_R6(XTLSEL_MANUAL, VCO_ACI_SEL_M1, 1, R_40, R_10, R_40, R_10, C3_C4_100_100) );
         //LMX2531_WRITE( MAKE_R6(CALC_XTSEL(Fosc/1000000), VCO_ACI_SEL_M1, 1, R_40, R_10, R_40, R_10, C3_C4_100_100) );
         LMX2531_WRITE( MAKE_R4(ICP_1X, TOC_DISABLED) );
@@ -552,8 +644,10 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
         LMX2531_WRITE( MAKE_R3((VCO_MAX > DIVIDER_MAX_FREQ), FDM_FRACTIONAL, DITHER_STRONG, FRAC_ORDER_4, FOLD_DISABLED, den >> 12) );
         LMX2531_WRITE( MAKE_R2(den & 0xFFF, r) );
     }
-    LMX2531_WRITE( MAKE_R1(ICP_1X, n >> 8, num >> 12) );
-    LMX2531_WRITE( MAKE_R0(n & 0xFF, num & 0xFFF) );
+    //LMX2531_WRITE( MAKE_R1(ICP_1X, n >> 8, num >> 12) );
+    //LMX2531_WRITE( MAKE_R0(n & 0xFF, num & 0xFFF) );
+
+    SetLMX2531_R1_R0(num, n);
 #endif
 
     LMK_devider = i/2;
@@ -578,9 +672,11 @@ void SetLMK(void)
    for (uint8_t i = 0; i < 8; i++, j<<=1)
    {
         if ((j & LMK_OutMask) == j)
-            LMK0X0XX_WRITE(MAKE_LMK(1, 1, LMK_devider, 0, i));
+            //LMK0X0XX_WRITE(MAKE_LMK(1, 1, LMK_devider, 0, i));
+            write_reg_LMK0X0XX(MAKE_LMK_HH(), MAKE_LMK_HL(1, 1), MAKE_LMK_LH(LMK_devider), MAKE_LMK_LL(0, i));
         else
-            LMK0X0XX_WRITE(0x00000100 | (uint32_t)i);
+            //LMK0X0XX_WRITE(0x00000100 | (uint32_t)i);
+            write_reg_LMK0X0XX(MAKE_LMK_HH(), MAKE_LMK_HL(0, 0), MAKE_LMK_LH(1), MAKE_LMK_LL(0, i));
    }
 
 #ifdef PRESENT_GPS
@@ -652,6 +748,7 @@ uint8_t ProcessCommand(void)
         case cmdIDLE:
             return 1;
 
+#ifndef NO_CMDREG
         case cmdREGISTER:
         {
 
@@ -682,7 +779,8 @@ uint8_t ProcessCommand(void)
             }
             break;
         }
-
+#endif
+#ifndef NO_CMDPIN
         case cmdPIN:
         {
             switch (command.type)
@@ -741,6 +839,7 @@ uint8_t ProcessCommand(void)
             }
          	return 0;
         }
+#endif
 
         case cmdSET:
         {
@@ -779,6 +878,7 @@ uint8_t ProcessCommand(void)
                 case trgVCO:
                     switch (command.details)
                     {
+#ifndef VCO_FIXED
                         case detMIN:
                             VCO_MIN = command.u16data[0];
                             break;
@@ -788,7 +888,7 @@ uint8_t ProcessCommand(void)
                         case detKBIT:
                             VCO_Kbit = command.u16data[0];
                             break;
-
+#endif
                         default:
                             return 0;
                     }
@@ -853,7 +953,7 @@ uint8_t ProcessCommand(void)
             }
             return 0;
         }
-
+#ifndef NO_CMDINFO
         case cmdINFO:
         {
             switch (command.type)
@@ -930,7 +1030,7 @@ uint8_t ProcessCommand(void)
 
             return 0;
         }
-
+#endif
         case cmdRESET:
         {
             InitLMX2531();
@@ -939,18 +1039,24 @@ uint8_t ProcessCommand(void)
             return 1;
         }
 
+#ifndef NO_HWINFO
         case cmdHWINFO:
             LoadHwInfo();
             return 1;
+#endif
 
+#ifndef NO_VERSION
         case cmdVERSION:
             FillResultPM(resVersion);
             return 1;
+#endif
 
+#ifndef NO_CMDEELOAD
         case cmdLOAD_EEPROM:
             LoadEEPROM();
             FillResultPM(resOk);
             return 1;
+#endif
 
         case cmdSTORE_EEPROM:
             StoreEEPROM();

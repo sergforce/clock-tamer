@@ -33,6 +33,8 @@
 #include "TamerProtocol.h"
 
 
+//#define NO_HEXVALUES
+
 #ifdef _SELF_TEST_
 
 #define PROGMEM
@@ -118,6 +120,8 @@ static uint8_t ParseValueD(uint8_t w1)
 
     return 0x10;
 }
+
+#ifndef NO_HEXVALUES
 static uint8_t ParseValue(uint8_t w1)
 {
     if (w1 >= '0' && w1 <= '9')
@@ -129,6 +133,7 @@ static uint8_t ParseValue(uint8_t w1)
 
     return 0x10;
 }
+#endif
 
 uint8_t IsCommandSeparator(uint8_t byte)
 {
@@ -200,6 +205,7 @@ uint8_t ParseCommand(void)
             uint8_t b1;
             uint8_t j;
 
+#ifndef NO_HEXVALUES
             if ((byte == 'x') || (byte == 'X'))
             {
 
@@ -213,6 +219,7 @@ uint8_t ParseCommand(void)
               }
             }
             else
+#endif
             {
               b1 = ParseValueD(byte);
               if (b1 == 0x10)
@@ -225,7 +232,7 @@ uint8_t ParseCommand(void)
                 if (b1 == 0x10)
                     goto skip;
 
-                command.u32data = (command.u32data * 10) + b1;
+                command.u32data = (command.u32data * 10u) + b1;
               }
             }
             byte = getbyte();
