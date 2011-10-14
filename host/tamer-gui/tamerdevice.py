@@ -58,15 +58,19 @@ class UsbDevice(object):
 
         for j in xrange(maxcnt):
           res = self.dev.readline()
-          res = re.sub("^\s+", "", res)
-          res = re.sub("\s+$", "", res)
-          print "RAW GPS REPLY: '%s'" % res
+          if len(res) > 0:
+            res = re.sub("^\s+", "", res)
+            res = re.sub("\s+$", "", res)
+            print "RAW GPS REPLY: '%s'" % res
 
-          pos = res.find(head)
-          if pos != -1:
+            pos = res.find(head)
+            if pos != -1:
               res = res[pos:].split("*")[0]
               print "GPS REPLY: '%s'" % res
               return res
+          else:
+            print "ZERO REPLY"
+            return None
 
         print "sendGPS: FAILED: '%s'" % res
 

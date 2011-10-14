@@ -107,7 +107,7 @@ class MainWindow(QtGui.QWidget):
             spl.showMessage("Waiting for GPS...");
             app.processEvents();
             gpsid = False
-            cnt = 15
+            cnt = 3
             for j in xrange(cnt):
                 try:
                     gpsid = self.dev.checkGps()
