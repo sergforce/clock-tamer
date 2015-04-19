@@ -1,4 +1,4 @@
-# Hey Emacs, this is a -*- makefile -*-
+# Hey Emacs, 6this is a -*- makefile -*-
 #----------------------------------------------------------------------------
 # WinAVR Makefile Template written by Eric B. Weddington, Jörg Wunsch, et al.
 #  >> Modified for use with the LUFA project. <<
@@ -61,7 +61,7 @@
 NODFU?=1
 SDK?=0
 GPS?=1
-TAMER_VER?=130
+TAMER_VER?=200
 
 # MCU name
 ifeq ($(TAMER_VER), 121) 
@@ -79,8 +79,16 @@ MCU = atmega32u2
 BOOT_START = 0x7000
 else
 
+ifeq ($(TAMER_VER), 200)
+MCU = atmega32u2
+BOOT_START = 0x7800
+
+else
+
 MCU = at90usb162
 BOOT_START = 0x3000
+endif
+
 endif
 
 endif
@@ -172,26 +180,35 @@ endif
 # List C source files here. (C dependencies are automatically generated.)
 
 SRC = src/Tamer.c                                                 \
-	  src/TamerBoard.c                                            \
-	  src/TamerControl.c                                          \
 	  src/TamerProtocol.c                                         \
 	  src/DescriptorsCDC.c                                        \
 	  src/RingBuff.c                                              \
-      src/TamerHwistr.c                                           \
+	  src/TamerHwistr.c                                           \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Class/Device/CDCClassDevice.c \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/Endpoint_$(ARCH).c  \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/EndpointStream_$(ARCH).c  \
 
+ifeq ($(TAMER_VER), 200)
+SRC += \
+	  src/TamerBoard2.c                                            \
+	  src/TamerControl2.c                                          \
+
+else
+SRC += \
+	  src/TamerBoard.c                                            \
+	  src/TamerControl.c                                          \
+
+endif
 
 ifeq ($(NODFU), 1)
 SRC += \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/ConfigDescriptors.c    \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/DeviceStandardReq.c    \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/Events.c    \
-      $(LUFA_PATH)/LUFA/Drivers/USB/Core/USBTask.c    \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/USBTask.c    \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/Device_$(ARCH).c    \
 	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/USBInterrupt_$(ARCH).c      \
-      $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/USBController_$(ARCH).c      \
+	  $(LUFA_PATH)/LUFA/Drivers/USB/Core/$(ARCH)/USBController_$(ARCH).c      \
 
 else
 

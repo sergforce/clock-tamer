@@ -23,13 +23,14 @@
 #ifndef _TAMER_CONFIG_H_
 #define _TAMER_CONFIG_H_
 
-
 //#define GPS_ENABLE
-
 
 #ifndef TAMER_VER
 #error You should define TAMER_VER (10 stads for 1.0, 11 - 1.1, and 12 - 1.2, 121 - 1.21)
 #endif
+
+#if TAMER_VER < 200
+// Tamer v1.x
 
 #if !defined(TAMER_1515_20) && \
     !defined(TAMER_2080_20) && \
@@ -83,8 +84,6 @@
 #error You should define ClockTamer hardware modification. There is no configure yet, sorry.
 #endif
 
-#define DEF_Fosc            1000000*TAMER_OSC
-
 // Configuration helpers
 
 #if LMX2531_TYPE == 1515
@@ -116,17 +115,25 @@
 #endif
 
 
-// Defaults to 52Mhz if it isn't set
-#ifndef DEF_Fout
-#define DEF_Fout            52000000
-#endif
-
-
 #ifndef DEF_OUT_MASK_LMK
 #define DEF_OUT_MASK_LMK		(1 << 6)
 #endif
 
+// Defaults to 52Mhz if it isn't set
+#ifndef DEF_Fout
+#define DEF_Fout            52000000
+#endif
+#define DEF_Fosc            1000000*TAMER_OSC
 
+
+#else
+// Tamer v2.0
+
+#define TAMER_OSC_STR       "19.2"
+#define DEF_Fout            30720000
+#define DEF_Fosc            19200000
+
+#endif
 
 
 #endif //_TAMER_CONFIG_H_

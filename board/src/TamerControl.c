@@ -186,7 +186,9 @@ static void FillUint16(uint16_t val)
 const uint8_t resOk[] PROGMEM = "OK";
 
 #ifndef NO_VERSION
-#if TAMER_VER == 130
+#if TAMER_VER == 200
+const uint8_t resVersion[] PROGMEM = "ClockTamer2(UmCLK) SW=2.0 API=2";
+#elif TAMER_VER == 130
 const uint8_t resVersion[] PROGMEM = "ClockTamer SW=1.30 API=1";
 #elif TAMER_VER == 123
 const uint8_t resVersion[] PROGMEM = "ClockTamer SW=1.23 API=1";
@@ -291,7 +293,6 @@ static inline uint8_t IsVcoLocked(void)
 #define FOLD_VALUE FOLD_DISABLED
 #endif
 
-//#define GPSSYNC_MAX_FREQ        3000000
 #define GPSSYNC_MAX_FREQ        3000000
 
 

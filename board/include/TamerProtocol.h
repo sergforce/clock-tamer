@@ -28,15 +28,12 @@
 
 Register command
 
-PIN,LMK,ENB,1
-PIN,LMX,GOE,1
-PIN,LMX,SYN,1
+PIN,SYL,,
 
 PIN,LED,,00                       PIN LED{xx}             8bit value
 
-REG,LMK,,x00234a0e                REG LMK{xx.xx.xx.xx}    32bit value
-REG,LMX,,x003403                  REG LMX{xx.xx.xx}       24bit value
 REG,DAC,,x0002                    REG DAC{xx.xx.xx}       16-24bit value
+REG,ADF,,x22222                                           32bit value
 
 SET,,OSC,10000200
 SET,,OUT,52000000
@@ -82,8 +79,7 @@ typedef enum tamerCommandType
 typedef enum tamerTargetType
 {
     trgNONE = 0,
-    trgLMK,
-    trgLMX,
+    trgADF,
     trgDAC,
     trgLED,
     trgVCO,
@@ -102,14 +98,12 @@ typedef enum tamerTargetDetails
 {
     detNONE = 0,
     detEN,
-    detGOE,
     detSYN,
     detOSC,
     detOUT,
     detPORTS,
     detMIN,
     detMAX,
-    detKBIT,
     detDIVIDERS,
     detAUTO,
     detD12,

@@ -22,7 +22,6 @@
 
 
 #include "Tamer.h"
-#include "TamerBoard.h"
 #include "TamerConfig.h"
 
 #define INCLUDE_FROM_TAMER_HWISTR_H
@@ -33,6 +32,8 @@
 #define STRINGIFY2(x)      _STRINGIFY2(x)
 
 #ifndef HWISTR_CUSTOM
+
+#if TAMER_VER < 200
 
 #if TAMER_OSC > 40
 #error Incorrect value for TAMER_OSC
@@ -51,6 +52,14 @@
 #endif
 
 #define HWISTR_OSC      "OSC=" STRINGIFY2(TAMER_OSC) " "
+
+#else
+
+#define HWISTR_LMX  "VCO=ADF4355 "
+#define HWISTR_LMK  "DIV=Si53301B "
+#define HWISTR_OSC  "OSC=" TAMER_OSC_STR " "
+#endif
+
 
 #ifdef PRESENT_DAC12
 #define HWISTR_DAC		"VCTCXO "

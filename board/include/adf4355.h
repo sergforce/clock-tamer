@@ -1,6 +1,6 @@
 /*
         ClockTamer - a software for configurable reference clock
-                  Copyright (C) 2009, Fairwaves
+                  Copyright (C) 2015, Fairwaves Inc.
           by Sergey Kostanbaev <Sergey.Kostanbaev@fairwaves.ru>
 */
 
@@ -20,37 +20,40 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/** \file
- *
- *  Header file for Tamer.c.
- */
-
-#ifndef _USB_SERIAL_H_
-#define _USB_SERIAL_H_
-
-	/* Includes: */
-		#include <avr/io.h>
-		#include <avr/wdt.h>
-		#include <avr/interrupt.h>
-		#include <avr/power.h>
-
-		#include "DescriptorsCDC.h"
-        #include "DescriptorsDFU.h"
-        #include "BootloaderDFU.h"
-
-		#include "RingBuff.h"
-
-        #include "TamerProtocol.h"
-#if TAMER_VER < 200
-        #include "TamerBoard.h"
-#else
-        #include "TamerBoard2.h"
-#endif
-		#include <LUFA/Version.h>
-		#include <LUFA/Drivers/USB/USB.h>
+#ifndef ADF4355
+#define ADF4355
 
 
-	/* Function Prototypes: */
-		void SetupHardware(void);
+/* REGISTERS */
+
+/* REG0: {AUTOCAL, PRESCALER, 16-bit INT VALUE}  */
+#define REG0_NVALUE_SHIFT       4
+#define REG0_NVALUE_MSK         0xffff
+#define REG0_PRESCALER_SHIFT    20
+#define REG0_AUTOCAL_SHIFT      21
+
+/* REG1: {MAIN FRAC1} */
+#define REG1_MFRAC_SHIFT        4
+#define REG1_MFRAC_MSK          0xffffff
+
+
+/* REG2: {AUX FRAC2, AUX MOD2} */
+#define REG2_AUX_FRAC_SHIFT     18
+#define REG2_AUX_FRAC_MSK       ((1<<14)-1)
+#define REG2_AUX_MOD_SHIFT      4
+#define REG2_AUX_MOD_MSK        ((1<<14)-1)
+
+/* REG3: {SD LOAD RESET, PHASE RESYNC, PHASE ADJUST, 24bit PHASE} */
+
+
+
+
+
+#define REG2_AUX_FRAC_SHIFT     18
+
+
+
+
+
 
 #endif

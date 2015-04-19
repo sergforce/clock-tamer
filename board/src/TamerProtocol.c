@@ -73,7 +73,8 @@ const uint8_t pTrg[]  PROGMEM  = "LMK"
                                  "VCO"
                                  "GPS"
                                  "IOS"
-                                 "STS";
+                                 "STS"
+                                 "ADF";
 
 #define TRG_COUNT    (sizeof(pTrg)  / WORD_SIZE)
 

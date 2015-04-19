@@ -48,30 +48,30 @@ RingBuff_t USARTtoUSB_Buffer;
  *  within a device can be differentiated from one another.
  */
 USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
-	{
-		.Config = 
-			{
-				.ControlInterfaceNumber         = 0,
-				.DataINEndpoint                 =
-					{
-						.Address          = CDC_TX_EPADDR,
-						.Size             = CDC_TXRX_EPSIZE,
-						.Banks            = 1,
-					},
-				.DataOUTEndpoint =
-					{
-						.Address          = CDC_RX_EPADDR,
-						.Size             = CDC_TXRX_EPSIZE,
-						.Banks            = 1,
-					},
-				.NotificationEndpoint =
-					{
-						.Address          = CDC_NOTIFICATION_EPADDR,
-						.Size             = CDC_NOTIFICATION_EPSIZE,
-						.Banks            = 1,
-					},
-			},
-	};
+{
+    .Config =
+    {
+        .ControlInterfaceNumber         = 0,
+        .DataINEndpoint                 =
+        {
+            .Address          = CDC_TX_EPADDR,
+            .Size             = CDC_TXRX_EPSIZE,
+            .Banks            = 1,
+        },
+        .DataOUTEndpoint =
+        {
+            .Address          = CDC_RX_EPADDR,
+            .Size             = CDC_TXRX_EPSIZE,
+            .Banks            = 1,
+        },
+        .NotificationEndpoint =
+        {
+            .Address          = CDC_NOTIFICATION_EPADDR,
+            .Size             = CDC_NOTIFICATION_EPSIZE,
+            .Banks            = 1,
+        },
+    },
+};
 
 
 
@@ -93,7 +93,7 @@ volatile uint8_t commands = 0;
 uint8_t gpsmode = 0;
 #endif
 
-#if TAMER_VER >= 12
+#if TAMER_VER >= 12 && TAMER_VER < 200
 void SetOscillatorMode(uint8_t);
 #endif
 
@@ -121,10 +121,10 @@ void DoExtraTasks(uint8_t dosend)
         while (USARTtoUSB_Buffer.Elements)
             CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
     }
-	else if (dosend && USB_DeviceState != DEVICE_STATE_Configured)
-	{
-		_delay_ms(100); //wait to flush spi buffer
-	}
+    else if (dosend && USB_DeviceState != DEVICE_STATE_Configured)
+    {
+        _delay_ms(100); //wait to flush spi buffer
+    }
 
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
     USB_USBTask();
@@ -133,154 +133,155 @@ void DoExtraTasks(uint8_t dosend)
 
 int main(void)
 {
-#if TAMER_VER >= 12
-	SetOscillatorMode(0);
+#if TAMER_VER >= 12 && TAMER_VER < 200
+    SetOscillatorMode(0);
 #endif
 
-	INFOLED_DDR |=  (1 << INFOLED);
-	INFOLED_PORT |= (1 << INFOLED);
+    INFOLED_DDR |=  (1 << INFOLED);
+    INFOLED_PORT |= (1 << INFOLED);
 
-	SetupHardware();
-	BoardInit();
+    SetupHardware();
+    BoardInit();
 
-	AutoStartControl();
+    AutoStartControl();
 
-	Buffer_Initialize(&USBtoUSART_Buffer);
-	Buffer_Initialize(&USARTtoUSB_Buffer);
+    Buffer_Initialize(&USBtoUSART_Buffer);
+    Buffer_Initialize(&USARTtoUSB_Buffer);
 
 
-	USART_vInit();
+    USART_vInit();
 
-	sei();
+    sei();
 
-	for (;;)
-	{
+    for (;;)
+    {
 #if (TAMER_VER >= 122) && defined (PRESENT_GPS)
-	restart_cycle:
-	
-		if (gpsmode)
-		{
-			for (uint8_t DataBytesRem = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface); DataBytesRem != 0; DataBytesRem--)
-			{
-				uint8_t byte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+restart_cycle:
 
-				if (byte == '%')
-				{
-					gpsmode = 0;
-					goto restart_cycle;
-				}
+        if (gpsmode)
+        {
+            for (uint8_t DataBytesRem = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface); DataBytesRem != 0; DataBytesRem--)
+            {
+                uint8_t byte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
-				while((UCSR1A&(1<<UDRE1)) == 0);
-				// Transmit data
-				UDR1 = byte;
-			}
+                if (byte == '%')
+                {
+                    gpsmode = 0;
+                    goto restart_cycle;
+                }
 
-			if (USB_DeviceState == DEVICE_STATE_Configured)
-			{
-				uint8_t byte;
-				uint16_t timeout = 1000;
+                while((UCSR1A&(1<<UDRE1)) == 0);
+                // Transmit data
+                UDR1 = byte;
+            }
 
-				// Wait until a byte has been received
-				while((UCSR1A&(1<<RXC1)) == 0)
-				{
-					if (--timeout == 0)
-						goto skip_data_send;
-				}
-				// Return received data
-				byte = UDR1;
+            if (USB_DeviceState == DEVICE_STATE_Configured)
+            {
+                uint8_t byte;
+                uint16_t timeout = 1000;
 
-				/* Read bytes from the USART receive buffer into the USB IN endpoint */
-				CDC_Device_SendByte(&VirtualSerial_CDC_Interface, byte);
-			}
+                // Wait until a byte has been received
+                while((UCSR1A&(1<<RXC1)) == 0)
+                {
+                    if (--timeout == 0)
+                        goto skip_data_send;
+                }
+                // Return received data
+                byte = UDR1;
 
-		skip_data_send:
-			TamerControlAux();
+                /* Read bytes from the USART receive buffer into the USB IN endpoint */
+                CDC_Device_SendByte(&VirtualSerial_CDC_Interface, byte);
+            }
 
-			CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-			USB_USBTask();
-		}
-		else
+skip_data_send:
+#if TAMER_VER < 200
+            TamerControlAux();
 #endif
-		{
 
-			for (uint8_t DataBytesRem = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface); DataBytesRem != 0; DataBytesRem--)
-			{
-				if (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements))
-					break;
+            CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+            USB_USBTask();
+        }
+        else
+#endif
+        {
 
-				uint8_t byte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
+            for (uint8_t DataBytesRem = CDC_Device_BytesReceived(&VirtualSerial_CDC_Interface); DataBytesRem != 0; DataBytesRem--)
+            {
+                if (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements))
+                    break;
 
-				if ((byte != 0) && (byte != 0xff))
-					Buffer_StoreElement(&USBtoUSART_Buffer, byte);
+                uint8_t byte = CDC_Device_ReceiveByte(&VirtualSerial_CDC_Interface);
 
-
-				// Uncomment this to enable echo on console
-				// CDC_Device_SendByte(&VirtualSerial_CDC_Interface, byte);
-
-				if (byte == '\n' || byte == '\r')
-				{
-					commands++;
-					break;
-				}
-			}
-
-			// Clean up buffer if it's full and there're no commands
-			if ((commands == 0) && (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements)))
-				Buffer_GetElement(&USBtoUSART_Buffer);
+                if ((byte != 0) && (byte != 0xff))
+                    Buffer_StoreElement(&USBtoUSART_Buffer, byte);
 
 
-			for (;commands>0;commands--)
-			{
-				uint8_t res = ParseCommand();
-				if (res)
-				{
-					res = ProcessCommand();
-					if (res == 0)
-					{
-						FillResultPM(resErr);
-					}
-				}
-				else
-				{
-					FillResultPM(resSyntax);
-				}
-			}
+                // Uncomment this to enable echo on console
+                // CDC_Device_SendByte(&VirtualSerial_CDC_Interface, byte);
+
+                if (byte == '\n' || byte == '\r')
+                {
+                    commands++;
+                    break;
+                }
+            }
+
+            // Clean up buffer if it's full and there're no commands
+            if ((commands == 0) && (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements)))
+                Buffer_GetElement(&USBtoUSART_Buffer);
 
 
-			if (USB_DeviceState == DEVICE_STATE_Configured)
-			{
-				/* Read bytes from the USART receive buffer into the USB IN endpoint */
-				while (USARTtoUSB_Buffer.Elements)
-					CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
-			}
+            for (;commands>0;commands--)
+            {
+                uint8_t res = ParseCommand();
+                if (res)
+                {
+                    res = ProcessCommand();
+                    if (res == 0)
+                    {
+                        FillResultPM(resErr);
+                    }
+                }
+                else
+                {
+                    FillResultPM(resSyntax);
+                }
+            }
 
-			TamerControlAux();
 
-			/* Load bytes from the USART transmit buffer into the USART */
-			//if (USBtoUSART_Buffer.Elements)
-			//  Serial_TxByte(Buffer_GetElement(&USBtoUSART_Buffer));
+            if (USB_DeviceState == DEVICE_STATE_Configured)
+            {
+                /* Read bytes from the USART receive buffer into the USB IN endpoint */
+                while (USARTtoUSB_Buffer.Elements)
+                    CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
+            }
 
-			//Serial_TxByte(CDC_Device_SendByte(&VirtualSerial_CDC_Interface, '\n'));
+#if TAMER_VER < 200
+            TamerControlAux();
+#endif
 
-			CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
-			USB_USBTask();
-		}
-	}
+            /* Load bytes from the USART transmit buffer into the USART */
+            //if (USBtoUSART_Buffer.Elements)
+            //  Serial_TxByte(Buffer_GetElement(&USBtoUSART_Buffer));
+
+            //Serial_TxByte(CDC_Device_SendByte(&VirtualSerial_CDC_Interface, '\n'));
+
+            CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
+            USB_USBTask();
+        }
+    }
 }
 
 
 /** Configures the board hardware and chip peripherals for the demo's functionality. */
 void SetupHardware(void)
 {
-	/* Disable watchdog if enabled by bootloader/fuses */
-	MCUSR &= ~(1 << WDRF);
-	wdt_disable();
+    /* Disable watchdog if enabled by bootloader/fuses */
+    MCUSR &= ~(1 << WDRF);
+    wdt_disable();
 
-	/* Disable clock division */
-	clock_prescale_set(clock_div_1);
-
-	/* Hardware Initialization */
-//	Serial_Init(38400, false);
+    /* Disable clock division */
+    clock_prescale_set(clock_div_1);
 
 #if (!defined(FIXED_CONTROL_ENDPOINT_SIZE))
     USB_Device_ControlEndpointSize = CDC_CONTROL_ENDPOINT_SIZE;
@@ -288,12 +289,12 @@ void SetupHardware(void)
 
     USB_Init();
 
-#ifdef SPI_ENABLED
-	//Enable MISO
-	DDRB = (1<<PB3);
+#if defined(SPI_ENABLED) && (TAMER_VER < 200)
+    //Enable MISO
+    DDRB = (1<<PB3);
 
-	SPCR = (1<<SPIE) | (1<<SPE) | (1<<CPOL);
-	//SPDR = 0xff;
+    SPCR = (1<<SPIE) | (1<<SPE) | (1<<CPOL);
+    //SPDR = 0xff;
 #endif
 
 }
@@ -309,22 +310,26 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 {
     if (!(CDC_Device_ConfigureEndpoints(&VirtualSerial_CDC_Interface)))
         LedClear();
-	else
-		VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS = 9600;
+    else
+        VirtualSerial_CDC_Interface.State.LineEncoding.BaudRateBPS = 9600;
 }
 
 /** Event handler for the library USB Connection event. */
 void EVENT_USB_Device_Connect(void)
 {
     LedSet();
-	SPCR &=~(1<<SPE);
+#if defined(SPI_ENABLED) && (TAMER_VER < 200)
+    SPCR &=~(1<<SPE);
+#endif
 }
 
 /** Event handler for the library USB Disconnection event. */
 void EVENT_USB_Device_Disconnect(void)
 {
     LedClear();
-	SPCR |= (1<<SPE);
+#if defined(SPI_ENABLED) && (TAMER_VER < 200)
+    SPCR |= (1<<SPE);
+#endif
 }
 
 
