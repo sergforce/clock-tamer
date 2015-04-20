@@ -35,42 +35,42 @@
 
 #if TAMER_VER < 200
 
-#if TAMER_OSC > 40
-#error Incorrect value for TAMER_OSC
-#endif
+# if TAMER_OSC > 40
+#  error Incorrect value for TAMER_OSC
+# endif
 
-#ifdef LMX2531_TYPE
-#define HWISTR_LMX		"LMX=" STRINGIFY2(LMX2531_TYPE) " "
+# ifdef LMX2531_TYPE
+#  define HWISTR_LMX		"LMX=" STRINGIFY2(LMX2531_TYPE) " "
+# else
+#  define HWISTR_LMX
+# endif
+
+# ifdef LMK_TYPE
+#  define HWISTR_LMK		"LMK=" STRINGIFY2(LMK_TYPE) " "
+# else
+#  define HWISTR_LMK
+# endif
+
+# define HWISTR_OSC      "OSC=" STRINGIFY2(TAMER_OSC) " "
+
 #else
-#define HWISTR_LMX
-#endif
 
-#ifdef LMK_TYPE
-#define HWISTR_LMK		"LMK=" STRINGIFY2(LMK_TYPE) " "
-#else
-#define HWISTR_LMK
-#endif
-
-#define HWISTR_OSC      "OSC=" STRINGIFY2(TAMER_OSC) " "
-
-#else
-
-#define HWISTR_LMX  "VCO=ADF4355 "
-#define HWISTR_LMK  "DIV=Si53301B "
-#define HWISTR_OSC  "OSC=" TAMER_OSC_STR " "
+# define HWISTR_LMX  "VCO=ADF4355-2 "
+# define HWISTR_LMK  "DIV=Si53301B "
+# define HWISTR_OSC  "OSC=" TAMER_OSC_STR " "
 #endif
 
 
 #ifdef PRESENT_DAC12
-#define HWISTR_DAC		"VCTCXO "
+# define HWISTR_DAC		"VCTCXO "
 #else
-#define HWISTR_DAC
+# define HWISTR_DAC
 #endif
 
 #if defined(PRESENT_GPS) && defined(GPS_ENABLE)
-#define HWISTR_GPS		"GPS "
+# define HWISTR_GPS		"GPS "
 #else
-#define HWISTR_GPS
+# define HWISTR_GPS
 #endif
 
 

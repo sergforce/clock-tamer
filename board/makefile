@@ -317,9 +317,11 @@ CFLAGS += -Wa,-adhlns=$(<:%.c=$(OBJDIR)/%.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 CFLAGS += -DTAMER_VER=$(TAMER_VER)
+CFLAGS += -D HWIEEMEM=EEMEM
+#CFLAGS += -D HWIEEMEM="__attribute__ ((section (\".hwieeprom\")))" 
 
-CFLAGS += -D HWIEEMEM="__attribute__ ((section (\".hwieeprom\")))" 
 CFLAGS += -D SAFE_EEPROM_ADDRESS=412
+
 ifeq ($(GPS), 1)
 CFLAGS += -D PRESENT_GPS
 endif
