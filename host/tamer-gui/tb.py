@@ -76,8 +76,12 @@ class MainWindow(QtGui.QWidget):
         print "Tamer version: %s" % self.ver
 
         vals = str(data).split(" ")
-        self.lmx = int(vals[0].split("=")[1])
-        self.lmk = int(vals[1].split("=")[1])
+        try:
+            self.lmx = int(vals[0].split("=")[1])
+            self.lmk = int(vals[1].split("=")[1])
+        except:
+            self.lmx=0
+            self.lmk=0
 
         if self.lmk == 1010 and (self.ver == "1.21" or self.ver == "1.22" or self.ver == "1.23" or self.ver == "1.30"):
             self.outputsConfig = tamer121_lmk1010
@@ -156,9 +160,10 @@ class MainWindow(QtGui.QWidget):
 
     def ReadOutputs(self):
         data = self.dev.getOutputsMask()
-        for i in range(0,8):
-            state = (2**i) & data
-            self.outCb[i].setChecked(state)
+        if isinstance(data, (int,long)):
+            for i in range(0,8):
+                state = (2**i) & data
+                self.outCb[i].setChecked(state)
 
     def GetOututsMask(self):
         data = 0
