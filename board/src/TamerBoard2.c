@@ -37,15 +37,20 @@ void BoardInit()
     AdfCeSet();
 
     /* SPI Init, configure only output and sck, mode 0 */
-    SPI_DDR = (1 << SPI_MOSI) | (1 << SPI_SCK);
-    SPSR = (1 << MSTR) | (1 << SPE);
+    SPI_DDR |= (1 << SPI_MOSI) | (1 << SPI_SCK) | (1 << SPI_SS);
+    SPI_PORT |= (1 << SPI_SS);
+
+    SPCR = (1 << MSTR) | (1 << SPE);
 
 }
 
-static void spi_write(uint8_t data)
+static uint8_t spi_write(uint8_t data)
 {
+    SPCR = (1 << MSTR) | (1 << SPE);
+
     SPDR = data;
     while (!(SPSR & (1<<SPIF)));
+    return SPDR;
 }
 
 /*

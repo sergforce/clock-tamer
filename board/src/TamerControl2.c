@@ -141,7 +141,7 @@ const uint8_t resOk[] PROGMEM = "OK";
 
 #ifndef NO_VERSION
 #if TAMER_VER == 200
-const uint8_t resVersion[] PROGMEM = "ClockTamer2(UmCLK) SW=2.0 API=2";
+const uint8_t resVersion[] PROGMEM = "ClockTamer2 (UmCLKv1.0) SW=2.0 API=2 R0.001";
 #elif TAMER_VER == 130
 const uint8_t resVersion[] PROGMEM = "ClockTamer SW=1.30 API=1";
 #elif TAMER_VER == 123

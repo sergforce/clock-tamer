@@ -288,15 +288,15 @@ void SetupHardware(void)
 #endif
 
     USB_Init();
-
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
+    xxx
+
     //Enable MISO
     DDRB = (1<<PB3);
 
     SPCR = (1<<SPIE) | (1<<SPE) | (1<<CPOL);
     //SPDR = 0xff;
 #endif
-
 }
 
 /** Event handler for the library USB Unhandled Control Request event. */
@@ -319,7 +319,7 @@ void EVENT_USB_Device_Connect(void)
 {
     LedSet();
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
-    SPCR &=~(1<<SPE);
+    SPCR &=~(1<<SPE); xxx
 #endif
 }
 
@@ -328,7 +328,7 @@ void EVENT_USB_Device_Disconnect(void)
 {
     LedClear();
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
-    SPCR |= (1<<SPE);
+    SPCR |= (1<<SPE); xxx
 #endif
 }
 

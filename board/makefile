@@ -177,6 +177,11 @@ else
 LUFA_OPTS += -D NO_BOOTSHARED
 endif
 
+ifeq ($(TAMER_VER), 200)
+LUFA_OPTS += -D PRESENT_DAC12
+endif
+
+
 # List C source files here. (C dependencies are automatically generated.)
 
 SRC = src/Tamer.c                                                 \

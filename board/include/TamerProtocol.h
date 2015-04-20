@@ -79,14 +79,17 @@ typedef enum tamerCommandType
 typedef enum tamerTargetType
 {
     trgNONE = 0,
-    trgADF,
+    trgLMK,
+    trgLMX,
     trgDAC,
     trgLED,
     trgVCO,
     trgGPS,
     trgIOS,
-    trgSTS
+    trgSTS,
+    trgADF,
 } TargetType_t;
+
 
 /** @brief Internal values of control commands target details.
 *
@@ -98,12 +101,14 @@ typedef enum tamerTargetDetails
 {
     detNONE = 0,
     detEN,
+    detGOE,
     detSYN,
     detOSC,
     detOUT,
     detPORTS,
     detMIN,
     detMAX,
+    detKBT,
     detDIVIDERS,
     detAUTO,
     detD12,
