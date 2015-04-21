@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>769</width>
-    <height>660</height>
+    <height>794</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>312</y>
-     <width>211</width>
-     <height>111</height>
+     <x>450</x>
+     <y>690</y>
+     <width>201</width>
+     <height>101</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -50,12 +50,12 @@
      <widget class="QComboBox" name="comboBox">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -90,7 +90,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>440</y>
+     <y>240</y>
      <width>211</width>
      <height>171</height>
     </rect>
@@ -105,7 +105,7 @@
     <item row="0" column="0" colspan="2">
      <widget class="QLabel" name="label_4">
       <property name="text">
-       <string>Register 1</string>
+       <string>Register 3</string>
       </property>
      </widget>
     </item>
@@ -123,7 +123,7 @@
      <widget class="QComboBox" name="comboBox_3">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>ON REG0</string>
        </property>
       </item>
       <item>
@@ -136,7 +136,7 @@
     <item row="2" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>Phase Resync:</string>
+       <string>Phase Rsync:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -147,12 +147,12 @@
      <widget class="QComboBox" name="comboBox_4">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -160,7 +160,7 @@
     <item row="3" column="0">
      <widget class="QLabel" name="label_7">
       <property name="text">
-       <string>Phase Adjust:</string>
+       <string>Phase Adj:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -171,12 +171,12 @@
      <widget class="QComboBox" name="comboBox_5">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -200,7 +200,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>313</y>
+     <y>240</y>
      <width>201</width>
      <height>301</height>
     </rect>
@@ -248,12 +248,42 @@
      <widget class="QComboBox" name="comboBox_6">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>3-state</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>DVdd</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>SDGnd</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>R DIV</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>N DIV</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Anlg LD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Dig LD</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>RSVD</string>
        </property>
       </item>
      </widget>
@@ -272,12 +302,12 @@
      <widget class="QComboBox" name="comboBox_7">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -296,12 +326,87 @@
      <widget class="QComboBox" name="comboBox_8">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>0.31 ma</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>0.63 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>0.94 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1.25 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1.56 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>1.88 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2.19 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2.19 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2.50 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2.81 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3.13 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3.44 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3.75 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4.06 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4.38 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4.69 ma</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>5.00 ma</string>
        </property>
       </item>
      </widget>
@@ -320,12 +425,12 @@
      <widget class="QComboBox" name="comboBox_9">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Single</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Diff</string>
        </property>
       </item>
      </widget>
@@ -344,12 +449,12 @@
      <widget class="QComboBox" name="comboBox_10">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>1.8V</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>3.3V</string>
        </property>
       </item>
      </widget>
@@ -368,12 +473,12 @@
      <widget class="QComboBox" name="comboBox_11">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Negative</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Positive</string>
        </property>
       </item>
      </widget>
@@ -392,12 +497,12 @@
      <widget class="QComboBox" name="comboBox_12">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -416,12 +521,12 @@
      <widget class="QComboBox" name="comboBox_13">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -440,12 +545,12 @@
      <widget class="QComboBox" name="comboBox_14">
       <item>
        <property name="text">
-        <string>Enabled</string>
+        <string>Disabled</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Disabled</string>
+        <string>Enabled</string>
        </property>
       </item>
      </widget>
@@ -712,7 +817,7 @@
     <rect>
      <x>480</x>
      <y>80</y>
-     <width>131</width>
+     <width>161</width>
      <height>27</height>
     </rect>
    </property>
@@ -735,7 +840,7 @@
     <rect>
      <x>480</x>
      <y>130</y>
-     <width>131</width>
+     <width>161</width>
      <height>27</height>
     </rect>
    </property>
@@ -774,32 +879,27 @@
    </item>
    <item>
     <property name="text">
-     <string>/3</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
      <string>/4</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>/5</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>/6</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>/7</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
      <string>/8</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/16</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/32</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>/64</string>
     </property>
    </item>
   </widget>
@@ -821,23 +921,751 @@
     <rect>
      <x>30</x>
      <y>20</y>
-     <width>71</width>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
-    <string>Ref freq:</string>
+    <string>Ref:</string>
    </property>
   </widget>
   <widget class="QSpinBox" name="spinBox_6">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>60</x>
      <y>20</y>
      <width>101</width>
      <height>31</height>
     </rect>
    </property>
+  </widget>
+  <widget class="QFrame" name="frame_8">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>238</y>
+     <width>199</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_35">
+      <property name="text">
+       <string>Register 7</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_40">
+      <property name="text">
+       <string>LE Sync:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="comboBox_16">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>REFin</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_37">
+      <property name="text">
+       <string>LD Cycles:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="comboBox_18">
+      <item>
+       <property name="text">
+        <string>1024</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2048</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4096</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>8192</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_39">
+      <property name="text">
+       <string>LOL Mode:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QComboBox" name="comboBox_19">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_36">
+      <property name="text">
+       <string>Frac-N LD :</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="comboBox_20">
+      <item>
+       <property name="text">
+        <string>5.0ns</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>6.0ns</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>8.0ns</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>12.0ns</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_38">
+      <property name="text">
+       <string>LD Mode:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QComboBox" name="comboBox_17">
+      <item>
+       <property name="text">
+        <string>FRAC-N</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>INT 2.9ns</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLabel" name="label_41">
+   <property name="geometry">
+    <rect>
+     <x>250</x>
+     <y>20</y>
+     <width>41</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Div:</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="spinBox_7">
+   <property name="geometry">
+    <rect>
+     <x>280</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_42">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>20</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Mhz</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>366</x>
+     <y>20</y>
+     <width>51</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>x2</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_2">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>20</y>
+     <width>51</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>/2</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_3">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>20</y>
+     <width>71</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Auto</string>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frame_9">
+   <property name="geometry">
+    <rect>
+     <x>450</x>
+     <y>450</y>
+     <width>201</width>
+     <height>230</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_6">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_48">
+      <property name="text">
+       <string>Register 9</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QCheckBox" name="checkBox_4">
+      <property name="text">
+       <string>Fast Calibration</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_44">
+      <property name="text">
+       <string>VCO Band Div:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="spinBox_9"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_43">
+      <property name="text">
+       <string>Timeout:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="spinBox_8"/>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_45">
+      <property name="text">
+       <string>ALC Timeout:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QSpinBox" name="spinBox_10"/>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_46">
+      <property name="text">
+       <string>Synth. Lock TO:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QSpinBox" name="spinBox_11"/>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_47">
+      <property name="text">
+       <string>Total cal. time:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="lineEdit_4"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_10">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>420</y>
+     <width>211</width>
+     <height>367</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_54">
+      <property name="text">
+       <string>Register 6</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_57">
+      <property name="text">
+       <string>Feedback:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QComboBox" name="comboBox_21">
+      <item>
+       <property name="text">
+        <string>Divided</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Fundamental</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_50">
+      <property name="text">
+       <string>MTLD:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="comboBox_25">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_56">
+      <property name="text">
+       <string>Aux Out En:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QComboBox" name="comboBox_27">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_49">
+      <property name="text">
+       <string>Aux Out Pwr:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="comboBox_28">
+      <item>
+       <property name="text">
+        <string>-4dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>-1dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>+2dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>+5dBm</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_55">
+      <property name="text">
+       <string>RF Out En:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QComboBox" name="comboBox_22">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_52">
+      <property name="text">
+       <string>RF Out Pwr:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QComboBox" name="comboBox_26">
+      <item>
+       <property name="text">
+        <string>-4dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>-1dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>+2dBm</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>+5dBm</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_51">
+      <property name="text">
+       <string>Neg Bleed:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QComboBox" name="comboBox_24">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_53">
+      <property name="text">
+       <string>Gated Bleed:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QComboBox" name="comboBox_23">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QCheckBox" name="checkBox_5">
+      <property name="text">
+       <string>Bleed Curr</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QSpinBox" name="spinBox_12"/>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_59">
+      <property name="text">
+       <string>Bleed Current</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QLineEdit" name="lineEdit_5"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_11">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>550</y>
+     <width>201</width>
+     <height>161</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_58">
+      <property name="text">
+       <string>Register 10</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QCheckBox" name="checkBox_6">
+      <property name="text">
+       <string>ADC Div</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSpinBox" name="spinBox_13"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_60">
+      <property name="text">
+       <string>ADC F kHz</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="lineEdit_6"/>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_61">
+      <property name="text">
+       <string>ADC Conv.</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QComboBox" name="comboBox_29">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_62">
+      <property name="text">
+       <string>ADC Enable:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QComboBox" name="comboBox_30">
+      <item>
+       <property name="text">
+        <string>Disabled</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Enabled</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_12">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>720</y>
+     <width>201</width>
+     <height>70</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_9">
+    <item row="0" column="0" colspan="2">
+     <widget class="QLabel" name="label_63">
+      <property name="text">
+       <string>Register 12</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_64">
+      <property name="text">
+       <string>Phase Resync:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSpinBox" name="spinBox_14"/>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
