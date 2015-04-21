@@ -42,14 +42,20 @@
 #define REG2_AUX_FRAC_MSK       ((1<<14)-1)
 #define REG2_AUX_MOD_SHIFT      4
 #define REG2_AUX_MOD_MSK        ((1<<14)-1)
+#define REG2_AUX_FRAC_SHIFT     18
 
 /* REG3: {SD LOAD RESET, PHASE RESYNC, PHASE ADJUST, 24bit PHASE} */
 
+#define REG3_SD_LOAD_SHIFT     30
+#define REG3_PHASE_RSYNC_SHIFT 29
+#define REG3_PHASE_ADJ_SHIFT   28
+#define REG3_PHASE_SHIFT       4
+#define REG3_PHASE_MASK        ((1<<24)-1)
 
 
 
 
-#define REG2_AUX_FRAC_SHIFT     18
+
 
 
 

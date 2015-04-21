@@ -389,6 +389,13 @@ uint8_t SetDac(uint16_t value)
     return 0;
 }
 
+uint8_t SetOutFreq(void)
+{
+
+
+    return 0;
+}
+
 uint8_t ProcessCommand(void)
 {
     switch(command.cmd)
@@ -412,10 +419,19 @@ uint8_t ProcessCommand(void)
                     {
                         case detD12:
                             write_reg_DAC12(command.data[1], command.data[0]);
+                            FillResultPM(resOk);
                             return 1;
                         default:
                             return 0;
                     }
+                case trgADF:
+                    write_reg_ADF4355(command.data[3],
+                                      command.data[2],
+                                      command.data[1],
+                                      command.data[0]);
+                    FillResultPM(resOk);
+                    return 1;
+                    break;
                 default:
                     return 0;
             }
@@ -440,7 +456,7 @@ uint8_t ProcessCommand(void)
                 default:
                     return 0;
             }
-         	return 0;
+            return 0;
         }
 #endif
         case cmdSET:
@@ -460,13 +476,10 @@ uint8_t ProcessCommand(void)
                             return 0;
                     }
 
-                    uint8_t r = 0;
-                    if (r)
-                    {
+                    uint8_t r = SetOutFreq();
+                    if (r) {
                         FillResultPM(resOk);
-                    }
-                    else
-                    {
+                    } else {
                         FillResultPM(resBadRange);
                     }
                     return 1;
