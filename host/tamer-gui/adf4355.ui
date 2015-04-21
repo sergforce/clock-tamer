@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>769</width>
+    <width>860</width>
     <height>794</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QFrame" name="frame">
+  <widget class="QFrame" name="frame_reg_0">
    <property name="geometry">
     <rect>
      <x>450</x>
@@ -47,7 +47,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBox">
+     <widget class="QComboBox" name="r0_autocal">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -71,7 +71,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QComboBox" name="comboBox_2">
+     <widget class="QComboBox" name="r0_prescaler">
       <item>
        <property name="text">
         <string>4/5</string>
@@ -86,7 +86,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="frame_2">
+  <widget class="QFrame" name="frame_reg_3">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -120,7 +120,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBox_3">
+     <widget class="QComboBox" name="r3_sd_load">
       <item>
        <property name="text">
         <string>ON REG0</string>
@@ -144,7 +144,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QComboBox" name="comboBox_4">
+     <widget class="QComboBox" name="r3_phase_rsync">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -168,7 +168,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_5">
+     <widget class="QComboBox" name="r3_phase_adj">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -192,11 +192,11 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QSpinBox" name="spinBox"/>
+     <widget class="QSpinBox" name="r3_phase"/>
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="frame_3">
+  <widget class="QFrame" name="frame_reg_4">
    <property name="geometry">
     <rect>
      <x>240</x>
@@ -245,7 +245,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBox_6">
+     <widget class="QComboBox" name="r4_muxout">
       <item>
        <property name="text">
         <string>3-state</string>
@@ -299,7 +299,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QComboBox" name="comboBox_7">
+     <widget class="QComboBox" name="r4_double_buf">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -323,7 +323,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_8">
+     <widget class="QComboBox" name="r4_cp_curr">
       <item>
        <property name="text">
         <string>0.31 ma</string>
@@ -422,7 +422,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QComboBox" name="comboBox_9">
+     <widget class="QComboBox" name="r4_refin">
       <item>
        <property name="text">
         <string>Single</string>
@@ -446,7 +446,7 @@
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QComboBox" name="comboBox_10">
+     <widget class="QComboBox" name="r4_mux">
       <item>
        <property name="text">
         <string>1.8V</string>
@@ -470,7 +470,7 @@
      </widget>
     </item>
     <item row="6" column="1">
-     <widget class="QComboBox" name="comboBox_11">
+     <widget class="QComboBox" name="r4_pd_pol">
       <item>
        <property name="text">
         <string>Negative</string>
@@ -494,7 +494,7 @@
      </widget>
     </item>
     <item row="7" column="1">
-     <widget class="QComboBox" name="comboBox_12">
+     <widget class="QComboBox" name="r4_powerdown">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -518,7 +518,7 @@
      </widget>
     </item>
     <item row="8" column="1">
-     <widget class="QComboBox" name="comboBox_13">
+     <widget class="QComboBox" name="r4_cp_state">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -542,7 +542,7 @@
      </widget>
     </item>
     <item row="9" column="1">
-     <widget class="QComboBox" name="comboBox_14">
+     <widget class="QComboBox" name="r4_counter">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -621,7 +621,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QSpinBox" name="spinBox_4"/>
+      <widget class="QSpinBox" name="f_frac2"/>
      </item>
      <item row="1" column="0" colspan="2">
       <widget class="QFrame" name="frame_5">
@@ -641,11 +641,11 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QSpinBox" name="spinBox_5"/>
+      <widget class="QSpinBox" name="f_mod2"/>
      </item>
     </layout>
    </widget>
-   <widget class="QSpinBox" name="spinBox_2">
+   <widget class="QSpinBox" name="f_int">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -723,7 +723,7 @@
      <string>+</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_3">
+   <widget class="QSpinBox" name="f_frac1">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -733,7 +733,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLabel" name="label_26">
+   <widget class="QLabel" name="f_n">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -773,7 +773,7 @@
     <string>PFD:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="f_pfd">
    <property name="geometry">
     <rect>
      <x>390</x>
@@ -812,7 +812,7 @@
     <string>VCOout: (MHz)</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="f_vco_out">
    <property name="geometry">
     <rect>
      <x>480</x>
@@ -835,7 +835,7 @@
     <string>RFoutA: (MHz)</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_3">
+  <widget class="QLineEdit" name="f_rf_out">
    <property name="geometry">
     <rect>
      <x>480</x>
@@ -858,7 +858,7 @@
     <string>DIV:</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="comboBox_15">
+  <widget class="QComboBox" name="f_div_out">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -929,7 +929,7 @@
     <string>Ref:</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="spinBox_6">
+  <widget class="QSpinBox" name="f_ref">
    <property name="geometry">
     <rect>
      <x>60</x>
@@ -939,7 +939,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QFrame" name="frame_8">
+  <widget class="QFrame" name="frame_reg_7">
    <property name="geometry">
     <rect>
      <x>450</x>
@@ -973,7 +973,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBox_16">
+     <widget class="QComboBox" name="r7_le_sync">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -997,7 +997,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QComboBox" name="comboBox_18">
+     <widget class="QComboBox" name="r7_ld_cycles">
       <item>
        <property name="text">
         <string>1024</string>
@@ -1031,7 +1031,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_19">
+     <widget class="QComboBox" name="r7_lol_mode">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1055,7 +1055,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QComboBox" name="comboBox_20">
+     <widget class="QComboBox" name="r7_frac_n">
       <item>
        <property name="text">
         <string>5.0ns</string>
@@ -1089,7 +1089,7 @@
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QComboBox" name="comboBox_17">
+     <widget class="QComboBox" name="r7_ld">
       <item>
        <property name="text">
         <string>FRAC-N</string>
@@ -1117,7 +1117,7 @@
     <string>Div:</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="spinBox_7">
+  <widget class="QSpinBox" name="f_div">
    <property name="geometry">
     <rect>
      <x>280</x>
@@ -1140,7 +1140,7 @@
     <string>Mhz</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox">
+  <widget class="QCheckBox" name="f_x2">
    <property name="geometry">
     <rect>
      <x>366</x>
@@ -1153,7 +1153,7 @@
     <string>x2</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_2">
+  <widget class="QCheckBox" name="f_div2">
    <property name="geometry">
     <rect>
      <x>430</x>
@@ -1166,7 +1166,7 @@
     <string>/2</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_3">
+  <widget class="QCheckBox" name="f_auto">
    <property name="geometry">
     <rect>
      <x>570</x>
@@ -1179,7 +1179,7 @@
     <string>Auto</string>
    </property>
   </widget>
-  <widget class="QFrame" name="frame_9">
+  <widget class="QFrame" name="frame_reg_9">
    <property name="geometry">
     <rect>
      <x>450</x>
@@ -1203,7 +1203,7 @@
      </widget>
     </item>
     <item row="1" column="0" colspan="2">
-     <widget class="QCheckBox" name="checkBox_4">
+     <widget class="QCheckBox" name="r9_fast_cal">
       <property name="text">
        <string>Fast Calibration</string>
       </property>
@@ -1220,7 +1220,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QSpinBox" name="spinBox_9"/>
+     <widget class="QSpinBox" name="r9_vco_div"/>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="label_43">
@@ -1233,7 +1233,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QSpinBox" name="spinBox_8"/>
+     <widget class="QSpinBox" name="r9_to"/>
     </item>
     <item row="4" column="0">
      <widget class="QLabel" name="label_45">
@@ -1246,7 +1246,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QSpinBox" name="spinBox_10"/>
+     <widget class="QSpinBox" name="r9_alc_to"/>
     </item>
     <item row="5" column="0">
      <widget class="QLabel" name="label_46">
@@ -1259,7 +1259,7 @@
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QSpinBox" name="spinBox_11"/>
+     <widget class="QSpinBox" name="r9_lock_to"/>
     </item>
     <item row="6" column="0">
      <widget class="QLabel" name="label_47">
@@ -1269,11 +1269,11 @@
      </widget>
     </item>
     <item row="6" column="1">
-     <widget class="QLineEdit" name="lineEdit_4"/>
+     <widget class="QLineEdit" name="r9_total_value"/>
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="frame_10">
+  <widget class="QFrame" name="frame_reg_6">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -1307,7 +1307,7 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QComboBox" name="comboBox_21">
+     <widget class="QComboBox" name="r6_feedback">
       <item>
        <property name="text">
         <string>Divided</string>
@@ -1331,7 +1331,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QComboBox" name="comboBox_25">
+     <widget class="QComboBox" name="r6_mtld">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1355,7 +1355,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_27">
+     <widget class="QComboBox" name="r6_aux_out">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1379,7 +1379,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QComboBox" name="comboBox_28">
+     <widget class="QComboBox" name="r6_aux_out_pwr">
       <item>
        <property name="text">
         <string>-4dBm</string>
@@ -1413,7 +1413,7 @@
      </widget>
     </item>
     <item row="5" column="1">
-     <widget class="QComboBox" name="comboBox_22">
+     <widget class="QComboBox" name="r6_out">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1437,7 +1437,7 @@
      </widget>
     </item>
     <item row="6" column="1">
-     <widget class="QComboBox" name="comboBox_26">
+     <widget class="QComboBox" name="r6_out_pwr">
       <item>
        <property name="text">
         <string>-4dBm</string>
@@ -1471,7 +1471,7 @@
      </widget>
     </item>
     <item row="7" column="1">
-     <widget class="QComboBox" name="comboBox_24">
+     <widget class="QComboBox" name="r6_neg_bleed">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1495,7 +1495,7 @@
      </widget>
     </item>
     <item row="8" column="1">
-     <widget class="QComboBox" name="comboBox_23">
+     <widget class="QComboBox" name="r6_gated_bleed">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1509,14 +1509,14 @@
      </widget>
     </item>
     <item row="9" column="0">
-     <widget class="QCheckBox" name="checkBox_5">
+     <widget class="QCheckBox" name="r6_bleed">
       <property name="text">
        <string>Bleed Curr</string>
       </property>
      </widget>
     </item>
     <item row="9" column="1">
-     <widget class="QSpinBox" name="spinBox_12"/>
+     <widget class="QSpinBox" name="r6_bleed_curr"/>
     </item>
     <item row="10" column="0">
      <widget class="QLabel" name="label_59">
@@ -1529,11 +1529,15 @@
      </widget>
     </item>
     <item row="10" column="1">
-     <widget class="QLineEdit" name="lineEdit_5"/>
+     <widget class="QLineEdit" name="r6_bleed_value">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="frame_11">
+  <widget class="QFrame" name="frame_reg_10">
    <property name="geometry">
     <rect>
      <x>240</x>
@@ -1557,14 +1561,14 @@
      </widget>
     </item>
     <item row="1" column="0">
-     <widget class="QCheckBox" name="checkBox_6">
+     <widget class="QCheckBox" name="r10_adc">
       <property name="text">
        <string>ADC Div</string>
       </property>
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_13"/>
+     <widget class="QSpinBox" name="r10_adc_div"/>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="label_60">
@@ -1577,7 +1581,7 @@
      </widget>
     </item>
     <item row="2" column="1">
-     <widget class="QLineEdit" name="lineEdit_6"/>
+     <widget class="QLineEdit" name="r10_adc_value"/>
     </item>
     <item row="3" column="0">
      <widget class="QLabel" name="label_61">
@@ -1590,7 +1594,7 @@
      </widget>
     </item>
     <item row="3" column="1">
-     <widget class="QComboBox" name="comboBox_29">
+     <widget class="QComboBox" name="r10_adc_conv">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1614,7 +1618,7 @@
      </widget>
     </item>
     <item row="4" column="1">
-     <widget class="QComboBox" name="comboBox_30">
+     <widget class="QComboBox" name="r10_adc_en">
       <item>
        <property name="text">
         <string>Disabled</string>
@@ -1629,7 +1633,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QFrame" name="frame_12">
+  <widget class="QFrame" name="frame_reg_12">
    <property name="geometry">
     <rect>
      <x>240</x>
@@ -1663,9 +1667,378 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_14"/>
+     <widget class="QSpinBox" name="r12_phase_rsync"/>
     </item>
    </layout>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>10</y>
+     <width>21</width>
+     <height>781</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QFrame" name="frame_13">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>380</y>
+     <width>181</width>
+     <height>411</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_10">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_65">
+      <property name="text">
+       <string>R0</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="reg0"/>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="b_reg0_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QLabel" name="label_66">
+      <property name="text">
+       <string>R1</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLineEdit" name="reg1"/>
+    </item>
+    <item row="1" column="2">
+     <widget class="QPushButton" name="b_reg1_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QLabel" name="label_67">
+      <property name="text">
+       <string>R2</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QLineEdit" name="reg2"/>
+    </item>
+    <item row="2" column="2">
+     <widget class="QPushButton" name="b_reg2_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_68">
+      <property name="text">
+       <string>R3</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLineEdit" name="reg3"/>
+    </item>
+    <item row="3" column="2">
+     <widget class="QPushButton" name="b_reg3_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_69">
+      <property name="text">
+       <string>R4</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLineEdit" name="reg4"/>
+    </item>
+    <item row="4" column="2">
+     <widget class="QPushButton" name="b_reg4_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_70">
+      <property name="text">
+       <string>R5</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="reg5"/>
+    </item>
+    <item row="5" column="2">
+     <widget class="QPushButton" name="b_reg5_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_71">
+      <property name="text">
+       <string>R6</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QLineEdit" name="reg6"/>
+    </item>
+    <item row="6" column="2">
+     <widget class="QPushButton" name="b_reg6_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_72">
+      <property name="text">
+       <string>R7</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QLineEdit" name="reg7"/>
+    </item>
+    <item row="7" column="2">
+     <widget class="QPushButton" name="b_reg7_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_73">
+      <property name="text">
+       <string>R8</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QLineEdit" name="reg8"/>
+    </item>
+    <item row="8" column="2">
+     <widget class="QPushButton" name="b_reg8_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_74">
+      <property name="text">
+       <string>R9</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="QLineEdit" name="reg9"/>
+    </item>
+    <item row="9" column="2">
+     <widget class="QPushButton" name="b_reg9_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="0">
+     <widget class="QLabel" name="label_75">
+      <property name="text">
+       <string>R10</string>
+      </property>
+     </widget>
+    </item>
+    <item row="10" column="1">
+     <widget class="QLineEdit" name="reg10"/>
+    </item>
+    <item row="10" column="2">
+     <widget class="QPushButton" name="b_reg10_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0">
+     <widget class="QLabel" name="label_76">
+      <property name="text">
+       <string>R11</string>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="1">
+     <widget class="QLineEdit" name="reg11"/>
+    </item>
+    <item row="11" column="2">
+     <widget class="QPushButton" name="b_reg11_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="label_77">
+      <property name="text">
+       <string>R12</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <widget class="QLineEdit" name="reg12"/>
+    </item>
+    <item row="12" column="2">
+     <widget class="QPushButton" name="b_reg12_set">
+      <property name="maximumSize">
+       <size>
+        <width>40</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Set</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QPushButton" name="b_set">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>320</y>
+     <width>181</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>SET ALL REGS</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="b_save">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>280</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save to file...</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="b_load">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>240</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Load from file..</string>
+   </property>
   </widget>
  </widget>
  <resources/>
