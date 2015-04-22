@@ -87,11 +87,11 @@
 #define REG6_CP_BLEED_CURR_SHIFT 13
 #define REG6_CP_BLEED_CURR_MASK  ((1<<8)-1)
 #define REG6_MLTD_SHIFT          11
-#define REG6_AUX_PWR_EN          9
-#define REG6_AUX_PWR             7
+#define REG6_AUX_PWR_EN_SHIFT    9
+#define REG6_AUX_PWR_SHIFT       7
 #define REG6_AUX_PWR_MASK        ((1<<2)-1)
-#define REG6_PWR_EN              6
-#define REG6_PWR                 4
+#define REG6_PWR_EN_SHIFT        6
+#define REG6_PWR_SHIFT           4
 #define REG6_PWR_MASK            ((1<<2)-1)
 
 /* REG7: {RESERVED 6-bit, LE SYNC, RESERVED 15-bit, LD CYCLE CNT 2-bit,
