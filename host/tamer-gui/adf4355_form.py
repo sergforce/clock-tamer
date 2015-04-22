@@ -5,19 +5,19 @@ import sys
 import time
 import re
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtXml import *
+from PyQt4 import QtCore, QtGui, uic
 
-from adf4355_ui import *
+#from adf4355_ui import *
 from adf4355_regs import *
 
-class Adf4355(QtGui.QDialog):
+class Adf4355(QtGui.QWidget):
     def __init__(self):
         QtGui.QWidget.__init__(self)
-        self.obj = Ui_Dialog()
-        self.obj.setupUi(self)
-        
+        #self.obj = Ui_Dialog()
+        #self.obj.setupUi(self)
+        self.obj = uic.loadUi("adf4355.ui")
+        self.obj.show()
+
         self.obj.r3_uis = [ self.obj.r3_sd_load, self.obj.r3_phase_rsync, self.obj.r3_phase_adj, self.obj.r3_phase ]
         for i in self.obj.r3_uis:
             try:    i.currentIndexChanged['QString'].connect(self.r3_changed)
@@ -35,7 +35,7 @@ class Adf4355(QtGui.QDialog):
 if __name__ == '__main__':
       app = QtGui.QApplication(sys.argv)
       qb = Adf4355()
-      qb.show()
+      #qb.show()
 
       res = app.exec_()
       sys.exit(res)
