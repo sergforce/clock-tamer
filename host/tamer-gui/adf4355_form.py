@@ -11,12 +11,14 @@ from PyQt4 import QtCore, QtGui, uic
 from adf4355_regs import *
 
 class Adf4355(QtGui.QWidget):
-    def __init__(self):
+    def __init__(self, func = None):
         QtGui.QWidget.__init__(self)
         #self.obj = Ui_Dialog()
         #self.obj.setupUi(self)
         self.obj = uic.loadUi("adf4355.ui")
         self.obj.show()
+        
+        self.func = func
         
         self.N = 1.0
         self.pfd = 1.0
@@ -76,6 +78,14 @@ class Adf4355(QtGui.QWidget):
         
         #Tune Logic
         self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
+        self.obj.b_set.clicked.connect(self.set_regs)
+        
+    def set_regs(self):
+        if self.func is not None:
+            regs = [ self.reg12, self.reg11, self.reg10, self.reg9, self.reg8, self.reg7, 
+                     self.reg6, self.reg5, self.reg4, self.reg3, self.reg2, self.reg1, self.reg0 ]
+            self.func(regs)
+
 
     def all_changed(self):
         self.r0_changed()
@@ -116,7 +126,7 @@ class Adf4355(QtGui.QWidget):
         self.mul_changed()
 
     def r1_changed(self):
-        reg = (((self.obj.f_frac1.value() & REG0_NVALUE_MASK) << REG0_NVALUE_SHIFT) | 1)
+        reg = (((self.obj.f_frac1.value() & REG1_MFRAC_MASK) << REG1_MFRAC_SHIFT) | 1)
         self.reg1 = reg
         self.obj.reg1.setText("x%08x" % reg)
         self.mul_changed()

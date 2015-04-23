@@ -30,6 +30,8 @@ tamer121_lmk1010 = ("LVDS/P+", "CMOS", None,   "LVDS/P+",      "LVDS",   "LVDS",
 
 tamer_unknown  = ("unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown")
 
+from adf4355_form import *
+
 class MainWindow(QtGui.QWidget):
     def __init__(self, device=None):
         QtGui.QWidget.__init__(self)
@@ -54,7 +56,15 @@ class MainWindow(QtGui.QWidget):
 
         if spl != None:
             spl.finish(self)
+            
+        self.adf = Adf4355(self.write_adf)
 
+    def write_adf(self, d):
+        for i in d:
+            data = self.dev.setAdf(i)
+            print "Reg: %x => %s" % (i, data)
+        
+        
     def onTimer(self):
         self.onGet()
 

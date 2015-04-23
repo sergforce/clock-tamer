@@ -231,7 +231,9 @@ class TamerDevice(object):
     def setGpsAut(self, mode = 1):
         return self.dev.sendCmd("SET", "GPS", "AUT", mode)
 
-
+    def setAdf(self, reg):
+        return self.dev.sendCmd("REG", "ADF", "", reg)
+        
     def getOsc(self):
         res = self.dev.sendCmd("INF", "", "OSC")
         return self.dev.getValueFromResult(res)
