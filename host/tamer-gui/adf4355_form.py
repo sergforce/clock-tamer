@@ -17,6 +17,9 @@ class Adf4355(QtGui.QWidget):
         #self.obj.setupUi(self)
         self.obj = uic.loadUi("adf4355.ui")
         self.obj.show()
+        
+        self.N = 1.0
+        self.pfd = 1.0
 
         self.reg0 = 0
         self.reg1 = 1
@@ -50,8 +53,11 @@ class Adf4355(QtGui.QWidget):
         self.obj.r3_uis = [ self.obj.r3_sd_load, self.obj.r3_phase_rsync, self.obj.r3_phase_adj, self.obj.r3_phase ]
         ui_change(self.r3_changed, self.obj.r3_uis)
         
-        self.obj.r4_uis = [ self.obj.r4_muxout, self.obj.r4_double_buf, self.obj.r4_cp_curr, self.obj.r4_refin, self.obj.r4_mux_lvl, self.obj.r4_pd_pol, self.obj.r4_powerdown, self.obj.r4_cp_state, self.obj.r4_counter_rst ]
+        self.obj.r4_uis = [ self.obj.r4_muxout, self.obj.r4_double_buf, self.obj.r4_cp_curr, self.obj.r4_refin, self.obj.r4_mux_lvl, self.obj.r4_pd_pol, self.obj.r4_powerdown, self.obj.r4_cp_state, self.obj.r4_counter_rst, self.obj.f_r_cnt ]
         ui_change(self.r4_changed, self.obj.r4_uis)
+        # Special tricks with check boxes
+        self.obj.f_x2.stateChanged['int'].connect(self.r4_changed)
+        self.obj.f_div2.stateChanged['int'].connect(self.r4_changed)
 
         self.obj.r6_uis = [ self.obj.r6_feedback, self.obj.r6_mtld, self.obj.r6_aux_out, self.obj.r6_aux_out_pwr, self.obj.r6_out, self.obj.r6_out_pwr, self.obj.r6_neg_bleed, self.obj.r6_gated_bleed, self.obj.r6_bleed_curr, self.obj.f_div_out ] #self.obj.r6_bleed
         ui_change(self.r6_changed, self.obj.r6_uis)
@@ -67,6 +73,9 @@ class Adf4355(QtGui.QWidget):
 
         self.obj.r12_uis = [ self.obj.r12_phase_rsync ]
         ui_change(self.r12_changed, self.obj.r12_uis)
+        
+        #Tune Logic
+        self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
 
     def all_changed(self):
         self.r0_changed()
@@ -82,6 +91,20 @@ class Adf4355(QtGui.QWidget):
         self.r10_changed()
         self.obj.reg11.setText("x%08x" % self.reg11)
         self.r12_changed()
+        
+    def mul_changed(self):
+        self.N = (((float(self.obj.f_frac2.value()) / float(self.obj.f_mod2.value()) +
+		   self.obj.f_frac1.value()) / 16777216.0) + self.obj.f_int.value())
+	self.obj.f_vco_out.setText("%.9f" % (self.N * self.pfd))
+	self.obj.f_n.setText("N = %.12f" % self.N)
+	  
+    def pfd_changed(self):
+	self.pfd = (self.obj.f_ref.value() * 
+	            (2 if self.obj.f_x2.isChecked() else 1) /
+	            self.obj.f_r_cnt.value() /
+	            (2 if self.obj.f_div2.isChecked() else 1))
+	self.obj.f_pfd.setText("%.3f" % self.pfd)
+	self.mul_changed()
 
     def r0_changed(self):
         self.obj.f_int.setMinimum(75) if self.obj.r0_prescaler.currentIndex() == 1 else self.obj.f_int.setMinimum(23)
@@ -90,17 +113,20 @@ class Adf4355(QtGui.QWidget):
                ((self.obj.f_int.value() & REG0_NVALUE_MASK) << REG0_NVALUE_SHIFT) | 0)
         self.reg0 = reg
         self.obj.reg0.setText("x%08x" % reg)
+        self.mul_changed()
 
     def r1_changed(self):
         reg = (((self.obj.f_frac1.value() & REG0_NVALUE_MASK) << REG0_NVALUE_SHIFT) | 1)
         self.reg1 = reg
         self.obj.reg1.setText("x%08x" % reg)
+        self.mul_changed()
 
     def r2_changed(self):
         reg = (((self.obj.f_frac2.value() & REG2_AUX_FRAC_MASK) << REG2_AUX_FRAC_SHIFT) |
                ((self.obj.f_mod2.value() & REG2_AUX_MOD_MASK) << REG2_AUX_MOD_SHIFT) | 2)
         self.reg2 = reg
         self.obj.reg2.setText("x%08x" % reg)
+        self.mul_changed()
 
     def r3_changed(self):
         reg = (((self.obj.r3_sd_load.currentIndex() & 1) << REG3_SD_LOAD_SHIFT) |
@@ -112,6 +138,9 @@ class Adf4355(QtGui.QWidget):
 
     def r4_changed(self):
         reg = (((self.obj.r4_muxout.currentIndex() & REG4_MUXOUT_MASK) << REG4_MUXOUT_SHIFT) |
+	       ((1 if self.obj.f_x2.isChecked() else 0) << REG4_REF_DBL_SHIFT) |
+	       ((1 if self.obj.f_div2.isChecked() else 0) << REG4_REF_DIV_SHIFT) |
+	       ((self.obj.f_r_cnt.value() & REG4_R_MASK) << REG4_R_SHIFT) |
                ((self.obj.r4_double_buf.currentIndex() & 1) << REG4_DBL_BUFF_SHIFT) |
                ((self.obj.r4_cp_curr.currentIndex() & REG4_CURRENT_MASK) << REG4_CURRENT_SHIFT) |
                ((self.obj.r4_refin.currentIndex() & 1) << REG4_REF_MODE_SHIFT) |
@@ -122,6 +151,7 @@ class Adf4355(QtGui.QWidget):
                ((self.obj.r4_counter_rst.currentIndex() & 1) << REG4_CNTR_RESET ) | 4)
         self.reg4 = reg
         self.obj.reg4.setText("x%08x" % reg)
+        self.pfd_changed()
 
     def r6_changed(self):
         reg = (((self.obj.r6_feedback.currentIndex() & 1) << REG6_FB_SEL_SHIFT) |

@@ -776,12 +776,12 @@
     <rect>
      <x>390</x>
      <y>50</y>
-     <width>41</width>
+     <width>81</width>
      <height>17</height>
     </rect>
    </property>
    <property name="text">
-    <string>PFD:</string>
+    <string>PFD: (MHz)</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="f_pfd">
@@ -938,16 +938,6 @@
    </property>
    <property name="text">
     <string>Ref:</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="f_ref">
-   <property name="geometry">
-    <rect>
-     <x>60</x>
-     <y>10</y>
-     <width>101</width>
-     <height>31</height>
-    </rect>
    </property>
   </widget>
   <widget class="QFrame" name="frame_reg_7">
@@ -1128,7 +1118,7 @@
     <string>Div:</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="f_div">
+  <widget class="QSpinBox" name="f_r_cnt">
    <property name="geometry">
     <rect>
      <x>330</x>
@@ -1136,6 +1126,12 @@
      <width>71</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="minimum">
+    <number>1</number>
+   </property>
+   <property name="maximum">
+    <number>1023</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_42">
@@ -1162,6 +1158,9 @@
    </property>
    <property name="text">
     <string>x2</string>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QCheckBox" name="f_div2">
@@ -1586,7 +1585,14 @@
      </widget>
     </item>
     <item row="1" column="1">
-     <widget class="QSpinBox" name="r10_adc_div"/>
+     <widget class="QSpinBox" name="r10_adc_div">
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>255</number>
+      </property>
+     </widget>
     </item>
     <item row="2" column="0">
      <widget class="QLabel" name="label_60">
@@ -2121,6 +2127,31 @@
    </property>
    <property name="text">
     <string>=&gt; PFD</string>
+   </property>
+  </widget>
+  <widget class="QDoubleSpinBox" name="f_ref">
+   <property name="geometry">
+    <rect>
+     <x>70</x>
+     <y>10</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="suffix">
+    <string/>
+   </property>
+   <property name="decimals">
+    <number>3</number>
+   </property>
+   <property name="minimum">
+    <double>10.000000000000000</double>
+   </property>
+   <property name="maximum">
+    <double>250.000000000000000</double>
+   </property>
+   <property name="value">
+    <double>19.199999999999999</double>
    </property>
   </widget>
  </widget>

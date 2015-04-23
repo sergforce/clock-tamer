@@ -28,20 +28,20 @@
 
 /* REG0: {AUTOCAL, PRESCALER, 16-bit INT VALUE}  */
 #define REG0_NVALUE_SHIFT       4
-#define REG0_NVALUE_MSK         0xffff
+#define REG0_NVALUE_MASK        ((1<<16)-1)
 #define REG0_PRESCALER_SHIFT    20
 #define REG0_AUTOCAL_SHIFT      21
 
 /* REG1: {MAIN FRAC1} */
 #define REG1_MFRAC_SHIFT        4
-#define REG1_MFRAC_MSK          0xffffff
+#define REG1_MFRAC_MASK         ((1<<24)-1)
 
 
 /* REG2: {AUX FRAC2, AUX MOD2} */
 #define REG2_AUX_FRAC_SHIFT     18
-#define REG2_AUX_FRAC_MSK       ((1<<14)-1)
+#define REG2_AUX_FRAC_MASK      ((1<<14)-1)
 #define REG2_AUX_MOD_SHIFT      4
-#define REG2_AUX_MOD_MSK        ((1<<14)-1)
+#define REG2_AUX_MOD_MASK       ((1<<14)-1)
 #define REG2_AUX_FRAC_SHIFT     18
 
 /* REG3: {SD LOAD RESET, PHASE RESYNC, PHASE ADJUST, 24bit PHASE} */
@@ -108,7 +108,7 @@
 #define REG7_LD_MODE_SHIFT       4
 
 /* REG8:  RESERVED */
-#define REG5_RESERVED            0x102D0428
+#define REG8_RESERVED            0x102D0428
 
 /* REG9: {VCO BAND DIV 8-bit, TIMEOUT 10-bit, AUTO LEVEL TO 5-bit,
  *        SYNT LOCK TO 5-bit }
@@ -128,14 +128,14 @@
 #define REG10_ADC_CLK_DIV_SHIFT  6
 #define REG10_ADC_CLK_DIV_MASK   ((1<<8)-1)
 #define REG10_ADC_CONV_SHIFT     5
-#define REG10_ADC_EN             4
+#define REG10_ADC_EN_SHIFT       4
 
 /* REG11:  RESERVED */
 #define REG11_RESERVED           0x0061300B
 
 /* REG12: {RESYNC CLOCK 16-bit, RESERVED 12-bit} */
 #define REG12_RESYNC_CLOCK_SHIFT 16
-#define REG10_RESYNC_CLOCK_MASK  ((1<<16)-1)
+#define REG12_RESYNC_CLOCK_MASK  ((1<<16)-1)
 #define REG12_RESERVED_SHIFT     4
 #define REG12_RESERVED_VALUE     0x41
 
