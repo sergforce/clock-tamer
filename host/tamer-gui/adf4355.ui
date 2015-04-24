@@ -2057,20 +2057,20 @@
    <property name="geometry">
     <rect>
      <x>670</x>
-     <y>260</y>
+     <y>270</y>
      <width>181</width>
-     <height>51</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="text">
-    <string>SET ALL REGS</string>
+    <string>SET ALL REGS R12-R0</string>
    </property>
   </widget>
   <widget class="QPushButton" name="b_save">
    <property name="geometry">
     <rect>
      <x>670</x>
-     <y>220</y>
+     <y>210</y>
      <width>181</width>
      <height>31</height>
     </rect>
@@ -2180,6 +2180,19 @@
    </property>
    <property name="value">
     <double>19.199999999999999</double>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="b_set_freq">
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>240</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Set frequency R4-R0&amp;&amp;R4</string>
    </property>
   </widget>
  </widget>
