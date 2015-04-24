@@ -21,6 +21,7 @@ class Adf4355(QtGui.QWidget):
         self.func = func
         
         self.N = 1.0
+        self.VCO = 1.0
         self.pfd = 1.0
 
         self.reg = [0] * 13
@@ -77,6 +78,13 @@ class Adf4355(QtGui.QWidget):
         self.obj.r12_uis = [ self.obj.r12_phase_rsync ]
         ui_change(self.r12_changed, self.obj.r12_uis)
         
+        self.obj.f_vco_out.textChanged['QString'].connect(self.vco_changed)
+        self.obj.f_div_out.currentIndexChanged['QString'].connect(self.calc_fout)
+
+        # Update calculations        
+        self.vco_changed()
+        self.obj.r10_adc_div.valueChanged['QString'].connect(self.adc_clock_changed)
+
         #Tune Logic
         self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
         btns = [ self.obj.b_reg0_set, self.obj.b_reg1_set, self.obj.b_reg2_set,
@@ -90,7 +98,7 @@ class Adf4355(QtGui.QWidget):
             self.obj.b_set_freq.clicked.connect(self.set_freq_regs)
 
             for i,v in enumerate(btns):
-                v.clicked.connect(lambda: self.set_reg(int(i)))
+                v.clicked.connect((lambda i=i: lambda: self.func([self.reg[i]]))(i))
 
     def set_freq_regs(self):
         self.func([self.reg[4] | (1<<REG4_CNTR_RESET),
@@ -103,10 +111,6 @@ class Adf4355(QtGui.QWidget):
 
     def set_regs(self):
         self.func([ i for i in reversed(self.reg) ])
-
-    @QtCore.pyqtSlot(int)
-    def set_reg(self, regno):
-        self.func([self.reg[regno]])
         
     def all_changed(self):
         self.r0_changed()
@@ -122,20 +126,54 @@ class Adf4355(QtGui.QWidget):
         self.r10_changed()
         self.obj.reg11.setText("x%08x" % self.reg[11])
         self.r12_changed()
-        
+   
+    def calc_fout(self):
+        div = 2 ** self.obj.f_div_out.currentIndex()
+        fout = self.VCO / float(div)
+        if fout < 53.125 or fout > 4400:
+            self.obj.f_rf_out.setStyleSheet("QLineEdit { background-color: red; }")
+        else:
+            self.obj.f_rf_out.setStyleSheet("")
+        self.obj.f_rf_out.setText("%.3f" % fout)
+
+    def vco_changed(self):
+        try:
+            val = float(self.obj.f_vco_out.text())
+            if val < 3400 or val > 6800:
+                self.obj.f_vco_out.setStyleSheet("QLineEdit { background-color: red; }")
+            else:
+                self.obj.f_vco_out.setStyleSheet("")
+            self.calc_fout()
+        except ValueError:
+            self.obj.f_vco_out.setStyleSheet("QLineEdit { background-color: red; }")
+     
     def mul_changed(self):
         self.N = (((float(self.obj.f_frac2.value()) / float(self.obj.f_mod2.value()) +
                     self.obj.f_frac1.value()) / 16777216.0) + self.obj.f_int.value())
-        self.obj.f_vco_out.setText("%.9f" % (self.N * self.pfd))
+        self.VCO = self.N * self.pfd
+        self.obj.f_vco_out.setText("%.9f" % (self.VCO))
         self.obj.f_n.setText("N = %.12f" % self.N)
 	  
     def pfd_changed(self):
-	    self.pfd = (self.obj.f_ref.value() * 
-	                (2 if self.obj.f_x2.isChecked() else 1) /
-	                self.obj.f_r_cnt.value() /
-	                (2 if self.obj.f_div2.isChecked() else 1))
-	    self.obj.f_pfd.setText("%.3f" % self.pfd)
+        self.pfd = (self.obj.f_ref.value() * 
+                    (2 if self.obj.f_x2.isChecked() else 1) /
+                    self.obj.f_r_cnt.value() /
+                    (2 if self.obj.f_div2.isChecked() else 1))
+        self.obj.f_pfd.setText("%.3f" % self.pfd)
+        if self.pfd < 10 or (self.pfd > 250 and self.obj.r4_refin.currentIndex() == 0 or self.pfd > 600):
+            self.obj.f_pfd.setStyleSheet("QLineEdit { background-color: red; }")
+        else:
+            self.obj.f_pfd.setStyleSheet("")
 	    self.mul_changed()
+        self.adc_clock_changed()
+
+    def adc_clock_changed(self):
+        adc_clock = (1000 * self.pfd / 8 ) / self.obj.r10_adc_div.value()
+        self.obj.r10_adc_value.setText("%.2f kHz" % adc_clock)
+        if adc_clock > 100:
+            self.obj.r10_adc_value.setStyleSheet("QLineEdit { background-color: red; }")
+        else:
+            self.obj.r10_adc_value.setStyleSheet("")
 
     def r0_changed(self):
         self.obj.f_int.setMinimum(75) if self.obj.r0_prescaler.currentIndex() == 1 else self.obj.f_int.setMinimum(23)
