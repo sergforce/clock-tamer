@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Wed Dec 12 12:34:32 2012
-#      by: PyQt4 UI code generator 4.8.2
+# Created: Thu Mar 26 20:24:26 2015
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -12,7 +12,16 @@ from PyQt4 import QtCore, QtGui
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
-    _fromUtf8 = lambda s: s
+    def _fromUtf8(s):
+        return s
+
+try:
+    _encoding = QtGui.QApplication.UnicodeUTF8
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig, _encoding)
+except AttributeError:
+    def _translate(context, text, disambig):
+        return QtGui.QApplication.translate(context, text, disambig)
 
 class Ui_Basic(object):
     def setupUi(self, Basic):
@@ -242,46 +251,45 @@ class Ui_Basic(object):
         QtCore.QMetaObject.connectSlotsByName(Basic)
 
     def retranslateUi(self, Basic):
-        Basic.setWindowTitle(QtGui.QApplication.translate("Basic", "ClockTamer Configuration", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_5.setText(QtGui.QApplication.translate("Basic", "1", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_7.setText(QtGui.QApplication.translate("Basic", "4+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_11.setText(QtGui.QApplication.translate("Basic", "6", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_6.setText(QtGui.QApplication.translate("Basic", "0+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_9.setText(QtGui.QApplication.translate("Basic", "5+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_8.setText(QtGui.QApplication.translate("Basic", "4-", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_13.setText(QtGui.QApplication.translate("Basic", "7-", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_10.setText(QtGui.QApplication.translate("Basic", "3-", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("Basic", "7+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_14.setText(QtGui.QApplication.translate("Basic", "0-", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_16.setText(QtGui.QApplication.translate("Basic", "3+", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_17.setText(QtGui.QApplication.translate("Basic", "5-", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_3.setText(QtGui.QApplication.translate("Basic", "HWI:", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_4.setText(QtGui.QApplication.translate("Basic", "VER:", None, QtGui.QApplication.UnicodeUTF8))
-        self.groupBox.setTitle(QtGui.QApplication.translate("Basic", "Outputs Enabled", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut0.setText(QtGui.QApplication.translate("Basic", "OUT 0", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut1.setText(QtGui.QApplication.translate("Basic", "OUT 1", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut2.setText(QtGui.QApplication.translate("Basic", "OUT 2", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut3.setText(QtGui.QApplication.translate("Basic", "OUT 3", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut4.setText(QtGui.QApplication.translate("Basic", "OUT 4", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut5.setText(QtGui.QApplication.translate("Basic", "OUT 5", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut6.setText(QtGui.QApplication.translate("Basic", "OUT 6", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOut7.setText(QtGui.QApplication.translate("Basic", "OUT 7", None, QtGui.QApplication.UnicodeUTF8))
-        self.label.setText(QtGui.QApplication.translate("Basic", "Fosc", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setText(QtGui.QApplication.translate("Basic", "Fout", None, QtGui.QApplication.UnicodeUTF8))
-        self.leFosc.setInputMask(QtGui.QApplication.translate("Basic", "09\'999\'999 \\Hz;_", None, QtGui.QApplication.UnicodeUTF8))
-        self.leFosc.setText(QtGui.QApplication.translate("Basic", "20\'000\'000 Hz", None, QtGui.QApplication.UnicodeUTF8))
-        self.leFout.setInputMask(QtGui.QApplication.translate("Basic", "09\'999\'999 \\Hz;_", None, QtGui.QApplication.UnicodeUTF8))
-        self.leFout.setText(QtGui.QApplication.translate("Basic", "52\'000\'000 Hz", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbOscDisable.setText(QtGui.QApplication.translate("Basic", "Disable internal oscillator", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbAutoStart.setText(QtGui.QApplication.translate("Basic", "Start on power up", None, QtGui.QApplication.UnicodeUTF8))
-        self.gGps.setTitle(QtGui.QApplication.translate("Basic", "GPS", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_18.setText(QtGui.QApplication.translate("Basic", "1PPS Count", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_19.setText(QtGui.QApplication.translate("Basic", "Calculated Fout", None, QtGui.QApplication.UnicodeUTF8))
-        self.cbGPSSync.setText(QtGui.QApplication.translate("Basic", "Keep in sync with GPS", None, QtGui.QApplication.UnicodeUTF8))
-        self.btStore.setText(QtGui.QApplication.translate("Basic", "Store to EEPROM", None, QtGui.QApplication.UnicodeUTF8))
-        self.btLoad.setText(QtGui.QApplication.translate("Basic", "Load from EEPROM", None, QtGui.QApplication.UnicodeUTF8))
-        self.btSet.setText(QtGui.QApplication.translate("Basic", "SET", None, QtGui.QApplication.UnicodeUTF8))
-        self.btGet.setText(QtGui.QApplication.translate("Basic", "GET", None, QtGui.QApplication.UnicodeUTF8))
+        Basic.setWindowTitle(_translate("Basic", "ClockTamer Configuration", None))
+        self.label_5.setText(_translate("Basic", "1", None))
+        self.label_7.setText(_translate("Basic", "4+", None))
+        self.label_11.setText(_translate("Basic", "6", None))
+        self.label_6.setText(_translate("Basic", "0+", None))
+        self.label_9.setText(_translate("Basic", "5+", None))
+        self.label_8.setText(_translate("Basic", "4-", None))
+        self.label_13.setText(_translate("Basic", "7-", None))
+        self.label_10.setText(_translate("Basic", "3-", None))
+        self.label_12.setText(_translate("Basic", "7+", None))
+        self.label_14.setText(_translate("Basic", "0-", None))
+        self.label_16.setText(_translate("Basic", "3+", None))
+        self.label_17.setText(_translate("Basic", "5-", None))
+        self.label_3.setText(_translate("Basic", "HWI:", None))
+        self.label_4.setText(_translate("Basic", "VER:", None))
+        self.groupBox.setTitle(_translate("Basic", "Outputs Enabled", None))
+        self.cbOut0.setText(_translate("Basic", "OUT 0", None))
+        self.cbOut1.setText(_translate("Basic", "OUT 1", None))
+        self.cbOut2.setText(_translate("Basic", "OUT 2", None))
+        self.cbOut3.setText(_translate("Basic", "OUT 3", None))
+        self.cbOut4.setText(_translate("Basic", "OUT 4", None))
+        self.cbOut5.setText(_translate("Basic", "OUT 5", None))
+        self.cbOut6.setText(_translate("Basic", "OUT 6", None))
+        self.cbOut7.setText(_translate("Basic", "OUT 7", None))
+        self.label.setText(_translate("Basic", "Fosc", None))
+        self.label_2.setText(_translate("Basic", "Fout", None))
+        self.leFosc.setInputMask(_translate("Basic", "09\'999\'999 \\Hz;_", None))
+        self.leFosc.setText(_translate("Basic", "20\'000\'000 Hz", None))
+        self.leFout.setInputMask(_translate("Basic", "09\'999\'999 \\Hz;_", None))
+        self.leFout.setText(_translate("Basic", "52\'000\'000 Hz", None))
+        self.cbOscDisable.setText(_translate("Basic", "Disable internal oscillator", None))
+        self.cbAutoStart.setText(_translate("Basic", "Start on power up", None))
+        self.gGps.setTitle(_translate("Basic", "GPS", None))
+        self.label_18.setText(_translate("Basic", "1PPS Count", None))
+        self.label_19.setText(_translate("Basic", "Calculated Fout", None))
+        self.cbGPSSync.setText(_translate("Basic", "Keep in sync with GPS", None))
+        self.btStore.setText(_translate("Basic", "Store to EEPROM", None))
+        self.btLoad.setText(_translate("Basic", "Load from EEPROM", None))
+        self.btSet.setText(_translate("Basic", "SET", None))
+        self.btGet.setText(_translate("Basic", "GET", None))
 
-import res_rc
 import res_rc
