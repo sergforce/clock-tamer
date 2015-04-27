@@ -18,17 +18,12 @@ from PyQt4.QtXml import *
 from tamer_basic_ui import *
 from tamerdevice import *
 
-tamer10_lmk1000 = ("LVDS", None, "LVDS",   None,        "LVPECL/SYNC", "LVPECL/LVCMOS", "LVCMOS", "LVPECL")
-
-
-tamer11_lmk1010 = ("LVDS", "CMOS", "LVDS", None,        "LVDS",   "LVDS",   "CMOS", "LVDS")
-
-tamer12_lmk1000 = ("LVDS", "CMOS", None,   "LVPECL",    "LVPECL", "LVPECL", None,   "LVPECL")
-tamer12_lmk1010 = ("LVDS", "CMOS", None,   "LVDS",      "LVDS",   "LVDS",   "CMOS", "LVDS")
-
+tamer10_lmk1000  = ("LVDS", None, "LVDS",   None,        "LVPECL/SYNC", "LVPECL/LVCMOS", "LVCMOS", "LVPECL")
+tamer11_lmk1010  = ("LVDS", "CMOS", "LVDS", None,        "LVDS",   "LVDS",   "CMOS", "LVDS")
+tamer12_lmk1000  = ("LVDS", "CMOS", None,   "LVPECL",    "LVPECL", "LVPECL", None,   "LVPECL")
+tamer12_lmk1010  = ("LVDS", "CMOS", None,   "LVDS",      "LVDS",   "LVDS",   "CMOS", "LVDS")
 tamer121_lmk1010 = ("LVDS/P+", "CMOS", None,   "LVDS/P+",      "LVDS",   "LVDS",   "CMOS", "LVDS")
-
-tamer_unknown  = ("unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown")
+tamer_unknown    = ("unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown", "unknown")
 
 from adf4355_form import *
 
@@ -62,7 +57,7 @@ class MainWindow(QtGui.QWidget):
     def write_adf(self, d):
         for i in d:
             data = self.dev.setAdf(i)
-            print "Reg: %x => %s" % (i, data)
+            print("Reg: %x => %s" % (i, data))
         
         
     def onTimer(self):
@@ -77,40 +72,53 @@ class MainWindow(QtGui.QWidget):
         else:
             self.gps = 0
 
+        if "VCTCXO" in str(data):
+            self.vctcxo = True
+        else:
+            self.vctcxo = False
 
         dataVer = self.dev.getVer()
         self.obj.leVER.setText(dataVer)
 
         vals = str(dataVer).split(" ")
         self.ver = vals[1].split("=")[1]
-        print "Tamer version: %s" % self.ver
+	self.vernum = float(self.ver)
+        print("Tamer version: %s" % self.ver)
 
         vals = str(data).split(" ")
-        try:
-            self.lmx = int(vals[0].split("=")[1])
-            self.lmk = int(vals[1].split("=")[1])
-        except:
-            self.lmx=0
-            self.lmk=0
 
-        if self.lmk == 1010 and (self.ver == "1.21" or self.ver == "1.22" or self.ver == "1.23" or self.ver == "1.30"):
-            self.outputsConfig = tamer121_lmk1010
-        elif self.lmk == 1010 and self.ver == "1.2":
-            self.outputsConfig = tamer12_lmk1010
-        elif self.lmk == 1000 and self.ver == "1.2":
-            self.outputsConfig = tamer12_lmk1010
-        elif self.lmk == 1010 and self.ver == "1.1pre":
-            self.outputsConfig = tamer11_lmk1010
-        elif self.ver == "1.0":
-            self.outputsConfig = tamer10_lmk1000
+        self.obj.lbDac.setVisible(self.vctcxo)
+        self.obj.sbDacValue.setVisible(self.vctcxo)
+        self.obj.cbOutMode.setVisible(self.vctcxo)
+
+        if self.vernum >= 2:
+	    self.obj.groupBox.setVisible(False)
+            self.obj.cbOscDisable.setEnabled(False)
         else:
-            self.outputsConfig = tamer_unknown
-
-        for i,v in enumerate(self.outputsConfig):
-            if v == None:
-                self.outCb[i].setVisible(False)
+            try:
+                self.lmx = int(vals[0].split("=")[1])
+                self.lmk = int(vals[1].split("=")[1])
+            except:
+                self.lmx=0
+                self.lmk=0
+            if self.lmk == 1010 and (self.ver == "1.21" or self.ver == "1.22" or self.ver == "1.23" or self.ver == "1.30"):
+                self.outputsConfig = tamer121_lmk1010
+            elif self.lmk == 1010 and self.ver == "1.2":
+                self.outputsConfig = tamer12_lmk1010
+            elif self.lmk == 1000 and self.ver == "1.2":
+                self.outputsConfig = tamer12_lmk1010
+            elif self.lmk == 1010 and self.ver == "1.1pre":
+                self.outputsConfig = tamer11_lmk1010
+            elif self.ver == "1.0":
+                self.outputsConfig = tamer10_lmk1000
             else:
-                self.outCb[i].setText("%d: %s" % (i, v))
+                self.outputsConfig = tamer_unknown
+
+            for i,v in enumerate(self.outputsConfig):
+                if v == None:
+                    self.outCb[i].setVisible(False)
+                else:
+                    self.outCb[i].setText("%d: %s" % (i, v))
 
         if self.gps == 0:
             self.obj.gGps.setVisible(False)
@@ -128,7 +136,7 @@ class MainWindow(QtGui.QWidget):
                     if gpsid == True:
                         break
 		    else:
-			print "GPS NOT PRESENT"
+			print("GPS NOT PRESENT")
                 except:
                     pass
 
@@ -216,17 +224,26 @@ class MainWindow(QtGui.QWidget):
         data = self.dev.getAut()
         self.obj.cbAutoStart.setChecked(data)
 
-        data = self.dev.getIntOscState()
-        if data == None:
-            self.obj.cbOscDisable.setEnabled(False)
-            self.oscState = False
+	if self.vernum < 2:
+            data = self.dev.getIntOscState()
+            if data is None:
+                self.obj.cbOscDisable.setEnabled(False)
+                self.oscState = False
+            else:
+                self.obj.cbOscDisable.setChecked(not data)
+                self.oscState = True
+            self.ReadOutputs()
         else:
-            self.obj.cbOscDisable.setChecked(not data)
-            self.oscState = True
+            data = self.dev.getDac()
+            if data is None:
+                self.obj.sbDacValue.setEnabled(False)
+                self.dacValue = 2048
+            else:
+                self.dacValue = int(data)
+                self.obj.sbDacValue.setValue(self.dacValue)
 
         self.ReadFosc()
         self.ReadFout()
-        self.ReadOutputs()
         if self.gps:
             self.ReadGps()
 
@@ -259,8 +276,11 @@ class MainWindow(QtGui.QWidget):
         self.obj.leCalcFout.setText(str(data))
 
     def onSet(self):
-        data = self.GetOututsMask()
-        self.dev.setOutputsMask(data)
+        if self.vernum < 2:
+            data = self.GetOututsMask()
+            self.dev.setOutputsMask(data)
+        if self.vctcxo:
+            self.dev.setDac(self.obj.sbDacValue.value())
         #print data
         data = self.GetFosc()
         res1 = self.dev.setOsc(data)
@@ -302,7 +322,7 @@ if __name__ == '__main__':
       res = app.exec_()
       if qb.gps:
            qb.dev.enterGpsMode()
-           print "Now you can attach gpsd to you ClockTamer"
+           print("Now you can attach gpsd to you ClockTamer")
       sys.exit(res)
 
 

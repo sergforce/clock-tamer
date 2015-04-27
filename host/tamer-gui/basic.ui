@@ -450,6 +450,45 @@
        </property>
       </widget>
      </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="lbDac">
+       <property name="text">
+        <string>DAC</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="sbDacValue">
+       <property name="maximum">
+        <number>4095</number>
+       </property>
+       <property name="singleStep">
+        <number>1</number>
+       </property>
+       <property name="value">
+        <number>2048</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QComboBox" name="cbOutMode">
+       <item>
+        <property name="text">
+         <string>DIV4 on Lock</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Int. Oscillator</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>DIV4 Always</string>
+        </property>
+       </item>
+      </widget>
+     </item>
     </layout>
    </item>
    <item>

@@ -28,7 +28,7 @@ else:
         for i in itertools.count():
             try:
                 val = winreg.EnumValue(key, i)
-                print val
+                print(val)
                 if val[0].find("USBSER") != -1:
                     yield str(val[1])
             except EnvironmentError:
@@ -41,7 +41,7 @@ try:
     import serial
     serial_found = True
 except:
-    print "Install pyserial"
+    print("Install pyserial")
     
 
 
@@ -59,7 +59,7 @@ class UsbDevice(object):
                 raise "USB Device for tammer isn't founded"
             else:
                 if len(devname) > 1:
-                    print "More than one USBSER device: ", devname
+                    print("More than one USBSER device: ", devname)
                 self.devname = devname[0]
         else:
             self.devname = devname
@@ -84,7 +84,7 @@ class UsbDevice(object):
         self.dev.write(string + "\r\n")
         self.dev.readline()
         self.dev.flushInput()
-        print "CMD='%s' NORET" % (string, )
+        print("CMD='%s' NORET" % (string, ))
         return 0
 
     def leaveGpsMode(self):
@@ -93,14 +93,14 @@ class UsbDevice(object):
         self.dev.write(string + "\r\n")
         self.dev.readline()
         self.dev.flushInput()
-        print "CMD='%s' NORET" % (string, )
+        print("CMD='%s' NORET" % (string, ))
         return 0
 
     def sendGPS(self, head, cmd):
         maxcnt = 100
         string = head + cmd
         res = ""
-        print "GPS SEND: '%s'" % string
+        print("GPS SEND: '%s'" % string)
 
         self.dev.flushInput()
         self.dev.write(string + "\r\n")
@@ -110,18 +110,18 @@ class UsbDevice(object):
           if len(res) > 0:
             res = re.sub("^\s+", "", res)
             res = re.sub("\s+$", "", res)
-            print "RAW GPS REPLY: '%s'" % res
+            print("RAW GPS REPLY: '%s'" % res)
 
             pos = res.find(head)
             if pos != -1:
               res = res[pos:].split("*")[0]
-              print "GPS REPLY: '%s'" % res
+              print("GPS REPLY: '%s'" % res)
               return res
           else:
-            print "ZERO REPLY"
+            print("ZERO REPLY")
             return None
 
-        print "sendGPS: FAILED: '%s'" % res
+        print("sendGPS: FAILED: '%s'" % res)
 
     def sendCmd(self, cmd, trg=None, det=None, val=None, shouldBeAnswer=True):
         string = str(cmd)
@@ -137,10 +137,10 @@ class UsbDevice(object):
         res = re.sub("^\s+", "", res)
         res = re.sub("\s+$", "", res)
         if (not shouldBeAnswer) and len(res) == 0:
-            print "CMD='%s' NORET" % (string)
+            print("CMD='%s' NORET" % (string))
             return 0
 
-        print "CMD='%s' RET='%s'" % (string, res)
+        print("CMD='%s' RET='%s'" % (string, res))
         if res == 'SYNTAX ERROR':
           #sometimes you get a 'SYNTAX ERROR' while the command will succeed if you try again
           if self.retries <= self.max_retries:
@@ -148,7 +148,7 @@ class UsbDevice(object):
             time.sleep(0.1)
             return self.sendCmd(cmd, trg, det, val, shouldBeAnswer)
           else:
-            print "IO ERROR: max_retries reached for command ", cmd
+            print("IO ERROR: max_retries reached for command ", cmd)
         else:
           self.retries=0
 
@@ -233,6 +233,9 @@ class TamerDevice(object):
 
     def setAdf(self, reg):
         return self.dev.sendCmd("REG", "ADF", "", reg)
+
+    def setDac(self, reg):
+        return self.dev.sendCmd("SET", "DAC", "D12", reg)
         
     def getOsc(self):
         res = self.dev.sendCmd("INF", "", "OSC")
@@ -252,6 +255,12 @@ class TamerDevice(object):
 
     def getIntOscState(self):
         res = self.dev.sendCmd("INF", "IOS", "ENB")
+        if "ERROR" in res:
+            return None
+        return self.dev.getValueFromResult(res)
+
+    def getDac(self):
+        res = self.dev.sendCmd("INF", "DAC", "D12")
         if "ERROR" in res:
             return None
         return self.dev.getValueFromResult(res)

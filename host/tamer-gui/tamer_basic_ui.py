@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Thu Mar 26 20:24:26 2015
+# Created: Mon Apr 27 19:15:58 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -191,6 +191,21 @@ class Ui_Basic(object):
         self.cbAutoStart.setMinimumSize(QtCore.QSize(220, 0))
         self.cbAutoStart.setObjectName(_fromUtf8("cbAutoStart"))
         self.gridLayout_2.addWidget(self.cbAutoStart, 2, 2, 1, 1)
+        self.lbDac = QtGui.QLabel(Basic)
+        self.lbDac.setObjectName(_fromUtf8("lbDac"))
+        self.gridLayout_2.addWidget(self.lbDac, 3, 0, 1, 1)
+        self.sbDacValue = QtGui.QSpinBox(Basic)
+        self.sbDacValue.setMaximum(4095)
+        self.sbDacValue.setSingleStep(1)
+        self.sbDacValue.setProperty("value", 2048)
+        self.sbDacValue.setObjectName(_fromUtf8("sbDacValue"))
+        self.gridLayout_2.addWidget(self.sbDacValue, 3, 1, 1, 1)
+        self.cbOutMode = QtGui.QComboBox(Basic)
+        self.cbOutMode.setObjectName(_fromUtf8("cbOutMode"))
+        self.cbOutMode.addItem(_fromUtf8(""))
+        self.cbOutMode.addItem(_fromUtf8(""))
+        self.cbOutMode.addItem(_fromUtf8(""))
+        self.gridLayout_2.addWidget(self.cbOutMode, 3, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout_2)
         self.line = QtGui.QFrame(Basic)
         self.line.setFrameShape(QtGui.QFrame.HLine)
@@ -283,6 +298,10 @@ class Ui_Basic(object):
         self.leFout.setText(_translate("Basic", "52\'000\'000 Hz", None))
         self.cbOscDisable.setText(_translate("Basic", "Disable internal oscillator", None))
         self.cbAutoStart.setText(_translate("Basic", "Start on power up", None))
+        self.lbDac.setText(_translate("Basic", "DAC", None))
+        self.cbOutMode.setItemText(0, _translate("Basic", "DIV4 on Lock", None))
+        self.cbOutMode.setItemText(1, _translate("Basic", "Int. Oscillator", None))
+        self.cbOutMode.setItemText(2, _translate("Basic", "DIV4 Always", None))
         self.gGps.setTitle(_translate("Basic", "GPS", None))
         self.label_18.setText(_translate("Basic", "1PPS Count", None))
         self.label_19.setText(_translate("Basic", "Calculated Fout", None))
