@@ -31,7 +31,7 @@ void BoardInit()
     DacSyncInit();
     SyntSelInit();
 
-    SyntSelClear();
+    SyntSelSet();
 
     AdfInit();
     AdfCeSet();

@@ -2237,6 +2237,22 @@
     <string>Set frequency R4-R0&amp;&amp;R4</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="b_save_ee">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>670</x>
+     <y>140</y>
+     <width>181</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save to EEPROM</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

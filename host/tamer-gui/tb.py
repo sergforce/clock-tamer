@@ -53,6 +53,12 @@ class MainWindow(QtGui.QWidget):
             spl.finish(self)
             
         self.adf = Adf4355(self.write_adf)
+        self.adf.obj.b_save_ee.setEnabled(True)
+        self.adf.obj.b_save_ee.clicked.connect(self.write_ee_adf)
+  
+    def write_ee_adf(self):
+        for i in self.adf.reg:
+            self.dev.storeEepromADF4355Reg(i)
 
     def write_adf(self, d):
         for i in d:

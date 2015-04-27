@@ -213,6 +213,9 @@ class TamerDevice(object):
         return self.dev.sendCmd("VER")
 #        return self.getStringFromResult(res)
 
+    def storeEepromADF4355Reg(self,reg):
+        return self.dev.sendCmd("STE", "ADF", "", reg)
+
     def setOsc(self, freq=20000000):
         return self.dev.sendCmd("SET", "", "OSC", freq)
 

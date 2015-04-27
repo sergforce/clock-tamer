@@ -32,6 +32,8 @@
 #define BIND static
 #include "uint64_ops.h"
 
+#include "adf4355.h"
+
 //////////////////////////////////////
 #define SELF_TESTING
 //////////////////////////////////////
@@ -266,6 +268,8 @@ uint16_t unused_eeVCO_MAX      EEMEM = DEF_VCO_MAX;
 uint16_t unused_eeVCO_Kbit     EEMEM = DEF_VCO_Kbit;
 # endif
 uint8_t  eeLMK_OutMask  EEMEM = DEF_OUT_MASK_LMK;
+#else
+uint32_t ee_adf4355_regs[13] EEMEM;
 #endif
 
 uint8_t  eeAutoFreq     EEMEM = 1;
@@ -308,6 +312,23 @@ static void LoadEEPROM(void)
 #endif
 }
 
+static void StoreEEPROM_adf4355_reg(int32_t reg)
+{
+    uint8_t regno = reg & 0xf;
+    if (regno > 12)
+        return; // Invalid value, ignoring
+
+    eeprom_write_dword(&ee_adf4355_regs[regno], reg);
+}
+
+static int32_t LoadEEPROM_adf4355_reg(uint8_t regno)
+{
+    if (regno > 12)
+        return -1; // Invalid value, ignoring
+
+    return eeprom_read_dword(&ee_adf4355_regs[regno]);
+}
+
 static void StoreEEPROM(void)
 {
     eeprom_write_dword(&eeFosc, Fosc);
@@ -325,7 +346,7 @@ static void StoreEEPROM(void)
     eeprom_write_byte(&eeAutoFreq, AutoFreq);
 
 #ifdef PRESENT_DAC12
-    eeprom_write_byte(&eeDacValue, DacValue);
+    eeprom_write_word(&eeDacValue, DacValue);
 #endif
 
 #ifdef PRESENT_GPS
@@ -372,8 +393,42 @@ void AutoStartControl(void)
     {
         LoadEEPROM();
 
+        int8_t i;
+        union {
+            uint8_t          data[4];
+            uint32_t         u32data;
+        } v;
+
+        for (i = 12; i >= 0; --i) {
+            v.u32data = LoadEEPROM_adf4355_reg(i);
+            if ((v.data[0] & 0xf) != i)
+                return; //Failed init
+
+            write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+        }
+
         _delay_ms(50);
 
+        // Tune procedure
+        v.u32data = LoadEEPROM_adf4355_reg(4) | ((uint32_t)1<<REG4_CNTR_RESET);
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+
+        v.u32data = LoadEEPROM_adf4355_reg(2);
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+
+        v.u32data = LoadEEPROM_adf4355_reg(1);
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+
+        v.u32data = LoadEEPROM_adf4355_reg(0) & (~((uint32_t)1<<REG0_AUTOCAL_SHIFT));
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+
+        v.u32data = LoadEEPROM_adf4355_reg(4) & (~((uint32_t)1<<REG4_CNTR_RESET));
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
+
+        _delay_ms(10);
+
+        v.u32data = LoadEEPROM_adf4355_reg(0) | ((uint32_t)1<<REG0_AUTOCAL_SHIFT);
+        write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
     }
 
 }
@@ -602,6 +657,15 @@ uint8_t ProcessCommand(void)
 #ifdef PRESENT_DAC12
                 case trgDAC:  FillCmd();  FillUint16(DacValue);  FillResultNoNewLinePM(newLine); return 1;
 #endif
+                case trgADF:
+                {
+                    switch (command.details)
+                    {
+                        case detLCK: FillCmd();  FillUint16(IsVcoLocked()); FillResultNoNewLinePM(newLine); break;
+                        default: return 0;
+                    }
+                    return 1;
+                }
                 default:
                   return 0;
             }
@@ -629,13 +693,27 @@ uint8_t ProcessCommand(void)
 
 #ifndef NO_CMDEELOAD
         case cmdLOAD_EEPROM:
-            LoadEEPROM();
-            FillResultPM(resOk);
+            switch (command.type)
+            {
+            case trgADF:
+                FillCmd(); FillUint32(LoadEEPROM_adf4355_reg(command.data[0])); FillResultNoNewLinePM(newLine); return 1;
+            default:
+                LoadEEPROM();
+                FillResultPM(resOk);
+            }
             return 1;
 #endif
 
         case cmdSTORE_EEPROM:
-            StoreEEPROM();
+            switch (command.type)
+            {
+            case trgADF:
+                StoreEEPROM_adf4355_reg(command.u32data);
+                break;
+            default:
+                StoreEEPROM();
+            }
+
             FillResultPM(resOk);
             return 1;
 
