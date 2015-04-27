@@ -285,6 +285,10 @@ class MainWindow(QtGui.QWidget):
         if self.vernum < 2:
             data = self.GetOututsMask()
             self.dev.setOutputsMask(data)
+        else:
+            idx = self.obj.cbOutMode.currentIndex()
+            self.dev.pinDivOut(0 if idx == 1 else 1)
+
         if self.vctcxo:
             self.dev.setDac(self.obj.sbDacValue.value())
         #print data

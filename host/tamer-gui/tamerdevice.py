@@ -231,6 +231,9 @@ class TamerDevice(object):
     def setIntOscState(self, enb=1):
         return self.dev.sendCmd("SET", "IOS", "ENB", enb)
 
+    def pinDivOut(self, mode = 1):
+        return self.dev.sendCmd("PIN", "ADF", "DIV", mode)
+
     def setGpsAut(self, mode = 1):
         return self.dev.sendCmd("SET", "GPS", "AUT", mode)
 

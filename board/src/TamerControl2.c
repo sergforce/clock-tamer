@@ -508,6 +508,19 @@ uint8_t ProcessCommand(void)
                     FillResultPM(resOk);
                     return 1;
                 }
+                case trgADF:
+                {
+                    if (command.details == detDIVIDERS) {
+                        if (command.data[0])
+                            SyntSelSet();
+                        else
+                            SyntSelClear();
+
+                        FillResultPM(resOk);
+                        return 1;
+                    }
+                    return 0;
+                }
                 default:
                     return 0;
             }
