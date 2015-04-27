@@ -85,7 +85,12 @@ class Adf4355(QtGui.QWidget):
         self.vco_changed()
         self.obj.r10_adc_div.valueChanged['QString'].connect(self.adc_clock_changed)
 
+        self.obj.b_save.clicked.connect(self.save_regs)
+        self.obj.b_load.clicked.connect(self.load_regs)
+        self.obj.b_load.setEnabled(False)
+
         #Tune Logic
+        self.obj.f_auto.stateChanged['int'].connect(self.switch_auto_mode)
         self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
         btns = [ self.obj.b_reg0_set, self.obj.b_reg1_set, self.obj.b_reg2_set,
                  self.obj.b_reg3_set, self.obj.b_reg4_set, self.obj.b_reg5_set,
@@ -99,6 +104,34 @@ class Adf4355(QtGui.QWidget):
 
             for i,v in enumerate(btns):
                 v.clicked.connect((lambda i=i: lambda: self.func([self.reg[i]]))(i))
+
+    def save_regs(self):
+        filename = QtGui.QFileDialog.getSaveFileName(self, "Save registers to file", "out.regs", "Register settings *.regs (*.regs)")
+        if len(filename) > 0:
+            with open(filename, 'w') as f:
+                for i in self.reg: f.write("%08x\n" % i)
+
+    def load_regs(self):
+        filename = QtGui.QFileDialog.getOpenFileName(self, "Load registers from file", "out.regs", "Register settings *.regs (*.regs)")
+        if len(filename) > 0:
+            regs_ok = True          # Sanity check
+            try:
+                with open(filename, 'r') as f:
+                    new_regs = [ int(f.readline(), 16) for i in range(13) ]
+                out_regs = [ 0xf ] * 13 # Fill invalid reg number
+                for i,v in enumerate(new_regs):
+                    regs_ok = regs_ok and (i == (v & 0xf))
+                    out_regs[i] = v     # Sort registers by its number
+            except:
+                regs_ok = False
+            if not regs_ok:
+                QtGui.QMessageBox.critical(self, "Bad file", "Unable to parse register file")
+            else:
+                self.process_load(out_regs)
+
+    def process_load(self, new_regs):
+        # TODO: make this
+        pass
 
     def set_freq_regs(self):
         self.func([self.reg[4] | (1<<REG4_CNTR_RESET),
@@ -126,7 +159,13 @@ class Adf4355(QtGui.QWidget):
         self.r10_changed()
         self.obj.reg11.setText("x%08x" % self.reg[11])
         self.r12_changed()
-   
+
+    def switch_auto_mode(self):
+        muteobjs = [ self.obj.f_frac1, self.obj.f_frac2, self.obj.f_int, self.obj.f_mod2, self.obj.f_div_out ]
+        for i in muteobjs: i.setEnabled(not self.obj.f_auto.isChecked())
+        self.obj.f_rf_out.setReadOnly(not self.obj.f_auto.isChecked())
+
+
     def calc_fout(self):
         div = 2 ** self.obj.f_div_out.currentIndex()
         fout = self.VCO / float(div)
@@ -134,7 +173,8 @@ class Adf4355(QtGui.QWidget):
             self.obj.f_rf_out.setStyleSheet("QLineEdit { background-color: red; }")
         else:
             self.obj.f_rf_out.setStyleSheet("")
-        self.obj.f_rf_out.setText("%.3f" % fout)
+        if not self.obj.f_auto.isChecked():
+            self.obj.f_rf_out.setText("%.3f" % fout)
 
     def vco_changed(self):
         try:
@@ -151,9 +191,9 @@ class Adf4355(QtGui.QWidget):
         self.N = (((float(self.obj.f_frac2.value()) / float(self.obj.f_mod2.value()) +
                     self.obj.f_frac1.value()) / 16777216.0) + self.obj.f_int.value())
         self.VCO = self.N * self.pfd
-        self.obj.f_vco_out.setText("%.9f" % (self.VCO))
         self.obj.f_n.setText("N = %.12f" % self.N)
-	  
+        self.obj.f_vco_out.setText("%.9f" % (self.VCO))
+
     def pfd_changed(self):
         self.pfd = (self.obj.f_ref.value() * 
                     (2 if self.obj.f_x2.isChecked() else 1) /
