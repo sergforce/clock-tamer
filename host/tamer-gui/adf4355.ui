@@ -844,6 +844,9 @@
      <height>27</height>
     </rect>
    </property>
+   <property name="readOnly">
+    <bool>true</bool>
+   </property>
   </widget>
   <widget class="QLabel" name="label_31">
    <property name="geometry">
@@ -866,6 +869,9 @@
      <width>161</width>
      <height>27</height>
     </rect>
+   </property>
+   <property name="readOnly">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QLabel" name="label_32">

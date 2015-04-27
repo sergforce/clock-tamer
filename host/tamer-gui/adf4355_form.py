@@ -273,6 +273,7 @@ class Adf4355(QtGui.QWidget):
                ((self.obj.r6_gated_bleed.currentIndex() & 1) << REG6_GATED_BLEED_SHIFT) |
                ((self.obj.r6_bleed_curr.value() & REG6_CP_BLEED_CURR_MASK) << REG6_CP_BLEED_CURR_SHIFT) |
                ((self.obj.f_div_out.currentIndex() & REG6_RF_DIV_MASK) << REG6_RF_DIV_SHIFT) |
+               (1 << 10) |  # Taken from ADI utility
                (REG6_RESERVED_VALUE << REG6_RESERVED_SHIFT) | 6)
         self.reg[6] = reg
         self.obj.reg6.setText("x%08x" % reg)
