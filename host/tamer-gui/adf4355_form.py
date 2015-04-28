@@ -80,15 +80,22 @@ class Adf4355(QtGui.QWidget):
         
         self.obj.f_vco_out.textChanged['QString'].connect(self.vco_changed)
         self.obj.f_div_out.currentIndexChanged['QString'].connect(self.calc_fout)
-
+        
+        self.obj.f_manual_reg.stateChanged['int'].connect(self.switch_manual_reg)
+        
         # Update calculations        
         self.vco_changed()
         self.obj.r10_adc_div.valueChanged['QString'].connect(self.adc_clock_changed)
 
         self.obj.b_save.clicked.connect(self.save_regs)
         self.obj.b_load.clicked.connect(self.load_regs)
-        #self.obj.b_load.setEnabled(False)
 
+        self.edr = [ self.obj.reg0, self.obj.reg1, self.obj.reg2, self.obj.reg3,
+                     self.obj.reg4, self.obj.reg5, self.obj.reg6, self.obj.reg7,
+                     self.obj.reg8, self.obj.reg9, self.obj.reg10, self.obj.reg11,
+                     self.obj.reg12 ]
+        for i in self.edr: i.setReadOnly(True)
+        
         #Tune Logic
         self.obj.f_auto.stateChanged['int'].connect(self.switch_auto_mode)
         self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
@@ -105,6 +112,36 @@ class Adf4355(QtGui.QWidget):
             for i,v in enumerate(btns):
                 v.clicked.connect((lambda i=i: lambda: self.func([self.reg[i]]))(i))
 
+    def switch_manual_reg(self):
+        frames = [ self.obj.frame_reg_0, self.obj.frame_reg_3, self.obj.frame_reg_4,
+                   self.obj.frame_reg_6, self.obj.frame_reg_7, self.obj.frame_reg_9,
+                   self.obj.frame_reg_10, self.obj.frame_reg_12, self.obj.frame_7,
+                   self.obj.f_ref, self.obj.f_r_cnt, self.obj.f_x2, self.obj.f_div2,
+                   self.obj.f_pfd, self.obj.f_div_out, self.obj.f_vco_out, self.obj.f_rf_out ]
+        for f in frames:
+            f.setEnabled(not self.obj.f_manual_reg.isChecked())
+        
+        if self.obj.f_manual_reg.isChecked():
+            for i in range(13):
+                self.edr[i].setReadOnly(False)
+                self.edr[i].textChanged['QString'].connect(self.set_manual_reg_edit)
+        else:
+            for i in range(13):
+                self.edr[i].setReadOnly(True)
+                self.edr[i].textChanged['QString'].disconnect(self.set_manual_reg_edit)
+          
+        
+    def set_manual_reg_edit(self):
+        for i in range(13):
+            try:
+                s = str(self.edr[i].text())
+                if s[0] == 'x' or s[0] == 'X': s = s[1:]
+                self.reg[i] = int(s, 16)
+                self.edr[i].setStyleSheet("")
+            except:
+                self.edr[i].setStyleSheet("QLineEdit { background-color: red; }")
+        
+        
     def save_regs(self):
         filename = QtGui.QFileDialog.getSaveFileName(self, "Save registers to file", "out.regs", "Register settings *.regs (*.regs)")
         if len(filename) > 0:
