@@ -46,8 +46,6 @@ void BoardInit()
 
 static uint8_t spi_write(uint8_t data)
 {
-    SPCR = (1 << MSTR) | (1 << SPE);
-
     SPDR = data;
     while (!(SPSR & (1<<SPIF)));
     return SPDR;
@@ -83,11 +81,13 @@ void write_reg_ADF4355(uint8_t f1, uint8_t f2, uint8_t f3, uint8_t f4)
 void write_reg_DAC12(uint8_t f1, uint8_t f2)
 {
         DacSyncSet();
-        DacSyncSet(); // Delay of one cycle
+        SPCR |= (1 << CPHA);
         DacSyncClear();
 
         spi_write(f1);
         spi_write(f2);
+
+        SPCR &= ~(1 << CPHA);
 }
 
 

@@ -378,6 +378,16 @@ extern uint8_t commands;
 extern RingBuff_t USBtoUSART_Buffer;
 //extern RingBuff_t USARTtoUSB_Buffer;
 
+static uint8_t SetDac(uint16_t value)
+{
+    if (value < 0x1000)
+    {
+        DAC12_WRITE(value);
+        return 1;
+    }
+
+    return 0;
+}
 
 void AutoStartControl(void)
 {
@@ -392,6 +402,10 @@ void AutoStartControl(void)
     if (AutoFreq)
     {
         LoadEEPROM();
+
+#ifdef PRESENT_DAC12
+        SetDac(DacValue);
+#endif
 
         int8_t i;
         union {
@@ -431,17 +445,6 @@ void AutoStartControl(void)
         write_reg_ADF4355(v.data[3], v.data[2], v.data[1], v.data[0]);
     }
 
-}
-
-uint8_t SetDac(uint16_t value)
-{
-    if (value < 0x1000)
-    {
-        DAC12_WRITE(value);
-        return 1;
-    }
-
-    return 0;
 }
 
 uint8_t SetOutFreq(void)
