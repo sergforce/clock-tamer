@@ -87,7 +87,7 @@ class Adf4355(QtGui.QWidget):
 
         self.obj.b_save.clicked.connect(self.save_regs)
         self.obj.b_load.clicked.connect(self.load_regs)
-        self.obj.b_load.setEnabled(False)
+        #self.obj.b_load.setEnabled(False)
 
         #Tune Logic
         self.obj.f_auto.stateChanged['int'].connect(self.switch_auto_mode)
@@ -130,8 +130,77 @@ class Adf4355(QtGui.QWidget):
                 self.process_load(out_regs)
 
     def process_load(self, new_regs):
-        # TODO: make this
-        pass
+        #REG0
+        self.obj.r0_autocal.setCurrentIndex((new_regs[0] >> REG0_AUTOCAL_SHIFT) & 1)
+        self.obj.r0_prescaler.setCurrentIndex((new_regs[0] >> REG0_PRESCALER_SHIFT) & 1)
+        self.obj.f_int.setValue((new_regs[0] >> REG0_NVALUE_SHIFT) & REG0_NVALUE_MASK)
+        #REG1
+        self.obj.f_frac1.setValue((new_regs[1] >> REG1_MFRAC_SHIFT) & REG1_MFRAC_MASK)
+        #REG2
+        self.obj.f_frac2.setValue((new_regs[2] >> REG2_AUX_FRAC_SHIFT) & REG2_AUX_FRAC_MASK)
+        self.obj.f_mod2.setValue((new_regs[2] >> REG2_AUX_MOD_SHIFT) & REG2_AUX_MOD_MASK)
+        #REG3
+        self.obj.r3_sd_load.setCurrentIndex((new_regs[3] >> REG3_SD_LOAD_SHIFT) & 1)
+        self.obj.r3_phase_rsync.setCurrentIndex((new_regs[3] >> REG3_PHASE_RSYNC_SHIFT) & 1)
+        self.obj.r3_phase_adj.setCurrentIndex((new_regs[3] >> REG3_PHASE_ADJ_SHIFT) & 1)
+        self.obj.r3_phase.setValue((new_regs[3] >> REG3_PHASE_SHIFT) & REG3_PHASE_MASK)
+        #REG4
+        self.obj.r4_muxout.setCurrentIndex((new_regs[4] >> REG4_MUXOUT_SHIFT) & REG4_MUXOUT_MASK)
+        
+        self.obj.f_x2.setChecked((new_regs[4] >> REG4_REF_DBL_SHIFT) & 1)
+        self.obj.f_div2.setChecked((new_regs[4] >> REG4_REF_DIV_SHIFT) & 1)
+        self.obj.f_r_cnt.setValue((new_regs[4] >> REG4_R_SHIFT) & REG4_R_MASK)
+        self.obj.r4_double_buf.setCurrentIndex((new_regs[4] >> REG4_DBL_BUFF_SHIFT) & 1)
+        self.obj.r4_cp_curr.setCurrentIndex((new_regs[4] >> REG4_CURRENT_SHIFT) & REG4_CURRENT_MASK)
+        self.obj.r4_refin.setCurrentIndex((new_regs[4] >> REG4_REF_MODE_SHIFT) & 1)
+        self.obj.r4_mux_lvl.setCurrentIndex((new_regs[4] >> REG4_MUX_LOGIC_SHIFT) & 1)
+        self.obj.r4_pd_pol.setCurrentIndex((new_regs[4] >> REG4_PD_POL_SHIFT) & 1)
+        self.obj.r4_powerdown.setCurrentIndex((new_regs[4] >> REG4_PWR_DOWN_SHIFT) & 1)
+        self.obj.r4_cp_state.setCurrentIndex((new_regs[4] >> REG4_CP_3STATE_SHIFT) & 1)
+        self.obj.r4_counter_rst.setCurrentIndex((new_regs[4] >> REG4_CNTR_RESET) & 1)
+        #REG5
+        
+        #REG6
+        self.obj.r6_feedback.setCurrentIndex((new_regs[6] >> REG6_FB_SEL_SHIFT) & 1)
+        self.obj.r6_mtld.setCurrentIndex((new_regs[6] >> REG6_MLTD_SHIFT) & 1)
+        self.obj.r6_aux_out.setCurrentIndex((new_regs[6] >> REG6_AUX_PWR_EN_SHIFT) & 1)
+        self.obj.r6_aux_out_pwr.setCurrentIndex((new_regs[6] >> REG6_AUX_PWR_SHIFT) & REG6_AUX_PWR_MASK)
+        self.obj.r6_out.setCurrentIndex((new_regs[6] >> REG6_PWR_EN_SHIFT) & 1)
+        self.obj.r6_out_pwr.setCurrentIndex((new_regs[6] >> REG6_PWR_SHIFT) & REG6_PWR_MASK)
+        self.obj.r6_neg_bleed.setCurrentIndex((new_regs[6] >> REG6_NEG_BLEED_SHIFT) & 1)
+        self.obj.r6_gated_bleed.setCurrentIndex((new_regs[6] >> REG6_GATED_BLEED_SHIFT) & 1)
+        self.obj.r6_bleed_curr.setValue((new_regs[6] >> REG6_CP_BLEED_CURR_SHIFT) & REG6_CP_BLEED_CURR_MASK)
+        self.obj.f_div_out.setCurrentIndex((new_regs[6] >> REG6_RF_DIV_SHIFT) & REG6_RF_DIV_MASK)
+        #REG7
+        self.obj.r7_le_sync.setCurrentIndex((new_regs[7] >> REG7_LE_SYNC_SHIFT) & 1)
+        self.obj.r7_ld_cycles.setCurrentIndex((new_regs[7] >> REG7_LD_CYCLE_CNT_SHIFT) & REG7_LD_CYCLE_CNT_MASK)
+        self.obj.r7_lol_mode.setCurrentIndex((new_regs[7] >> REG7_LOL_MODE_SHIFT) & 1)
+        self.obj.r7_frac_n.setCurrentIndex((new_regs[7] >> REG7_FRAC_N_PREC_SHIFT) & REG7_FRAC_N_PREC_MASK)
+        self.obj.r7_ld.setCurrentIndex((new_regs[7] >> REG7_LD_MODE_SHIFT) & 1)
+        #REG8
+        
+        #REG9
+        self.obj.r9_vco_div.setValue((new_regs[9] >> REG9_VCO_BAND_SHIFT) & REG9_VCO_BAND_MASK)
+        self.obj.r9_to.setValue((new_regs[9] >> REG9_TIMEOUT_SHIFT) & REG9_TIMEOUT_MASK)
+        self.obj.r9_alc_to.setValue((new_regs[9] >> REG9_AUTO_LVL_TO_SHIFT) & REG9_AUTO_LVL_TO_MASK)
+        self.obj.r9_lock_to.setValue((new_regs[9] >> REG9_SYNT_LOCK_TO_SHIFT) & REG9_SYNT_LOCK_TO_MASK)
+        #REG10
+        self.obj.r10_adc_div.setValue((new_regs[10] >> REG10_ADC_CLK_DIV_SHIFT) & REG10_ADC_CLK_DIV_MASK)
+        self.obj.r10_adc_conv.setCurrentIndex((new_regs[10] >> REG10_ADC_CONV_SHIFT) & 1)
+        self.obj.r10_adc_en.setCurrentIndex((new_regs[10] >> REG10_ADC_EN_SHIFT) & 1)
+        #REG11
+        
+        #REG12
+        self.obj.r12_phase_rsync.setValue((new_regs[12] >> REG12_RESYNC_CLOCK_SHIFT) & REG12_RESYNC_CLOCK_MASK)
+                
+        self.reg = new_regs
+        regs = [ self.obj.reg0, self.obj.reg1, self.obj.reg2, self.obj.reg3,
+                 self.obj.reg4, self.obj.reg5, self.obj.reg6, self.obj.reg7,
+                 self.obj.reg8, self.obj.reg9, self.obj.reg10, self.obj.reg11,
+                 self.obj.reg12 ]
+        for i,r in enumerate(regs):
+            r.setText("x%08x" % self.reg[i])
+        
 
     def set_freq_regs(self):
         self.func([self.reg[4] | (1<<REG4_CNTR_RESET),

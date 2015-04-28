@@ -201,6 +201,10 @@ class TamerDevice(object):
 
     def loadEeprom(self):
         return self.dev.sendCmd("LDE")
+      
+    def loadEepromADF4355Reg(self,reg):
+        res = self.dev.sendCmd("LDE", "ADF", "", reg)
+        return self.dev.getValueFromResult(res)
 
     def storeEeprom(self):
         return self.dev.sendCmd("STE")

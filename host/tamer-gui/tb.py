@@ -54,8 +54,16 @@ class MainWindow(QtGui.QWidget):
             
         self.adf = Adf4355(self.write_adf)
         self.adf.obj.b_save_ee.setEnabled(True)
+        self.adf.obj.b_load_ee.setEnabled(True)
         self.adf.obj.b_save_ee.clicked.connect(self.write_ee_adf)
-  
+        self.adf.obj.b_load_ee.clicked.connect(self.load_ee_adf)
+
+    def load_ee_adf(self):
+        regs = [ self.dev.loadEepromADF4355Reg(i) for i in range(13) ]
+        self.adf.process_load(regs)
+        # Load OSC
+        self.adf.obj.f_ref.setValue(float(self.dev.getOsc()) / 1000000)
+            
     def write_ee_adf(self):
         for i in self.adf.reg:
             self.dev.storeEepromADF4355Reg(i)
