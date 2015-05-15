@@ -490,6 +490,17 @@ uint8_t ProcessCommand(void)
                     FillResultPM(resOk);
                     return 1;
                     break;
+                case trgJTG:
+                    switch (command.details) 
+                    {
+                    case detRST: JTAGReset(); FillResultPM(resOk); return 1;
+                    case detRUN: JTAGRunTest(command.u32data); FillResultPM(resOk); return 1;
+                    case detSDR: FillCmd();  FillUint32(JTAGSDR(command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
+                    case detSIR: FillCmd();  FillUint32(JTAGSIR(command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
+                    default:
+                        return 0;
+                    }
+                    break;
                 default:
                     return 0;
             }

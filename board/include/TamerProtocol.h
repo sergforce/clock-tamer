@@ -88,6 +88,7 @@ typedef enum tamerTargetType
     trgIOS,
     trgSTS,
     trgADF,
+    trgJTG,
 } TargetType_t;
 
 
@@ -116,7 +117,11 @@ typedef enum tamerTargetDetails
     detR01,
     detR02,
     detR03,
-    detLCK
+    detLCK,
+    detRST,
+    detRUN,
+    detSDR,
+    detSIR,
 } TargetDetails_t;
 
 /** @brief Internal (decoded) command representation.

@@ -42,6 +42,7 @@ void BoardInit()
 
     SPCR = (1 << MSTR) | (1 << SPE);
 
+    JTAGInit();
 }
 
 static uint8_t spi_write(uint8_t data)

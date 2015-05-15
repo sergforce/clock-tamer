@@ -27,10 +27,11 @@
 
 #define JTAG_TMS          PC2
 #define JTAG_TCK          PC4
-#define JTAG_TDO          PC5
-#define JTAG_TDI          PC6
+#define JTAG_TDO          PC6 //Actually its TDI on schematic
+#define JTAG_TDI          PC5 //Actually its TDO on schematic
 #define JTAG_DDR          DDRC
 #define JTAG_PORT         PORTC
+#define JTAG_PIN          PINC
 
 
 #define INFOLED           PB5
@@ -96,6 +97,14 @@ void write_reg_DAC12(uint8_t f1, uint8_t f2);
 #define DAC12_WRITE(x)  write_reg_DAC12( \
   (uint8_t)((x) >> 8), \
   (uint8_t)((x)))
+
+
+void JTAGInit(void);
+void JTAGReset(void);
+uint32_t JTAGSDR(uint32_t in, uint8_t num_bits);
+uint32_t JTAGSIR(uint32_t in, uint8_t num_bits);
+void JTAGRunTest(uint32_t clks);
+
 
 
 #endif //_TAMER_BOARD_H_

@@ -74,7 +74,8 @@ const uint8_t pTrg[]  PROGMEM  = "LMK"
                                  "GPS"
                                  "IOS"
                                  "STS"
-                                 "ADF";
+                                 "ADF"
+                                 "JTG";
 
 #define TRG_COUNT    (sizeof(pTrg)  / WORD_SIZE)
 
@@ -94,7 +95,11 @@ const uint8_t pDet[]  PROGMEM  = "ENB"
                                  "R01"
                                  "R02"
                                  "R03"
-                                 "LCK";
+                                 "LCK"
+                                 "RST"
+                                 "RUN"
+                                 "SDR"
+                                 "SIR";
 #define DET_COUNT    (sizeof(pDet)  / WORD_SIZE)
 
 
