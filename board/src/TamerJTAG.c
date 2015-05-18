@@ -26,12 +26,13 @@
 #include "Tamer.h"
 
 #define JTAG_PULSE() do { \
-        JTAG_PORT |= (1 << JTAG_TCK); \
-        _nop();                       \
+        JTAG_PORT |= (1 << JTAG_TCK);  \
+        _nop();                        \
         JTAG_PORT &= ~(1 << JTAG_TCK); \
+        _nop();                        \
         } while(0) 
 
-#define _nop() __asm__ __volatile__ (" nop; \r\n")
+#define _nop() __asm__ __volatile__ (" nop; nop; nop; nop; \r\n")
 
 void JTAGInit(void)
 {
@@ -80,9 +81,13 @@ uint32_t JTAGSDR(uint32_t in, uint8_t num_bits)
     JTAG_PULSE();
 
     // Shift DR
-    int32_t out = 0;
-    for (; num_bits != 0; --num_bits, in<<=1) {
-        if (in & 0x80000000UL)
+    uint32_t out = 0;
+    if ((JTAG_PIN & (1 << JTAG_TDI)) ==  (1 << JTAG_TDI))
+        out |= 1;
+
+    uint32_t bit = 2;
+    for (; num_bits != 0; --num_bits, in >>= 1) {
+        if (in & 1UL)
             JTAG_PORT |= (1 << JTAG_TDO);
         else
             JTAG_PORT &= ~(1 << JTAG_TDO);
@@ -90,11 +95,13 @@ uint32_t JTAGSDR(uint32_t in, uint8_t num_bits)
         if (num_bits == 1)
             JTAG_PORT |= (1 << JTAG_TMS); // Last cycle, exit SDR
 
+        _nop();
         JTAG_PULSE();
 
-        out >>= 1;
         if ((JTAG_PIN & (1 << JTAG_TDI)) ==  (1 << JTAG_TDI))
-            out |= 0x80000000UL;
+            out |= bit;
+
+        bit <<= 1;
     }
     
     // Exit DR1

@@ -136,6 +136,48 @@ static void FillUint32(uint32_t val)
         Store('0');
 }
 
+static void FillCharHex(uint8_t c)
+{
+    if (c < 10)
+        Store('0' + c);
+    else
+        Store('A' + c - 10);
+}
+
+static void FillUint8Hex(uint8_t val)
+{
+    FillCharHex(val >> 4);
+    FillCharHex(val & 0xf);
+}
+
+static void FillUint16Hex(uint16_t val)
+{
+    union {
+        uint16_t v;
+        uint8_t d[2];
+    } m;
+
+    m.v = val;
+
+    FillUint8Hex(m.d[1]);
+    FillUint8Hex(m.d[0]);
+}
+
+static void FillUint32Hex(uint32_t val)
+{
+    union {
+        uint32_t v;
+        uint8_t d[4];
+    } m;
+
+    m.v = val;
+
+    FillUint8Hex(m.d[3]);
+    FillUint8Hex(m.d[2]);
+    FillUint8Hex(m.d[1]);
+    FillUint8Hex(m.d[0]);
+}
+
 #define FillUint16(x)   FillUint32(x)
 
 const uint8_t resBadRange[] PROGMEM = "Bad tuning range";
@@ -493,10 +535,26 @@ uint8_t ProcessCommand(void)
                 case trgJTG:
                     switch (command.details) 
                     {
+                    case detR00: 
+                        JTAGReset();
+                        JTAGSIR(0x2CCUL, 10);
+                        JTAGRunTest(1003);
+                        JTAGSIR(0x203UL, 10);
+                        JTAGRunTest(8);
+                        JTAGSDR(0x0089UL, 13);
+                        JTAGSIR(0x205UL, 10);
+                        JTAGRunTest(8);
+                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+                        FillResultNoNewLinePM(newLine);
+                        return 1;
                     case detRST: JTAGReset(); FillResultPM(resOk); return 1;
                     case detRUN: JTAGRunTest(command.u32data); FillResultPM(resOk); return 1;
-                    case detSDR: FillCmd();  FillUint32(JTAGSDR(command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
-                    case detSIR: FillCmd();  FillUint32(JTAGSIR(command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
+                    case detSDR: FillCmd();  FillUint32(JTAGSDR((uint32_t)command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
+                    case detSIR: FillCmd();  FillUint32(JTAGSIR((uint32_t)command.u16data[0], command.data[3]));      FillResultNoNewLinePM(newLine); return 1;
                     default:
                         return 0;
                     }
