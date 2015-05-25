@@ -17,29 +17,66 @@ module clocktamer
 (
 // {ALTERA_ARGS_BEGIN} DO NOT REMOVE THIS LINE!
 
+	FO_CPLD,
+	F_TCXO,
+	FIN_CPLD,
+	SPI_CE,
+	SPI_SCLK,
+	SPI_MOSI,
+	SPI_MISO,
+	ONEPPS_GPS,
+	ONEPPS_CNT,
+	NRESET,
+	MODE_SELECT,
+	ONEPPS_1,
+	ONEPPS_2,
+	ONEPPS_3,
+	ONEPPS_4
 // {ALTERA_ARGS_END} DO NOT REMOVE THIS LINE!
-
-       input clk,      // High clock input
-       input one_pps,  // One PPS signal
-       input nreset,   // Reset
-       output  one_pps_cont, // Continues 1PPS signal 
-		 output clk_div,
-		 
-       input spi_clk,     // serial clock 
-       input spi_sen,     // crystal enable for serial clk
-       output spi_out,    // serial data out
-		 input  spi_in,     // serial data in
-       output  spi_out_oen // serial output enable);
 
 );
 
-clock_counter c(clk, one_pps, nreset, 
-	one_pps_cont, clk_div, spi_clk, spi_sen, 
-	spi_out, spi_in, spi_out_oen);
-
 // {ALTERA_IO_BEGIN} DO NOT REMOVE THIS LINE!
+input			FO_CPLD;
+input			F_TCXO;
+input			FIN_CPLD;
+input			SPI_CE;
+input			SPI_SCLK;
+input			SPI_MOSI;
+output		SPI_MISO;
+input			ONEPPS_GPS;
+output		ONEPPS_CNT;
+input			NRESET;
+input			MODE_SELECT;
+input			ONEPPS_1;
+input			ONEPPS_2;
+input			ONEPPS_3;
+input			ONEPPS_4;
 
 // {ALTERA_IO_END} DO NOT REMOVE THIS LINE!
 // {ALTERA_MODULE_BEGIN} DO NOT REMOVE THIS LINE!
+
+wire spi_oe;
+wire spi_out;
+
+ALT_OUTBUF_TRI spi_outbuf_tri (
+   .i(spi_out),
+	.oe(spi_oe),
+   .o(SPI_MISO)); //out must be declared as an output pin
+	
+clock_counter c(
+	.clk(FIN_CPLD),
+	.one_pps(ONEPPS_GPS),
+	.nreset(NRESET), 
+	.one_pps_cont(ONEPPS_CNT),
+	.clk_div(),
+	.spi_clk(SPI_SCLK),
+	.spi_sen(SPI_CE), 
+	.spi_out(spi_out),
+	.spi_in(SPI_MOSI),
+	.spi_out_oen(spi_oe));
+
+	
 // {ALTERA_MODULE_END} DO NOT REMOVE THIS LINE!
 endmodule
+

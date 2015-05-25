@@ -14,7 +14,8 @@ module clock_counter (
        output spi_out_oen // serial output enable
 );
 
-parameter COUNTER_BITS     = 16;
+//parameter COUNTER_BITS     = 16;
+parameter COUNTER_BITS     = 27;
 
 parameter COUNTER_MAX      = 28;
 parameter COMPARE_PPS_BITS = 28;
@@ -54,7 +55,7 @@ end else begin
 		high_counter <= high_counter + 1;
 		
 		if (spi_clke == 2'b01) begin
-			if (spi_sen == 0'b0) begin
+			if (spi_sen == 1'b0) begin
 				if (spi_trans_started == 1'b0) begin
 					spi_trans_update <= ~spi_in;
 					spi_trans_started <= 1'b1;

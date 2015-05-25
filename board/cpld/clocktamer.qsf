@@ -42,7 +42,7 @@ set_global_assignment -name DEVICE 5M160ZE64C5
 set_global_assignment -name TOP_LEVEL_ENTITY clocktamer
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 14.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "23:06:05  Февраль 01, 2015"
-set_global_assignment -name LAST_QUARTUS_VERSION 14.1.0
+set_global_assignment -name LAST_QUARTUS_VERSION "14.1.0 SP0.19"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
@@ -51,5 +51,37 @@ set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (Verilog)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT "VERILOG HDL" -section_id eda_simulation
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name DEVICE_FILTER_PACKAGE "ANY QFP"
+set_global_assignment -name DEVICE_FILTER_PIN_COUNT 64
+set_location_assignment PIN_2 -to MODE_SELECT
+set_location_assignment PIN_4 -to FO_CPLD
+set_location_assignment PIN_7 -to F_TCXO
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to MODE_SELECT
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to FO_CPLD
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to F_TCXO
+set_location_assignment PIN_9 -to FIN_CPLD
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to FIN_CPLD
+set_location_assignment PIN_24 -to SPI_CE
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to SPI_CE
+set_location_assignment PIN_26 -to SPI_SCLK
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to SPI_SCLK
+set_location_assignment PIN_28 -to SPI_MOSI
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to SPI_MOSI
+set_location_assignment PIN_30 -to SPI_MISO
+set_instance_assignment -name RESERVE_PIN AS_OUTPUT_DRIVING_AN_UNSPECIFIED_SIGNAL -to SPI_MISO
+set_location_assignment PIN_64 -to NRESET
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to NRESET
+set_location_assignment PIN_40 -to ONEPPS_GPS
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_GPS
+set_location_assignment PIN_51 -to ONEPPS_CNT
+set_instance_assignment -name RESERVE_PIN AS_OUTPUT_DRIVING_AN_UNSPECIFIED_SIGNAL -to ONEPPS_CNT
+set_location_assignment PIN_43 -to ONEPPS_1
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_1
+set_location_assignment PIN_45 -to ONEPPS_2
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_2
+set_location_assignment PIN_47 -to ONEPPS_3
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_3
+set_location_assignment PIN_49 -to ONEPPS_4
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_4
 set_global_assignment -name VERILOG_FILE clocktamer.v
 set_global_assignment -name VERILOG_FILE clock_counter.v
