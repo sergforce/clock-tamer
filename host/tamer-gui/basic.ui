@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>618</width>
-    <height>750</height>
+    <height>783</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -582,6 +582,13 @@
       <widget class="QPushButton" name="btLoad">
        <property name="text">
         <string>Load from EEPROM</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btCPLD">
+       <property name="text">
+        <string>Update CPLD...</string>
        </property>
       </widget>
      </item>

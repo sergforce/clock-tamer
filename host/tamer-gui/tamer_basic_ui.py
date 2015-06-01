@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'basic.ui'
 #
-# Created: Mon Apr 27 19:15:58 2015
+# Created: Mon Jun  1 10:33:23 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_Basic(object):
     def setupUi(self, Basic):
         Basic.setObjectName(_fromUtf8("Basic"))
-        Basic.resize(618, 750)
+        Basic.resize(618, 783)
         self.verticalLayout = QtGui.QVBoxLayout(Basic)
         self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
         self.widget = QtGui.QWidget(Basic)
@@ -252,6 +252,9 @@ class Ui_Basic(object):
         self.btLoad = QtGui.QPushButton(Basic)
         self.btLoad.setObjectName(_fromUtf8("btLoad"))
         self.horizontalLayout_2.addWidget(self.btLoad)
+        self.btCPLD = QtGui.QPushButton(Basic)
+        self.btCPLD.setObjectName(_fromUtf8("btCPLD"))
+        self.horizontalLayout_2.addWidget(self.btCPLD)
         spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.btSet = QtGui.QPushButton(Basic)
@@ -308,6 +311,7 @@ class Ui_Basic(object):
         self.cbGPSSync.setText(_translate("Basic", "Keep in sync with GPS", None))
         self.btStore.setText(_translate("Basic", "Store to EEPROM", None))
         self.btLoad.setText(_translate("Basic", "Load from EEPROM", None))
+        self.btCPLD.setText(_translate("Basic", "Update CPLD...", None))
         self.btSet.setText(_translate("Basic", "SET", None))
         self.btGet.setText(_translate("Basic", "GET", None))
 

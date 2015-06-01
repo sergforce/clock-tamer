@@ -48,6 +48,7 @@ class MainWindow(QtGui.QWidget):
         self.connect(self.obj.btLoad,   QtCore.SIGNAL('clicked()'), self.onLoadEeprom)
         self.connect(self.obj.btSet,    QtCore.SIGNAL('clicked()'), self.onSet)
         self.connect(self.obj.btGet,    QtCore.SIGNAL('clicked()'), self.onGet)
+        self.connect(self.obj.btCPLD,   QtCore.SIGNAL('clicked()'), self.onCPLD)
 
         if spl != None:
             spl.finish(self)
@@ -76,6 +77,29 @@ class MainWindow(QtGui.QWidget):
         
     def onTimer(self):
         self.onGet()
+        
+    def onCPLD(self):
+        import svf_to_tamer
+        from time import sleep
+        
+        filename = QtGui.QFileDialog.getOpenFileName(self, "Load CPLD firmware", "*.svf", "SVF *.svf (*.svf)")
+        if len(filename) > 0:
+            #try:
+                prs = svf_to_tamer.svf_to_tamer(filename)
+                ret = self.dev.jtagCmd("RST", 0)
+                cmds = prs.commands()
+                i = 0
+                for cmd,val,exp in cmds:
+                    i += 1
+                    #time.sleep(0.001)
+                    #self.dev.flush()
+                    print("%02.1f%%: CMD: %s => %d; EXPECT: %s" % (float(100*i)/len(cmds), cmd, val, exp))
+                    ret = self.dev.jtagCmd(cmd, val)
+                    if exp is not None and (ret & 0xffff) != exp:                  
+                        raise ValueError("Expected %x, got %x" % (exp, ret))
+            #except Exception, e:
+            #    print("Can't parse CPLD image: %s", e)
+                print ("Done!")
 
     def ParseHWI(self):
         data = self.dev.getHwi()
@@ -109,6 +133,7 @@ class MainWindow(QtGui.QWidget):
 	    self.obj.groupBox.setVisible(False)
             self.obj.cbOscDisable.setEnabled(False)
         else:
+            self.obj.btCPLD.setVisible(False)
             try:
                 self.lmx = int(vals[0].split("=")[1])
                 self.lmk = int(vals[1].split("=")[1])

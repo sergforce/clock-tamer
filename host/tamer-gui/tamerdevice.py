@@ -160,6 +160,12 @@ class UsbDevice(object):
             return None
         return int(vals[3])
 
+    def getXValueFromResult(self, returnStr):
+        vals = str(returnStr).split(",");
+        if len(vals) < 4:
+            return None
+        return int(vals[3], 16)
+
     def getStringFromResult(self, returnStr):
         vals = str(returnStr).split(",");
         if len(vals) < 4:
@@ -194,6 +200,9 @@ class TamerDevice(object):
         self.leaveGpsMode()
         return res
 
+    def jtagCmd(self, cmd, value):
+        res = self.dev.sendCmd("REG", "JTG", cmd, value)
+        return self.dev.getValueFromResult(res)
 
 
     def reset(self):
