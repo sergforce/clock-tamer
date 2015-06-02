@@ -57,7 +57,7 @@ set_location_assignment PIN_2 -to MODE_SELECT
 set_location_assignment PIN_4 -to FO_CPLD
 set_location_assignment PIN_7 -to F_TCXO
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to MODE_SELECT
-set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to FO_CPLD
+set_instance_assignment -name RESERVE_PIN AS_OUTPUT_DRIVING_AN_UNSPECIFIED_SIGNAL -to FO_CPLD
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to F_TCXO
 set_location_assignment PIN_9 -to FIN_CPLD
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to FIN_CPLD
@@ -69,7 +69,7 @@ set_location_assignment PIN_28 -to SPI_MOSI
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to SPI_MOSI
 set_location_assignment PIN_30 -to SPI_MISO
 set_instance_assignment -name RESERVE_PIN AS_OUTPUT_DRIVING_AN_UNSPECIFIED_SIGNAL -to SPI_MISO
-set_location_assignment PIN_64 -to NRESET
+set_location_assignment PIN_63 -to NRESET
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to NRESET
 set_location_assignment PIN_40 -to ONEPPS_GPS
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_GPS
@@ -83,5 +83,17 @@ set_location_assignment PIN_47 -to ONEPPS_3
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_3
 set_location_assignment PIN_49 -to ONEPPS_4
 set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_4
+set_location_assignment PIN_33 -to ONEPPS_MODE
+set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to ONEPPS_MODE
 set_global_assignment -name VERILOG_FILE clocktamer.v
 set_global_assignment -name VERILOG_FILE clock_counter.v
+
+set_global_assignment -name AUTO_RESTART_CONFIGURATION OFF
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name USE_CONFIGURATION_DEVICE ON
+set_global_assignment -name GENERATE_SVF_FILE ON
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+
+set_global_assignment -name GENERATE_HEX_FILE ON

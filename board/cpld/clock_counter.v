@@ -4,6 +4,7 @@ module clock_counter (
        input clk,      // High clock input
        input one_pps,  // One PPS signal
        input nreset,   // Reset
+       input pps_sync_mode,     // use cont 1pps instead gps
        output reg one_pps_cont, // Continues 1PPS signal 
        output clk_div,
 
@@ -17,10 +18,9 @@ module clock_counter (
 //parameter COUNTER_BITS     = 16;
 parameter COUNTER_BITS     = 27;
 
-parameter COUNTER_MAX      = 28;
 parameter COMPARE_PPS_BITS = 28;
 
-reg [COUNTER_MAX-1:0] high_counter; // Counting value
+reg [COUNTER_BITS:0] high_counter;  // Counting value
 reg [COUNTER_BITS:0] cload;         // Serializable data over SPI (one extra bit as register present flag)
 reg        one_pps_latch;           // For rising-edge detection
 
@@ -29,6 +29,7 @@ reg        spi_trans_update;        // Set to one when processing divider update
 reg        spi_trans_started;       // Set to one for on the first bit of transaction
 
 reg [COMPARE_PPS_BITS-1:0]  pps_compare;
+reg [COMPARE_PPS_BITS-1:0]  pps_div;
 
 assign clk_div = high_counter[COUNTER_BITS];
 
@@ -36,6 +37,7 @@ always @(posedge clk)
 if (~nreset) begin
 	high_counter <= 0;
 	cload        <= 0;
+	pps_div      <= 0;
 	one_pps_latch <= 1'b0;
 
 	one_pps_cont <= 1'b0;
@@ -73,8 +75,15 @@ end else begin
 		end
 		
 		// THIS DOESN'T WORK YET
-		if (pps_compare[COMPARE_PPS_BITS-1:0] == high_counter[COUNTER_MAX-1:COUNTER_MAX-COMPARE_PPS_BITS]) begin
-			one_pps_cont <= ~one_pps_cont;
+		if (pps_sync_mode) begin
+			if (pps_compare[COMPARE_PPS_BITS-1:0] == pps_div[COMPARE_PPS_BITS-1:0]) begin
+				one_pps_cont <= ~one_pps_cont;
+				pps_div <= 0;
+			end else begin
+				pps_div <= pps_div + 1;
+			end
+		end else begin
+		   one_pps_cont <= one_pps;
 		end
 		
 		spi_clke[1] <= spi_clke[0];
