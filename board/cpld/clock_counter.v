@@ -33,7 +33,7 @@ reg [COMPARE_PPS_BITS-1:0]  pps_div;
 
 assign clk_div = high_counter[COUNTER_BITS];
 
-always @(posedge clk)
+always @(posedge clk or negedge nreset)
 if (~nreset) begin
 	high_counter <= 0;
 	cload        <= 0;
@@ -68,6 +68,7 @@ end else begin
 					end
 				end
 				cload <= cload << 1;
+				
 			end else begin
 				spi_trans_update <= 1'b0;
 				spi_trans_started <= 1'b0;
