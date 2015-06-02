@@ -65,7 +65,22 @@
 
 
 // TODO:   FO_CPLD=PB4, TP1=PB7, TP2=PD0, SPI_CPLD=PD1, TXD=PD2, RXD=PD3, BOOT=PD7
+
+
+#define FO_FEED           PB4
+
+#define CPLD_RST          PD0
+#define CPLD_CE           PD1
+#define CPLD_DDR          DDRD
+#define CPLD_PORT         PORTD
+
 void BoardInit(void);
+
+#define CpldInit()         CPLD_DDR |= (1 << CPLD_RST) | (1 << CPLD_CE)
+#define CpldCeSet()        CPLD_PORT |= (1 << CPLD_CE)
+#define CpldCeClear()      CPLD_PORT &= ~(1 << CPLD_CE)
+#define CpldResetSet()     CPLD_PORT |= (1 << CPLD_RST)
+#define CpldResetClear()   CPLD_PORT &= ~(1 << CPLD_RST)
 
 
 #define DacSyncInit()      DAC_SYNC_DDR |= (1 << DAC_SYNC)
@@ -85,6 +100,7 @@ void BoardInit(void);
 #define AdfCeClear()       ADF_PORT &= ~(1 << ADF_CE)
 
 
+uint32_t write_reg_CPLD(uint32_t val);
 void write_reg_ADF4355(uint8_t f1, uint8_t f2, uint8_t f3, uint8_t f4);
 void write_reg_DAC12(uint8_t f1, uint8_t f2);
 

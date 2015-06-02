@@ -89,6 +89,7 @@ typedef enum tamerTargetType
     trgSTS,
     trgADF,
     trgJTG,
+    trgPLD,
 } TargetType_t;
 
 

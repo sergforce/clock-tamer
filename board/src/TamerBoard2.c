@@ -35,6 +35,14 @@ void BoardInit()
 
     AdfInit();
     AdfCeSet();
+    
+    CpldInit();
+    CpldCeSet();
+    
+    /* RESET */
+    CpldResetClear();
+    CpldResetClear();
+    CpldResetSet();
 
     /* SPI Init, configure only output and sck, mode 0 */
     SPI_DDR |= (1 << SPI_MOSI) | (1 << SPI_SCK) | (1 << SPI_SS);
@@ -90,5 +98,19 @@ void write_reg_DAC12(uint8_t f1, uint8_t f2)
 
         SPCR &= ~(1 << CPHA);
 }
-
-
+  
+uint32_t write_reg_CPLD(uint32_t x)
+{
+    uint32_t ret;
+    
+    CpldCeClear();
+ 
+    ret  = (uint32_t)(spi_write((uint8_t)((x) >> 24))) << 24;
+    ret |= (uint32_t)(spi_write((uint8_t)((x) >> 16))) << 16;
+    ret |= (uint32_t)(spi_write((uint8_t)((x) >> 8))) << 8;
+    ret |= (uint32_t)(spi_write((uint8_t)((x))));
+    
+    CpldCeSet();
+    
+    return ret;
+}

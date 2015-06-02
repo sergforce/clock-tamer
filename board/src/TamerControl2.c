@@ -559,6 +559,11 @@ uint8_t ProcessCommand(void)
                         return 0;
                     }
                     break;
+                case trgPLD:
+                    FillCmd();
+                    FillUint32(write_reg_CPLD(command.u32data));
+                    FillResultNoNewLinePM(newLine);
+                    return 1;
                 default:
                     return 0;
             }
