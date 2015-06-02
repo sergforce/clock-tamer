@@ -91,12 +91,28 @@ class MainWindow(QtGui.QWidget):
                 i = 0
                 for cmd,val,exp in cmds:
                     i += 1
-                    #time.sleep(0.001)
+                    #time.sleep(0.005)
                     #self.dev.flush()
                     print("%02.1f%%: CMD: %s => %d; EXPECT: %s" % (float(100*i)/len(cmds), cmd, val, exp))
-                    ret = self.dev.jtagCmd(cmd, val)
-                    if exp is not None and (ret & 0xffff) != exp:                  
-                        raise ValueError("Expected %x, got %x" % (exp, ret))
+                    
+                    # usb transaction fails on big delays
+                    cnt = 1
+                    if cmd == "RUN":
+                        if int(val) > 30000:
+                            cnt = val / 30000
+                            val = 30000
+                            
+                        ##elif int(val) < 100:
+                        ##    val = 100
+                    for j in range(cnt):
+                        ret = self.dev.jtagCmd(cmd, val)
+                    if cmd != "RUN":
+                        rval = (ret & 0xffff)
+                        if exp is not None and rval != exp:                  
+                            raise ValueError("Expected %x, got %x" % (exp, ret))
+                    elif ret != "OK":
+                        raise ValueError("FAILED RUN")
+                       
             #except Exception, e:
             #    print("Can't parse CPLD image: %s", e)
                 print ("Done!")

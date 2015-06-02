@@ -202,7 +202,7 @@ class TamerDevice(object):
 
     def jtagCmd(self, cmd, value):
         res = self.dev.sendCmd("REG", "JTG", cmd, value)
-        return self.dev.getValueFromResult(res)
+        return res if cmd == "RUN" else self.dev.getValueFromResult(res)
 
 
     def reset(self):
