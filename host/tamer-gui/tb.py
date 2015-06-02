@@ -84,16 +84,27 @@ class MainWindow(QtGui.QWidget):
         
         filename = QtGui.QFileDialog.getOpenFileName(self, "Load CPLD firmware", "*.svf", "SVF *.svf (*.svf)")
         if len(filename) > 0:
+                pixmap = QtGui.QPixmap(480, 320)
+                pixmap.fill(QtGui.QColor(20,200,20))
+                splash = QtGui.QSplashScreen(pixmap)
+                
+                progressBar = QtGui.QProgressBar(splash)
+                progressBar.setGeometry(splash.width()/10, 8*splash.height()/10,
+                                        8*splash.width()/10, splash.height()/10)
+                splash.show()
             #try:
                 prs = svf_to_tamer.svf_to_tamer(filename)
                 ret = self.dev.jtagCmd("RST", 0)
                 cmds = prs.commands()
                 i = 0
                 for cmd,val,exp in cmds:
+                    app.processEvents()
                     i += 1
                     #time.sleep(0.005)
                     #self.dev.flush()
-                    print("%02.1f%%: CMD: %s => %d; EXPECT: %s" % (float(100*i)/len(cmds), cmd, val, exp))
+                    p = float(100*i)/len(cmds)
+                    progressBar.setValue(p)
+                    print("%02.1f%%: CMD: %s => %d; EXPECT: %s" % (p, cmd, val, exp))
                     
                     # usb transaction fails on big delays
                     cnt = 1
