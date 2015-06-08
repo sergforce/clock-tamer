@@ -66,13 +66,20 @@ ALT_OUTBUF_TRI spi_outbuf_tri (
 	.oe(spi_oe),
    .o(SPI_MISO)); //out must be declared as an output pin
 	
-clock_counter c(
+	clock_counter_fixed #(
+	 .COUNTER_BITS (7)
+/*clock_counter #(
+   .COUNTER_BITS (7),
+	.COMPARE_PPS_BITS(26)
+*/	
+	) c(
 	.clk(FIN_CPLD),
 	.one_pps(ONEPPS_GPS),
 	.nreset(NRESET), 
 	.pps_sync_mode(ONEPPS_MODE),
 	.one_pps_cont(ONEPPS_CNT),
 	.clk_div(FO_CPLD),
+	.fixed_clk(F_TCXO),
 	.spi_clk(SPI_SCLK),
 	.spi_sen(SPI_CE), 
 	.spi_out(spi_out),
