@@ -45,8 +45,6 @@ NFO
 */
 
 
-uint8_t IsCommandSeparator(uint8_t byte);
-
 /** @brief Internal values of control commands classes.
 *
 *  @see This enum is tightly coupled with \p pCmd variable in
@@ -140,5 +138,23 @@ typedef struct tamerCommad
 
 } __attribute__ ((__packed__))  TamerCommand_t;
 
+
+uint8_t ParseCommand(void);
+
+void FillNewLine(void);
+void FillResultPM(const uint8_t* res);
+void FillCmd(void);
+void FillUint32(uint32_t val);
+
+
+#ifdef USE_HEX_OUTPUT
+void FillUint8Hex(uint8_t val);
+void FillUint16Hex(uint16_t val);
+void FillUint32Hex(uint32_t val);
+#endif
+
+#define FillUint16(x)   FillUint32(x)
+
+extern TamerCommand_t command;
 
 #endif //_TAMER_PROTOCOL_H_

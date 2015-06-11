@@ -1,7 +1,7 @@
 /*
         ClockTamer - a software for configurable reference clock
-                  Copyright (C) 2009, Fairwaves
-          by Sergey Kostanbaev <Sergey.Kostanbaev@fairwaves.ru>
+                  Copyright (C) 2009,2015 Fairwaves
+          by Sergey Kostanbaev <Sergey.Kostanbaev@fairwaves.co>
 */
 
 /*
@@ -20,47 +20,37 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-/** \file
- *
- *  Header file for Tamer.c.
- */
+#include <stdint.h>
 
-#ifndef _USB_SERIAL_H_
-#define _USB_SERIAL_H_
+#include "Tamer.h"
+#include "TamerConfig.h"
+#include "TamerControl.h"
 
-/* Includes: */
-#include <avr/io.h>
-#include <avr/wdt.h>
-#include <avr/interrupt.h>
-#include <avr/power.h>
-
-#include "DescriptorsCDC.h"
-#include "DescriptorsDFU.h"
-#include "BootloaderDFU.h"
-
-#if TAMER_VER < 200
-#include "TamerBoard.h"
-#else
-#include "TamerBoard2.h"
-
-#define USE_HEX_OUTPUT
-#endif
-
-#include "RingBuff.h"
-
-#include "TamerProtocol.h"
-
-#include <LUFA/Version.h>
-#include <LUFA/Drivers/USB/USB.h>
+#include <util/delay.h>
+#include <avr/eeprom.h>
 
 
+static void LoadHwInfo(void)
+{
+    uint16_t i;
+    for (i=0; i<HWI_LEN; i++)
+    {
+        uint8_t c = eeprom_read_byte((uint8_t*)&eeHWInfo[i]);
+        if (c == 0)
+            break;
+        Store(c);
+    }
+    FillNewLine();
+}
 
-void SetupHardware(void);
 
-/**
- * @brief Store Store byte to send to the host
- * @param byte byte to store
- */
-void Store(uint8_t byte);
+static uint8_t SetDac(uint16_t value)
+{
+    if (value < 0x1000)
+    {
+        DAC12_WRITE(value);
+        return 1;
+    }
 
-#endif
+    return 0;
+}

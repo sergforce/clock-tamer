@@ -79,17 +79,15 @@ USB_ClassInfo_CDC_Device_t VirtualSerial_CDC_Interface =
  *  setup of all components and the main program loop.
  */
 
-void FillUint16(uint16_t val);
 void FillResultPM(const uint8_t* res);
 
 
-
-const uint8_t resSyntax[] PROGMEM = "SYNTAX ERROR";
-const uint8_t resErr[] PROGMEM = "CMD ERROR";
+static const uint8_t resSyntax[] PROGMEM = "SYNTAX ERROR";
+static const uint8_t resErr[]    PROGMEM = "CMD ERROR";
 
 
 volatile uint8_t commands = 0;
-#if (TAMER_VER >= 122)
+#if (TAMER_VER >= 122) && defined (PRESENT_GPS)
 uint8_t gpsmode = 0;
 #endif
 
@@ -128,6 +126,14 @@ void DoExtraTasks(uint8_t dosend)
 
     CDC_Device_USBTask(&VirtualSerial_CDC_Interface);
     USB_USBTask();
+}
+
+void Store(uint8_t byte)
+{
+    // May be completly useless, need  ATOMIC_BLOCK(ATOMIC_FORCEON)
+    cli();
+    Buffer_StoreElement(&USARTtoUSB_Buffer, byte);
+    sei();
 }
 
 
@@ -219,8 +225,7 @@ skip_data_send:
                 // Uncomment this to enable echo on console
                 // CDC_Device_SendByte(&VirtualSerial_CDC_Interface, byte);
 
-                if (byte == '\n' || byte == '\r')
-                {
+                if (byte == '\n' || byte == '\r') {
                     commands++;
                     break;
                 }
@@ -231,26 +236,20 @@ skip_data_send:
                 Buffer_GetElement(&USBtoUSART_Buffer);
 
 
-            for (;commands>0;commands--)
-            {
+            for (;commands>0;commands--) {
                 uint8_t res = ParseCommand();
-                if (res)
-                {
+                if (res) {
                     res = ProcessCommand();
-                    if (res == 0)
-                    {
+                    if (res == 0) {
                         FillResultPM(resErr);
                     }
-                }
-                else
-                {
+                } else {
                     FillResultPM(resSyntax);
                 }
             }
 
 
-            if (USB_DeviceState == DEVICE_STATE_Configured)
-            {
+            if (USB_DeviceState == DEVICE_STATE_Configured) {
                 /* Read bytes from the USART receive buffer into the USB IN endpoint */
                 while (USARTtoUSB_Buffer.Elements)
                     CDC_Device_SendByte(&VirtualSerial_CDC_Interface, Buffer_GetElement(&USARTtoUSB_Buffer));
@@ -288,14 +287,12 @@ void SetupHardware(void)
 #endif
 
     USB_Init();
+
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
-    xxx
-
-    //Enable MISO
+    // Enable MISO
     DDRB = (1<<PB3);
-
+    // Set SPI to SLAVE mode
     SPCR = (1<<SPIE) | (1<<SPE) | (1<<CPOL);
-    //SPDR = 0xff;
 #endif
 }
 
@@ -318,8 +315,10 @@ void EVENT_USB_Device_ConfigurationChanged(void)
 void EVENT_USB_Device_Connect(void)
 {
     LedSet();
+
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
-    SPCR &=~(1<<SPE); xxx
+    /* Disable SPI */
+    SPCR &=~(1<<SPE);
 #endif
 }
 
@@ -327,10 +326,52 @@ void EVENT_USB_Device_Connect(void)
 void EVENT_USB_Device_Disconnect(void)
 {
     LedClear();
+
 #if defined(SPI_ENABLED) && (TAMER_VER < 200)
-    SPCR |= (1<<SPE); xxx
+    /* Enable SPI */
+    SPCR |= (1<<SPE);
 #endif
 }
 
 
+/* In ClockTamer 2.0 control via SPI is disabled */
+#if defined(SPI_ENABLED) && (TAMER_VER < 200)
+
+ISR(SPI_STC_vect, ISR_BLOCK)
+{
+//	if (USB_DeviceState != DEVICE_STATE_Configured) {
+        uint8_t byte = SPDR;
+        if (byte == 0xFF && USARTtoUSB_Buffer.Elements) {
+            SPDR = *(USARTtoUSB_Buffer.OutPtr++);
+
+            USARTtoUSB_Buffer.Elements--;
+            //USARTtoUSB_Buffer.OutPtr++;
+            if (USARTtoUSB_Buffer.OutPtr == &USARTtoUSB_Buffer.Buffer[BUFF_LENGTH])
+                USARTtoUSB_Buffer.OutPtr = (RingBuff_Data_t*)&USARTtoUSB_Buffer.Buffer;
+
+        } else {
+            SPDR = 0xff;
+        }
+
+        if (byte == '\n' || byte == '\r') {
+            commands++;
+        }
+
+        if ((byte != 0) && (byte != 0xff)) {
+            //Buffer_StoreElement(&USBtoUSART_Buffer, byte);
+            USBtoUSART_Buffer.Elements++;
+
+            *(USBtoUSART_Buffer.InPtr++) = byte;
+            //USBtoUSART_Buffer.InPtr++;
+
+            if (USBtoUSART_Buffer.InPtr == &USBtoUSART_Buffer.Buffer[BUFF_LENGTH])
+                USBtoUSART_Buffer.InPtr = (RingBuff_Data_t*)&USBtoUSART_Buffer.Buffer;
+        }
+//	} else {
+//		SPDR = 0xff;
+//	}
+
+}
+
+#endif
 

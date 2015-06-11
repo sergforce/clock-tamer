@@ -70,117 +70,6 @@
 void SetLMK(void);
 uint8_t SetLMX2531(uint8_t tuneOnly);
 
-extern TamerCommand_t command;
-
-
-extern RingBuff_t USARTtoUSB_Buffer;
-
-const uint8_t newLine[] PROGMEM = "\r\n";
-
-
-void FillResultNoNewLinePM(const uint8_t* res);
-
-void FillResultPM(const uint8_t* res)
-{
-    FillResultNoNewLinePM(res);
-    FillResultNoNewLinePM(newLine);
-}
-
-static void Store(uint8_t byte)
-{
-    // May be completly useless, need  ATOMIC_BLOCK(ATOMIC_FORCEON)
-	cli();
-	Buffer_StoreElement(&USARTtoUSB_Buffer, byte);
-	sei();
-}
-
-void FillResultNoNewLinePM(const uint8_t *res)
-{
-    uint8_t byte;
-    while ((byte = pgm_read_byte(res++)))
-    {
-        Store(byte);
-    }
-}
-
-static void FillHead(const uint8_t* res, uint8_t idx)
-{
-    uint8_t byte;
-    uint8_t i;
-
-    if (idx > 0xf0)
-    {
-        Store('?');
-    }
-    else
-    {
-        res = res + 3*idx;
-        for (i = 0; i < 3; i++)
-        {
-            byte = pgm_read_byte(res++);
-            Store(byte);
-        }
-    }
-}
-
-extern uint8_t pCmd[];
-extern uint8_t pTrg[];
-extern uint8_t pDet[];
-
-static void FillCmd(void)
-{
-    if (command.cmd > 0)
-        FillHead(pCmd, command.cmd - 1);
-    Store(',');
-    if (command.type > 0)
-        FillHead(pTrg, command.type - 1);
-    Store(',');
-    if (command.details > 0)
-        FillHead(pDet, command.details - 1);
-    Store(',');
-}
-
-static void FillUint32(uint32_t val)
-{
-    uint32_t stv = 1000000000;
-    uint8_t f = 0;
-
-    for (;stv > 0; stv/=10)
-    {
-        uint8_t v = val / stv;
-       // if ((f) || (v > 0))
-        {
-            f = 1;
-            Store('0' + v);
-        }
-        val -= v*stv;
-    }
-    if (f == 0)
-        Store('0');
-}
-
-#ifdef FILL_UINT16
-static void FillUint16(uint16_t val)
-{
-    uint16_t stv = 10000;
-    uint8_t f = 0;
-
-    for (;stv > 0; stv/=10)
-    {
-        uint8_t v = val / stv;
-        //if ((f) || (v > 0))
-        {
-            f = 1;
-            Store('0' + v);
-        }
-        val -= v*stv;
-    }
-    if (f == 0)
-        Store('0');
-}
-#else
-#define FillUint16(x)   FillUint32(x)
-#endif
 
 
 const uint8_t resOk[] PROGMEM = "OK";
@@ -396,7 +285,7 @@ static void LoadHwInfo(void)
             break;
         Store(c);
     }
-	FillResultNoNewLinePM(newLine);
+    FillNewLine();
 }
 
 
@@ -720,7 +609,7 @@ static uint8_t SelfTestFull(void)
 
     FillResultNoNewLinePM(stPragma);
     FillUint16(failed);
-    FillResultNoNewLinePM(newLine);
+    FillNewLine();
 
     return failed;
 }
@@ -772,51 +661,7 @@ void TrimClock(void)
 
 #endif
 
-extern uint8_t gpsmode;
-extern uint8_t commands;
-extern RingBuff_t USBtoUSART_Buffer;
-//extern RingBuff_t USARTtoUSB_Buffer;
 
-ISR(SPI_STC_vect, ISR_BLOCK)
-{
-//	if (USB_DeviceState != DEVICE_STATE_Configured)
-//	{
-	   	uint8_t byte = SPDR;		
-        if (byte == 0xFF && USARTtoUSB_Buffer.Elements) {
-			SPDR = *(USARTtoUSB_Buffer.OutPtr++);
-			
-			USARTtoUSB_Buffer.Elements--;
-			//USARTtoUSB_Buffer.OutPtr++;
-			if (USARTtoUSB_Buffer.OutPtr == &USARTtoUSB_Buffer.Buffer[BUFF_LENGTH])
-				USARTtoUSB_Buffer.OutPtr = (RingBuff_Data_t*)&USARTtoUSB_Buffer.Buffer;			
-			
-		} else {
-			SPDR = 0xff;
-		}
-		
-  	  	if (byte == '\n' || byte == '\r') {
-   		 	commands++;
-		}
-
-		if ((byte != 0) && (byte != 0xff)) {
-            //Buffer_StoreElement(&USBtoUSART_Buffer, byte);
-			USBtoUSART_Buffer.Elements++;
-
-			*(USBtoUSART_Buffer.InPtr++) = byte;
-			//USBtoUSART_Buffer.InPtr++;
-		
-			if (USBtoUSART_Buffer.InPtr == &USBtoUSART_Buffer.Buffer[BUFF_LENGTH])
-                USBtoUSART_Buffer.InPtr = (RingBuff_Data_t*)&USBtoUSART_Buffer.Buffer;
-		}
-			
-
-//	}
-//	else
-//	{
-//		SPDR = 0xff;
-//	}
-	
-}
 
 void TamerControlAux(void)
 {
@@ -1386,7 +1231,7 @@ uint8_t ProcessCommand(void)
                     switch (command.details)
                     {
                     case detSYN:
-                        FillCmd();  FillUint16(SelfTestLockPin());      FillResultNoNewLinePM(newLine); return 1;
+                        FillCmd();  FillUint16(SelfTestLockPin());      FillNewLine(); return 1;
                     case detAUTO:
                         SelfTestFull(); return 1;
                     default:
@@ -1419,7 +1264,7 @@ uint8_t ProcessCommand(void)
                 {
                     if (command.details == detEN)
                     {
-                        FillCmd();  FillUint16(EnableOscillator); FillResultNoNewLinePM(newLine); return 1;
+                        FillCmd();  FillUint16(EnableOscillator); FillNewLine(); return 1;
                     }
                     return 0;
                 }
@@ -1429,15 +1274,15 @@ uint8_t ProcessCommand(void)
                 {
                     switch (command.details)
                     {
-                        case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillResultNoNewLinePM(newLine); break;
-                        case detKBIT:     FillCmd();  FillUint16(PPS_skipped);      FillResultNoNewLinePM(newLine); break;
-                        case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillResultNoNewLinePM(newLine); break;
-                        case detR01:      FillCmd();  FillUint16(Count1PPS);        FillResultNoNewLinePM(newLine); break;
-                        case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillResultNoNewLinePM(newLine); break;
-                        case detR03:      FillCmd();  FillUint32(FilteredVal);      FillResultNoNewLinePM(newLine); break;
-                        case detMAX:      FillCmd();  FillUint32(ddd);              FillResultNoNewLinePM(newLine); break;
-                        case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillResultNoNewLinePM(newLine); break;
-                        case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillResultNoNewLinePM(newLine); break;
+                        case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillNewLine(); break;
+                        case detKBIT:     FillCmd();  FillUint16(PPS_skipped);      FillNewLine(); break;
+                        case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillNewLine(); break;
+                        case detR01:      FillCmd();  FillUint16(Count1PPS);        FillNewLine(); break;
+                        case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillNewLine(); break;
+                        case detR03:      FillCmd();  FillUint32(FilteredVal);      FillNewLine(); break;
+                        case detMAX:      FillCmd();  FillUint32(ddd);              FillNewLine(); break;
+                        case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillNewLine(); break;
+                        case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillNewLine(); break;
                         default: return 0;
                     }
 
@@ -1448,9 +1293,9 @@ uint8_t ProcessCommand(void)
                 {
                     switch (command.details)
                     {
-                        case detOUT:   FillCmd();  FillUint32(Fout);      FillResultNoNewLinePM(newLine); break;
-                        case detOSC:   FillCmd();  FillUint32(Fosc);      FillResultNoNewLinePM(newLine); break;
-                        case detAUTO:  FillCmd();  FillUint16(AutoFreq);  FillResultNoNewLinePM(newLine); break;
+                        case detOUT:   FillCmd();  FillUint32(Fout);      FillNewLine(); break;
+                        case detOSC:   FillCmd();  FillUint32(Fosc);      FillNewLine(); break;
+                        case detAUTO:  FillCmd();  FillUint16(AutoFreq);  FillNewLine(); break;
                         default: return 0;
                     }
                     return 1;
@@ -1460,18 +1305,18 @@ uint8_t ProcessCommand(void)
                 {
                     switch (command.details)
                     {
-                        case detMIN:   FillCmd();  FillUint16(VCO_MIN);   FillResultNoNewLinePM(newLine); break;
-                        case detMAX:   FillCmd();  FillUint16(VCO_MAX);   FillResultNoNewLinePM(newLine); break;
-                        case detKBIT:  FillCmd();  FillUint16(VCO_Kbit);  FillResultNoNewLinePM(newLine); break;
+                        case detMIN:   FillCmd();  FillUint16(VCO_MIN);   FillNewLine(); break;
+                        case detMAX:   FillCmd();  FillUint16(VCO_MAX);   FillNewLine(); break;
+                        case detKBIT:  FillCmd();  FillUint16(VCO_Kbit);  FillNewLine(); break;
 #ifdef DEBUG_REGS
-                        case detR00:   FillCmd();  FillUint32(tmp_r0);      FillResultNoNewLinePM(newLine); break;
-                        case detR01:   FillCmd();  FillUint32(tmp_r1);      FillResultNoNewLinePM(newLine); break;
-                        case detR02:   FillCmd();  FillUint32(tmp_r2);      FillResultNoNewLinePM(newLine); break;
-                        case detR03:   FillCmd();  FillUint32(tmp_r3);      FillResultNoNewLinePM(newLine); break;
-                        case detEN:    FillCmd();  FillUint32(tmp_lmk);     FillResultNoNewLinePM(newLine); break;
+                        case detR00:   FillCmd();  FillUint32(tmp_r0);      FillNewLine(); break;
+                        case detR01:   FillCmd();  FillUint32(tmp_r1);      FillNewLine(); break;
+                        case detR02:   FillCmd();  FillUint32(tmp_r2);      FillNewLine(); break;
+                        case detR03:   FillCmd();  FillUint32(tmp_r3);      FillNewLine(); break;
+                        case detEN:    FillCmd();  FillUint32(tmp_lmk);     FillNewLine(); break;
 #endif
 #ifdef SELF_TESTING
-                        case detLCK:   FillCmd();  FillUint32(IsVcoLocked() ? 1 : 0);     FillResultNoNewLinePM(newLine); break;
+                        case detLCK:   FillCmd();  FillUint32(IsVcoLocked() ? 1 : 0);     FillNewLine(); break;
 #endif //SELF_TESTING
                         default: return 0;
                     }
@@ -1482,27 +1327,27 @@ uint8_t ProcessCommand(void)
                 {
                     switch (command.details)
                     {
-                        case detPORTS:    FillCmd();  FillUint16(LMK_OutMask);  FillResultNoNewLinePM(newLine); break;
-                        case detDIVIDERS: FillCmd();  FillUint16(LMK_devider);  FillResultNoNewLinePM(newLine); break;
+                        case detPORTS:    FillCmd();  FillUint16(LMK_OutMask);  FillNewLine(); break;
+                        case detDIVIDERS: FillCmd();  FillUint16(LMK_devider);  FillNewLine(); break;
                         default: return 0;
                     }
                     return 1;
                 }
 
 #ifdef PRESENT_DAC12
-                case trgDAC:  FillCmd();  FillUint16(DacValue);  FillResultNoNewLinePM(newLine); return 1;
+                case trgDAC:  FillCmd();  FillUint16(DacValue);  FillNewLine(); return 1;
 #endif
 #ifdef SELF_TESTING
                 case trgSTS:
                 {
                     switch (command.details)
                     {
-                        case detMAX: FillCmd();   FillUint32(SelfMax);  FillResultNoNewLinePM(newLine); break;
-                        case detMIN: FillCmd();   FillUint32(SelfMin);  FillResultNoNewLinePM(newLine); break;
-                        case detR01: { int32_t tmp; cli(); tmp = SelfMax - SelfMin; sei(); FillCmd(); FillUint32(tmp);  FillResultNoNewLinePM(newLine); break; }
+                        case detMAX: FillCmd();   FillUint32(SelfMax);  FillNewLine(); break;
+                        case detMIN: FillCmd();   FillUint32(SelfMin);  FillNewLine(); break;
+                        case detR01: { int32_t tmp; cli(); tmp = SelfMax - SelfMin; sei(); FillCmd(); FillUint32(tmp);  FillNewLine(); break; }
 
-                        case detR02: FillCmd(); FillUint32(SelfToOutputFreq(SelfMax));  FillResultNoNewLinePM(newLine); break;
-                        case detR03: FillCmd(); FillUint32(SelfToOutputFreq(SelfMin));  FillResultNoNewLinePM(newLine); break;
+                        case detR02: FillCmd(); FillUint32(SelfToOutputFreq(SelfMax));  FillNewLine(); break;
+                        case detR03: FillCmd(); FillUint32(SelfToOutputFreq(SelfMin));  FillNewLine(); break;
 
                         default: return 0;
                     }

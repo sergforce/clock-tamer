@@ -123,3 +123,5 @@ C:/tools/clock-tamer/board/LUFA-OLD/Projects/Webserver/Lib/FATFs
 C:/tools/clock-tamer/board/LUFA-OLD/Projects/Webserver/Lib/uip
 C:/tools/clock-tamer/board/LUFA-OLD/Projects/XPLAINBridge
 C:/tools/clock-tamer/board/LUFA-OLD/Projects/XPLAINBridge/Lib
+src
+include

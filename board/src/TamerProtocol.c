@@ -32,9 +32,6 @@
 #endif
 #include "TamerProtocol.h"
 
-
-//#define NO_HEXVALUES
-
 #ifdef _SELF_TEST_
 
 #define PROGMEM
@@ -49,62 +46,69 @@ extern RingBuff_t USBtoUSART_Buffer;
 
 #endif
 
+/* Static variables */
+TamerCommand_t command;
 
+/* Constants */
 #define WORD_SIZE       3
 
-const uint8_t pCmd[]  PROGMEM  = "REG"
-                                 "PIN"
-                                 "SET"
-                                 "SAV"
-                                 "DEF"
-                                 "INF"
-                                 "VER"
-                                 "HWI"
-                                 "RST"
-                                 "LDE"
-                                 "STE"
-                                 "%%%";
+const uint8_t newLine[] PROGMEM = "\r\n";
+
+static const uint8_t pCmd[]  PROGMEM  =
+        "REG"
+        "PIN"
+        "SET"
+        "SAV"
+        "DEF"
+        "INF"
+        "VER"
+        "HWI"
+        "RST"
+        "LDE"
+        "STE"
+        "%%%";
 #define CMD_COUNT    (sizeof(pCmd)  / WORD_SIZE)
 
-const uint8_t pTrg[]  PROGMEM  = "LMK"
-                                 "LMX"
-                                 "DAC"
-                                 "LED"
-                                 "VCO"
-                                 "GPS"
-                                 "IOS"
-                                 "STS"
-                                 "ADF"
-                                 "JTG"
-                                 "PLD";
-
+static const uint8_t pTrg[]  PROGMEM  =
+        "LMK"
+        "LMX"
+        "DAC"
+        "LED"
+        "VCO"
+        "GPS"
+        "IOS"
+        "STS"
+        "ADF"
+        "JTG"
+        "PLD";
 #define TRG_COUNT    (sizeof(pTrg)  / WORD_SIZE)
 
-const uint8_t pDet[]  PROGMEM  = "ENB"
-                                 "GOE"
-                                 "SYN"
-                                 "OSC"
-                                 "OUT"
-                                 "PRT"
-                                 "MIN"
-                                 "MAX"
-                                 "KBT"
-                                 "DIV"
-                                 "AUT"
-                                 "D12"
-                                 "R00"
-                                 "R01"
-                                 "R02"
-                                 "R03"
-                                 "LCK"
-                                 "RST"
-                                 "RUN"
-                                 "SDR"
-                                 "SIR";
+static const uint8_t pDet[]  PROGMEM  =
+        "ENB"
+        "GOE"
+        "SYN"
+        "OSC"
+        "OUT"
+        "PRT"
+        "MIN"
+        "MAX"
+        "KBT"
+        "DIV"
+        "AUT"
+        "D12"
+        "R00"
+        "R01"
+        "R02"
+        "R03"
+        "LCK"
+        "RST"
+        "RUN"
+        "SDR"
+        "SIR";
 #define DET_COUNT    (sizeof(pDet)  / WORD_SIZE)
 
 
-TamerCommand_t command;
+
 
 static inline uint8_t ParseParam(uint8_t w1, uint8_t w2, uint8_t w3, const uint8_t* table)
 {
@@ -146,7 +150,7 @@ static uint8_t ParseValue(uint8_t w1)
 }
 #endif
 
-uint8_t IsCommandSeparator(uint8_t byte)
+static uint8_t IsCommandSeparator(uint8_t byte)
 {
 	if (byte == 0 || byte == '\r' || byte == '\n')
     	return 1;
@@ -257,6 +261,122 @@ uint8_t ParseCommand(void)
     return 0;
 }
 
+static void FillResultNoNewLinePM(const uint8_t *res)
+{
+    uint8_t byte;
+    while ((byte = pgm_read_byte(res++)))
+    {
+        Store(byte);
+    }
+}
+
+void FillNewLine(void)
+{
+    FillResultNoNewLinePM(newLine);
+}
+
+void FillResultPM(const uint8_t* res)
+{
+    FillResultNoNewLinePM(res);
+    FillResultNoNewLinePM(newLine);
+}
+
+static void FillHead(const uint8_t* res, uint8_t idx)
+{
+    uint8_t byte;
+    uint8_t i;
+
+    if (idx > 0xf0)
+    {
+        Store('?');
+    }
+    else
+    {
+        res = res + 3*idx;
+        for (i = 0; i < 3; i++)
+        {
+            byte = pgm_read_byte(res++);
+            Store(byte);
+        }
+    }
+}
+
+void FillCmd(void)
+{
+    if (command.cmd > 0)
+        FillHead(pCmd, command.cmd - 1);
+    Store(',');
+    if (command.type > 0)
+        FillHead(pTrg, command.type - 1);
+    Store(',');
+    if (command.details > 0)
+        FillHead(pDet, command.details - 1);
+    Store(',');
+}
+
+void FillUint32(uint32_t val)
+{
+    uint32_t stv = 1000000000;
+    uint8_t f = 0;
+
+    for (;stv > 0; stv/=10)
+    {
+        uint8_t v = val / stv;
+        // if ((f) || (v > 0))
+        {
+            f = 1;
+            Store('0' + v);
+        }
+        val -= v*stv;
+    }
+    if (f == 0)
+        Store('0');
+}
+
+static void FillCharHex(uint8_t c)
+{
+    if (c < 10)
+        Store('0' + c);
+    else
+        Store('A' + c - 10);
+}
+
+#ifdef USE_HEX_OUTPUT
+void FillUint8Hex(uint8_t val)
+{
+    FillCharHex(val >> 4);
+    FillCharHex(val & 0xf);
+}
+
+void FillUint16Hex(uint16_t val)
+{
+    union {
+        uint16_t v;
+        uint8_t d[2];
+    } m;
+
+    m.v = val;
+
+    FillUint8Hex(m.d[1]);
+    FillUint8Hex(m.d[0]);
+}
+
+void FillUint32Hex(uint32_t val)
+{
+    union {
+        uint32_t v;
+        uint8_t d[4];
+    } m;
+
+    m.v = val;
+
+    FillUint8Hex(m.d[3]);
+    FillUint8Hex(m.d[2]);
+    FillUint8Hex(m.d[1]);
+    FillUint8Hex(m.d[0]);
+}
+
+#endif
 
 
 #ifdef _SELF_TEST_

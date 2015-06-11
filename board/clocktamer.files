@@ -136,3 +136,9 @@ src/TamerProtocol.c
 test/lmx2531regtest.c
 makefile
 DFUConfig/LUFAConfig.h
+src/TamerBoard2.c
+src/TamerControl2.c
+include/adf4355.h
+include/TamerBoard2.h
+include/uint64_ops.h
+src/TamerCommon.c
