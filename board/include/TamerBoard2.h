@@ -121,6 +121,8 @@ uint32_t JTAGSDR(uint32_t in, uint8_t num_bits);
 uint32_t JTAGSIR(uint32_t in, uint8_t num_bits);
 void JTAGRunTest(uint32_t clks);
 
+// FIXME
+#define IsVcoLocked()       (PINC & (1<<PC5))
 
 
 #endif //_TAMER_BOARD_H_

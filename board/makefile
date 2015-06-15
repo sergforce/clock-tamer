@@ -196,8 +196,8 @@ SRC = src/Tamer.c                                                 \
 ifeq ($(TAMER_VER), 200)
 SRC += \
 	  src/TamerBoard2.c                                            \
-	  src/TamerControl2.c                                          \
 	  src/TamerJTAG.c                                              \
+          src/TamerCommon.c                                            \
 
 else
 SRC += \

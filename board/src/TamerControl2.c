@@ -42,8 +42,7 @@
 #define DEBUG_REGS
 
 
-const uint8_t resBadRange[] PROGMEM = "Bad tuning range";
-const uint8_t resOk[] PROGMEM = "OK";
+
 
 
 #if TAMER_VER == 200
@@ -95,10 +94,6 @@ uint32_t SelfPrev = 0;
 
 #define FOLD_VALUE  FOLD_DIGITAL_LOCK
 
-static inline uint8_t IsVcoLocked(void)
-{
-    return (PINC & (1<<PC5));
-}
 #else //SELF_TESTING
 #define FOLD_VALUE FOLD_DISABLED
 #endif
@@ -206,31 +201,6 @@ static void StoreEEPROM(void)
 
 }
 
-static void LoadHwInfo(void)
-{
-    uint16_t i;
-    for (i=0; i<HWI_LEN; i++)
-    {
-        uint8_t c = eeprom_read_byte((uint8_t*)&eeHWInfo[i]);
-        if (c == 0)
-            break;
-        Store(c);
-    }
-    FillNewLine();
-}
-
-
-static uint8_t SetDac(uint16_t value)
-{
-    if (value < 0x1000)
-    {
-        DAC12_WRITE(value);
-        return 1;
-    }
-
-    return 0;
-}
-
 void AutoStartControl(void)
 {
     DacSyncInit();
@@ -246,7 +216,7 @@ void AutoStartControl(void)
         LoadEEPROM();
 
 #ifdef PRESENT_DAC12
-        SetDac(DacValue);
+        DAC12_WRITE(DacValue);
 #endif
 
         int8_t i;
@@ -291,329 +261,133 @@ void AutoStartControl(void)
 
 uint8_t SetOutFreq(void)
 {
-
-
     return 0;
 }
 
-#if (TAMER_VER >= 122) && defined (PRESENT_GPS)
-extern uint8_t gpsmode;
-#endif
 
-uint8_t ProcessCommand(void)
+
+// Specific command handling
+
+static uint8_t OnCmdLDE(void)
 {
-    switch(command.cmd)
+    switch (command.type)
     {
-        case cmdIDLE:
-            return 1;
-
-#if (TAMER_VER >= 122) && defined (PRESENT_GPS)
-        case cmdGPSMODE:
-    	    gpsmode = gpsmode ^ 1;
-    	    return 1;
-#endif
-
-#ifndef NO_CMDREG
-        case cmdREGISTER:
-        {
-            switch (command.type)
-            {
-                case trgDAC:
-                    switch (command.details)
-                    {
-                        case detD12:
-                            write_reg_DAC12(command.data[1], command.data[0]);
-                            FillResultPM(resOk);
-                            return 1;
-                        default:
-                            return 0;
-                    }
-                case trgADF:
-                    write_reg_ADF4355(command.data[3],
-                                      command.data[2],
-                                      command.data[1],
-                                      command.data[0]);
-                    FillResultPM(resOk);
-                    return 1;
-                    break;
-                case trgJTG:
-                    switch (command.details) 
-                    {
-                    case detR00: 
-                        JTAGReset();
-                        JTAGSIR(0x2CCUL, 10);
-                        JTAGRunTest(1003);
-                        JTAGSIR(0x203UL, 10);
-                        JTAGRunTest(8);
-                        JTAGSDR(0x0089UL, 13);
-                        JTAGSIR(0x205UL, 10);
-                        JTAGRunTest(8);
-                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
-                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
-                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
-                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
-                        FillUint16Hex(JTAGSDR(0xffffUL, 16));
-                        FillNewLine();
-                        return 1;
-                    case detRST: JTAGReset(); FillResultPM(resOk); return 1;
-                    case detRUN: JTAGRunTest(command.u32data); FillResultPM(resOk); return 1;
-                    case detSDR: FillCmd();  FillUint32(JTAGSDR((uint32_t)command.u16data[0], command.data[3]));      FillNewLine(); return 1;
-                    case detSIR: FillCmd();  FillUint32(JTAGSIR((uint32_t)command.u16data[0], command.data[3]));      FillNewLine(); return 1;
-                    default:
-                        return 0;
-                    }
-                    break;
-                case trgPLD:
-                    FillCmd();
-                    FillUint32(write_reg_CPLD(command.u32data));
-                    FillNewLine();
-                    return 1;
-                default:
-                    return 0;
-            }
-            break;
-        }
-#endif
-#ifndef NO_CMDPIN
-        case cmdPIN:
-        {
-            switch (command.type)
-            {
-                case trgLED:
-                {
-                    if (command.data[0])
-                        LedSet();
-                    else
-                        LedClear();
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-                case trgADF:
-                {
-                    if (command.details == detDIVIDERS) {
-                        if (command.data[0])
-                            SyntSelSet();
-                        else
-                            SyntSelClear();
-
-                        FillResultPM(resOk);
-                        return 1;
-                    }
-                    return 0;
-                }
-                default:
-                    return 0;
-            }
-            return 0;
-        }
-#endif
-        case cmdSET:
-        {
-            switch (command.type)
-            {
-                case trgNONE:
-                {
-                    switch (command.details)
-                    {
-                        case trgNONE:
-                            break;
-                        case detOUT:
-                            Fout = command.u32data;
-                            break;
-                        default:
-                            return 0;
-                    }
-
-                    uint8_t r = SetOutFreq();
-                    if (r) {
-                        FillResultPM(resOk);
-                    } else {
-                        FillResultPM(resBadRange);
-                    }
-                    return 1;
-                }
-#if TAMER_VER >= 12 && TAMER_VER < 200
-                case trgIOS:
-                {
-                    if (command.details == detEN)
-                    {
-                        if (command.data[0])
-                            EnableOscillator = 1;
-                        else
-                            EnableOscillator = 0;
-
-                        SetOscillator();
-                        FillResultPM(resOk);
-                        return 1;
-                    }
-                    return 0;
-                }
-#endif
-#ifdef PRESENT_DAC12
-                case trgDAC:
-                    switch (command.details)
-                    {
-                        case detNONE:
-                            break;
-
-                        case detD12:
-                            DacValue = command.u16data[0];
-                            break;
-
-                        default:
-                            return 0;
-                    }
-
-                    if (SetDac(DacValue))
-                        FillResultPM(resOk);
-                    else
-                        FillResultPM(resBadRange);
-                    return 1;
-#endif
-#ifdef PRESENT_GPS
-                case trgGPS:
-                {
-                    switch (command.details)
-                    {
-#if TAMER_VER < 200
-                        case detSYN:    UpdateOSCValue(); break;
-#endif
-                        case detAUTO:   AutoUpdateGps = command.data[0]; break;
-                        default:
-                            return 0;
-                    }
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-#endif
-#if defined(SELF_TESTING) && TAMER_VER < 200
-                case trgSTS:
-                {
-                    switch (command.details)
-                    {
-                    case detSYN:
-                        FillCmd();
-                        FillUint16(SelfTestLockPin());
-                        FillNewLine();
-                        return 1;
-                    case detAUTO:
-                        SelfTestFull();
-                        return 1;
-                    default:
-                        if (command.data[0] == 0)
-                            SelfTestStop();
-                        else if (command.data[0] < 128)
-                            SelfTestStart(command.data[0]);
-                        else {
-                            FillResultPM(resBadRange);
-                            return 1;
-                        }
-                    }
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-#endif
-                default:
-                    return 0;
-            }
-            return 0;
-        }
-#ifndef NO_CMDINFO
-        case cmdINFO:
-        {
-            switch (command.type)
-            {
-#if TAMER_VER >= 12 && TAMER_VER < 200
-                case trgIOS:
-                {
-                    if (command.details == detEN)
-                    {
-                        FillCmd();  FillUint16(EnableOscillator); FillNewLine(); return 1;
-                    }
-                    return 0;
-                }
-#endif
-                case trgNONE:
-                {
-                    switch (command.details)
-                    {
-                        case detOUT:   FillCmd();  FillUint32(Fout);      FillNewLine(); break;
-                        case detOSC:   FillCmd();  FillUint32(Fosc);      FillNewLine(); break;
-                        case detAUTO:  FillCmd();  FillUint16(AutoFreq);  FillNewLine(); break;
-                        default: return 0;
-                    }
-                    return 1;
-                }
-
-#ifdef PRESENT_DAC12
-                case trgDAC:  FillCmd();  FillUint16(DacValue);  FillNewLine(); return 1;
-#endif
-                case trgADF:
-                {
-                    switch (command.details)
-                    {
-                        case detLCK: FillCmd();  FillUint16(IsVcoLocked()); FillNewLine(); break;
-                        default: return 0;
-                    }
-                    return 1;
-                }
-                default:
-                  return 0;
-            }
-
-            return 0;
-        }
-#endif
-        case cmdRESET:
-        {
-            FillResultPM(resOk);
-            return 1;
-        }
-
-#ifndef NO_HWINFO
-        case cmdHWINFO:
-            LoadHwInfo();
-            return 1;
-#endif
-
-#ifndef NO_VERSION
-        case cmdVERSION:
-            FillResultPM(resVersion);
-            return 1;
-#endif
-
-#ifndef NO_CMDEELOAD
-        case cmdLOAD_EEPROM:
-            switch (command.type)
-            {
-            case trgADF:
-                FillCmd(); FillUint32(LoadEEPROM_adf4355_reg(command.data[0])); FillNewLine(); return 1;
-            default:
-                LoadEEPROM();
-                FillResultPM(resOk);
-            }
-            return 1;
-#endif
-
-        case cmdSTORE_EEPROM:
-            switch (command.type)
-            {
-            case trgADF:
-                StoreEEPROM_adf4355_reg(command.u32data);
-                break;
-            default:
-                StoreEEPROM();
-            }
-
-            FillResultPM(resOk);
-            return 1;
-
-        default:
-            return 0;
-
+    case trgADF:
+        FillCmd(); FillUint32(LoadEEPROM_adf4355_reg(command.data[0])); FillNewLine(); return 1;
+    default:
+        LoadEEPROM();
+        FillResultPM(resOk);
     }
-	return 0;
+    return 1;
 }
+
+static uint8_t OnCmdSTE(void)
+{
+    switch (command.type)
+    {
+    case trgADF:
+        StoreEEPROM_adf4355_reg(command.u32data);
+        break;
+    default:
+        StoreEEPROM();
+    }
+
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdREG_JTG(void)
+{
+    switch (command.details)
+    {
+    case detR00:
+        JTAGReset();
+        JTAGSIR(0x2CCUL, 10);
+        JTAGRunTest(1003);
+        JTAGSIR(0x203UL, 10);
+        JTAGRunTest(8);
+        JTAGSDR(0x0089UL, 13);
+        JTAGSIR(0x205UL, 10);
+        JTAGRunTest(8);
+        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+        FillUint16Hex(JTAGSDR(0xffffUL, 16));
+        FillNewLine();
+        return 1;
+    case detRST: JTAGReset(); FillResultPM(resOk); return 1;
+    case detRUN: JTAGRunTest(command.u32data); FillResultPM(resOk); return 1;
+    case detSDR: FillCmd();  FillUint32(JTAGSDR((uint32_t)command.u16data[0], command.data[3]));      FillNewLine(); return 1;
+    case detSIR: FillCmd();  FillUint32(JTAGSIR((uint32_t)command.u16data[0], command.data[3]));      FillNewLine(); return 1;
+    default:
+        return 0;
+    }
+}
+
+static uint8_t OnCmdREG_ADF(void)
+{
+    write_reg_ADF4355(command.data[3],
+            command.data[2],
+            command.data[1],
+            command.data[0]);
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdREG_PLD(void)
+{
+    FillCmd();
+    FillUint32(write_reg_CPLD(command.u32data));
+    FillNewLine();
+    return 1;
+}
+
+static uint8_t OnCmdPIN_ADF(void)
+{
+    if (command.details == detDIVIDERS) {
+        if (command.data[0])
+            SyntSelSet();
+        else
+            SyntSelClear();
+
+        FillResultPM(resOk);
+        return 1;
+    }
+    return 0;
+}
+
+static uint8_t OnCmdSET_NONE(void)
+{
+    switch (command.details)
+    {
+    case trgNONE:
+        break;
+    case detOUT:
+        Fout = command.u32data;
+        break;
+    default:
+        return 0;
+    }
+
+    uint8_t r = SetOutFreq();
+    if (r) {
+        FillResultPM(resOk);
+    } else {
+        FillResultPM(resBadRange);
+    }
+    return 1;
+}
+
+// Unsupported functions in V2.x
+#define OnCmdREG_LMK()      0
+#define OnCmdREG_LMX()      0
+#define OnCmdPIN_LMK()      0
+#define OnCmdPIN_LMX()      0
+
+#define OnCmdSET_IOS()      0
+#define OnCmdSET_VCO()      0
+#define OnCmdSET_LMK()      0
+
+#define OnCmdSET_GPS()      0
+#define OnCmdSET_STS()      0

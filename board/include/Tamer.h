@@ -54,6 +54,9 @@
 #include <LUFA/Drivers/USB/USB.h>
 
 
+uint8_t OnCmdGPS(void);
+
+uint8_t ProcessCommand(void);
 
 void SetupHardware(void);
 

@@ -71,9 +71,6 @@ void SetLMK(void);
 uint8_t SetLMX2531(uint8_t tuneOnly);
 
 
-
-const uint8_t resOk[] PROGMEM = "OK";
-
 #ifndef NO_VERSION
 #if TAMER_VER == 200
 const uint8_t resVersion[] PROGMEM = "ClockTamer2(UmCLK) SW=2.0 API=2";
@@ -95,10 +92,6 @@ const uint8_t resVersion[] PROGMEM = "ClockTamer SW=1.0 API=1";
 const uint8_t resVersion[] PROGMEM = "ClockTamer SW=[unknown] API=1";
 #endif
 #endif
-
-const uint8_t resBadRange[] PROGMEM = "Bad tuning range";
-
-
 
 //#define NOVARS
 
@@ -174,10 +167,6 @@ uint32_t SelfPrev = 0;
 
 #define FOLD_VALUE  FOLD_DIGITAL_LOCK
 
-static inline uint8_t IsVcoLocked(void)
-{
-    return (PINC & (1<<PC5));
-}
 #else //SELF_TESTING
 #define FOLD_VALUE FOLD_DISABLED
 #endif
@@ -274,21 +263,6 @@ static void StoreEEPROM(void)
 #endif
 
 }
-
-static void LoadHwInfo(void)
-{
-    uint16_t i;
-    for (i=0; i<HWI_LEN; i++)
-    {
-        uint8_t c = eeprom_read_byte((uint8_t*)&eeHWInfo[i]);
-        if (c == 0)
-            break;
-        Store(c);
-    }
-    FillNewLine();
-}
-
-
 
 #ifdef PRESENT_GPS
 
@@ -617,7 +591,7 @@ static uint8_t SelfTestFull(void)
 #endif
 
 
-void UpdateOSCValue(void)
+static void UpdateOSCValue(void)
 {
     int32_t delta = (int)(FilteredVal/FILTER_EXP_ALPHA) - (int)Fout ;
 
@@ -635,7 +609,7 @@ void UpdateOSCValue(void)
     }
 }
 
-void TrimClock(void)
+static void TrimClock(void)
 {
     //TODO Add atomic read for CounterHHValue
 
@@ -671,7 +645,7 @@ void TamerControlAux(void)
 #endif
 }
 
-void InitLMX2531(void)
+static void InitLMX2531(void)
 {
     // Enable LMX2531
     LmxCeSet();
@@ -693,7 +667,7 @@ void InitLMX2531(void)
 #endif
 }
 
-void InitLMK(void)
+static void InitLMK(void)
 {
     // Enable LMK01000
     LmkGoeSet();
@@ -739,7 +713,7 @@ inline static void SetLMX2531_R1_R0(uint32_t num, uint16_t n)
 }
 
 
-uint8_t SetLMX2531(uint8_t tuneOnly)
+static uint8_t SetLMX2531(uint8_t tuneOnly)
 {
     uint32_t num;
 
@@ -884,7 +858,7 @@ uint8_t SetLMX2531(uint8_t tuneOnly)
 }
 
 
-void SetLMK(void)
+static void SetLMK(void)
 {
    uint8_t j = 1;
    for (uint8_t i = 0; i < 8; i++, j<<=1)
@@ -920,7 +894,7 @@ void SetLMK(void)
 #define DDR_OSC     DDRD
 #define PORT_OSC    PORTD
 
-void SetOscillatorMode(uint8_t mode)
+static void SetOscillatorMode(uint8_t mode)
 {
     DDR_OSC |= (1 << ENABLE_OSC);
 
@@ -981,314 +955,231 @@ void AutoStartControl(void)
 
 }
 
-#ifdef PRESENT_DAC12
-uint8_t SetDac(uint16_t value)
+static uint8_t OnCmdREG_LMK(void)
 {
-    if (value < 0x1000)
+    write_reg_LMK0X0XX(command.data[3], command.data[2], command.data[1], command.data[0]);
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdREG_LMX(void)
+{
+    write_reg_LMX2531(command.data[2], command.data[1], command.data[0]);
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdPIN_LMK(void)
+{
+    switch (command.details)
     {
-        DAC12_WRITE(value);
-        return 1;
+    case detGOE:
+        if (command.data[0])
+            LmkGoeSet();
+        else
+            LmkGoeClear();
+        break;
+    case detSYN:
+        if (command.data[0])
+            LmkGoeSet();
+        else
+            LmkGoeClear();
+        break;
+    default:
+        return 0;
+    }
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdPIN_LMX(void)
+{
+    switch (command.details)
+    {
+    case detEN:
+        if (command.data[0])
+            LmxCeSet();
+        else
+            LmxCeClear();
+        break;
+    default:
+        return 0;
+    }
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdSET_NONE(void)
+{
+    switch (command.details)
+    {
+    case trgNONE:
+        break;
+    case detOUT:
+        Fout = command.u32data;
+        break;
+    case detOSC:
+        Fosc = command.u32data;
+        break;
+    case detAUTO:
+        AutoFreq = command.data[0];
+        break;
+    default:
+        return 0;
     }
 
+    uint8_t r = SetLMX2531(0);
+    if (r) {
+        SetLMK();
+        FillResultPM(resOk);
+    } else {
+        FillResultPM(resBadRange);
+    }
+    return 1;
+}
+
+static uint8_t OnCmdSET_IOS(void)
+{
+#if TAMER_VER >= 12
+    if (command.details == detEN)
+    {
+        if (command.data[0])
+            EnableOscillator = 1;
+        else
+            EnableOscillator = 0;
+
+        SetOscillator();
+        FillResultPM(resOk);
+        return 1;
+    }
+#endif
     return 0;
 }
+
+static uint8_t OnCmdSET_VCO(void)
+{
+    switch (command.details)
+    {
+#ifndef VCO_FIXED
+        case detMIN:
+            VCO_MIN = command.u16data[0];
+            break;
+        case detMAX:
+            VCO_MAX = command.u16data[0];
+            break;
+        case detKBIT:
+            VCO_Kbit = command.u16data[0];
+            break;
 #endif
+        default:
+            return 0;
+    }
+
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdSET_LMK(void)
+{
+    switch (command.details)
+    {
+        case detPORTS:
+            LMK_OutMask = command.data[0];
+            break;
+
+        default:
+            return 0;
+    }
+
+    SetLMK();
+
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdSET_GPS(void)
+{
+#ifdef PRESENT_GPS
+    switch (command.details)
+    {
+        case detSYN:    UpdateOSCValue(); break;
+        case detAUTO:   AutoUpdateGps = command.data[0]; break;
+        default:
+            return 0;
+    }
+
+    FillResultPM(resOk);
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+static uint8_t OnCmdSET_STS(void)
+{
+#ifdef SELF_TESTING
+    switch (command.details)
+    {
+    case detSYN:
+        FillCmd();  FillUint16(SelfTestLockPin());      FillNewLine(); return 1;
+    case detAUTO:
+        SelfTestFull(); return 1;
+    default:
+        if (command.data[0] == 0)
+            SelfTestStop();
+        else if (command.data[0] < 128)
+            SelfTestStart(command.data[0]);
+        else {
+            FillResultPM(resBadRange);
+            return 1;
+        }
+    }
+
+    FillResultPM(resOk);
+    return 1;
+#else
+    return 0;
+#endif
+}
+
+static uint8_t OnCmdNFO_IOS(void)
+{
+#if TAMER_VER >= 12
+    if (command.details == detEN)
+    {
+        FillCmd();  FillUint16(EnableOscillator); FillNewLine(); return 1;
+    }
+#endif
+    return 0;
+}
+
+static uint8_t OnCmdNFO_GPS(void)
+{
+#ifdef PRESENT_GPS
+    switch (command.details)
+    {
+        case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillNewLine(); return 1;
+        case detKBIT:     FillCmd();  FillUint16(PPS_skipped);      FillNewLine(); return 1;
+        case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillNewLine(); return 1;
+        case detR01:      FillCmd();  FillUint16(Count1PPS);        FillNewLine(); return 1;
+        case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillNewLine(); return 1;
+        case detR03:      FillCmd();  FillUint32(FilteredVal);      FillNewLine(); return 1;
+        case detMAX:      FillCmd();  FillUint32(ddd);              FillNewLine(); return 1;
+        case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillNewLine(); return 1;
+        case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillNewLine(); return 1;
+        default: return 0;
+    }
+#endif
+    return 0;
+}
 
 uint8_t ProcessCommand(void)
 {
-    switch(command.cmd)
-    {
-        case cmdIDLE:
-            return 1;
-
-#if (TAMER_VER >= 122) && defined (PRESENT_GPS)
-        case cmdGPSMODE:
-    	    gpsmode = gpsmode ^ 1;
-    	    return 1;
-#endif
-
-#ifndef NO_CMDREG
-        case cmdREGISTER:
-        {
-
-            switch (command.type)
-            {
-                case trgLMK:
-                    write_reg_LMK0X0XX(command.data[3], command.data[2], command.data[1], command.data[0]);
-                    FillResultPM(resOk);
-                    return 1;
-
-                case trgLMX:
-                    write_reg_LMX2531(command.data[2], command.data[1], command.data[0]);
-                    FillResultPM(resOk);
-                    return 1;
-#ifdef PRESENT_DAC12
-                case trgDAC:
-                    switch (command.details)
-                    {
-                        case detD12:
-                            write_reg_DAC12(command.data[1], command.data[0]);
-                            return 1;
-                        default:
-                            return 0;
-                    }
-#endif
-                default:
-                    return 0;
-            }
-            break;
-        }
-#endif
-#ifndef NO_CMDPIN
-        case cmdPIN:
-        {
-            switch (command.type)
-            {
-                case trgLMK:
-                {
-                    switch (command.details)
-                    {
-                        case detGOE:
-                            if (command.data[0])
-                                LmkGoeSet();
-                            else
-                                LmkGoeClear();
-                            break;
-                        case detSYN:
-                            if (command.data[0])
-                                LmkGoeSet();
-                            else
-                                LmkGoeClear();
-                            break;
-                        default:
-                            return 0;
-                    }
-                    FillResultPM(resOk);
-                    return 1;
-                }
-                case trgLMX:
-                {
-                    switch (command.details)
-                    {
-                        case detEN:
-                            if (command.data[0])
-                                LmxCeSet();
-                            else
-                                LmxCeClear();
-                            break;
-                        default:
-                            return 0;
-                    }
-                    FillResultPM(resOk);
-                    return 1;
-                }
-
-                case trgLED:
-                {
-                    if (command.data[0])
-                        LedSet();
-                    else
-                        LedClear();
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-                default:
-                    return 0;
-            }
-         	return 0;
-        }
-#endif
-
-        case cmdSET:
-        {
-            switch (command.type)
-            {
-                case trgNONE:
-                {
-                    switch (command.details)
-                    {
-                        case trgNONE:
-                            break;
-                        case detOUT:
-                            Fout = command.u32data;
-                            break;
-                        case detOSC:
-                            Fosc = command.u32data;
-                            break;
-                        case detAUTO:
-                            AutoFreq = command.data[0];
-                            break;
-                        default:
-                            return 0;
-                    }
-
-                    uint8_t r = SetLMX2531(0);
-                    if (r)
-                    {
-                        SetLMK();
-                        FillResultPM(resOk);
-                    }
-                    else
-                    {
-                        FillResultPM(resBadRange);
-                    }
-                    return 1;
-                }
-#if TAMER_VER >= 12
-                case trgIOS:
-                {
-                    if (command.details == detEN)
-                    {
-                        if (command.data[0])
-                            EnableOscillator = 1;
-                        else
-                            EnableOscillator = 0;
-
-                        SetOscillator();
-                        FillResultPM(resOk);
-                        return 1;
-                    }
-                    return 0;
-                }
-#endif
-                case trgVCO:
-                    switch (command.details)
-                    {
-#ifndef VCO_FIXED
-                        case detMIN:
-                            VCO_MIN = command.u16data[0];
-                            break;
-                        case detMAX:
-                            VCO_MAX = command.u16data[0];
-                            break;
-                        case detKBIT:
-                            VCO_Kbit = command.u16data[0];
-                            break;
-#endif
-                        default:
-                            return 0;
-                    }
-
-                    FillResultPM(resOk);
-                    return 1;
-
-                case trgLMK:
-                    switch (command.details)
-                    {
-                        case detPORTS:
-                            LMK_OutMask = command.data[0];
-                            break;
-
-                        default:
-                            return 0;
-                    }
-
-                    SetLMK();
-
-                    FillResultPM(resOk);
-                    return 1;
-#ifdef PRESENT_DAC12
-                case trgDAC:
-                    switch (command.details)
-                    {
-                        case detNONE:
-                            break;
-
-                        case detD12:
-                            DacValue = command.u16data[0];
-                            break;
-
-                        default:
-                            return 0;
-                    }
-
-                    if (SetDac(DacValue))
-                        FillResultPM(resOk);
-                    else
-                        FillResultPM(resBadRange);
-                    return 1;
-#endif
-
-#ifdef PRESENT_GPS
-                case trgGPS:
-                {
-                    switch (command.details)
-                    {
-                        case detSYN:    UpdateOSCValue(); break;
-                        case detAUTO:   AutoUpdateGps = command.data[0]; break;
-                        default:
-                            return 0;
-                    }
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-#endif
-#ifdef SELF_TESTING
-                case trgSTS:
-                {
-                    switch (command.details)
-                    {
-                    case detSYN:
-                        FillCmd();  FillUint16(SelfTestLockPin());      FillNewLine(); return 1;
-                    case detAUTO:
-                        SelfTestFull(); return 1;
-                    default:
-                        if (command.data[0] == 0)
-                            SelfTestStop();
-                        else if (command.data[0] < 128)
-                            SelfTestStart(command.data[0]);
-                        else {
-                            FillResultPM(resBadRange);
-                            return 1;
-                        }
-                    }
-
-                    FillResultPM(resOk);
-                    return 1;
-                }
-#endif
-                default:
-                    return 0;
-            }
-            return 0;
-        }
 #ifndef NO_CMDINFO
         case cmdINFO:
         {
             switch (command.type)
             {
-#if TAMER_VER >= 12
-                case trgIOS:
-                {
-                    if (command.details == detEN)
-                    {
-                        FillCmd();  FillUint16(EnableOscillator); FillNewLine(); return 1;
-                    }
-                    return 0;
-                }
-#endif
-#ifdef PRESENT_GPS
-                case trgGPS:
-                {
-                    switch (command.details)
-                    {
-                        case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillNewLine(); break;
-                        case detKBIT:     FillCmd();  FillUint16(PPS_skipped);      FillNewLine(); break;
-                        case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillNewLine(); break;
-                        case detR01:      FillCmd();  FillUint16(Count1PPS);        FillNewLine(); break;
-                        case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillNewLine(); break;
-                        case detR03:      FillCmd();  FillUint32(FilteredVal);      FillNewLine(); break;
-                        case detMAX:      FillCmd();  FillUint32(ddd);              FillNewLine(); break;
-                        case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillNewLine(); break;
-                        case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillNewLine(); break;
-                        default: return 0;
-                    }
-
-                    return 1;
-                }
-#endif
                 case trgNONE:
                 {
                     switch (command.details)

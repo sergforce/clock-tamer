@@ -114,4 +114,7 @@ void write_reg_DAC12(uint8_t f1, uint8_t f2);
 #define DacSyncClear()     DAC_SYNC_PORT &= ~(1 << DAC_SYNC)
 
 
+#define IsVcoLocked()       (PINC & (1<<PC5))
+
+
 #endif //_TAMER_BOARD_H_

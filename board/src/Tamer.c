@@ -231,6 +231,7 @@ skip_data_send:
                 }
             }
 
+
             // Clean up buffer if it's full and there're no commands
             if ((commands == 0) && (!(BUFF_STATICSIZE - USBtoUSART_Buffer.Elements)))
                 Buffer_GetElement(&USBtoUSART_Buffer);
@@ -375,3 +376,12 @@ ISR(SPI_STC_vect, ISR_BLOCK)
 
 #endif
 
+uint8_t OnCmdGPS(void)
+{
+#if (TAMER_VER >= 122) && defined (PRESENT_GPS)
+    gpsmode = gpsmode ^ 1;
+    return 1;
+#else
+    return 0;
+#endif
+}
