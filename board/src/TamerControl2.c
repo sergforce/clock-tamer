@@ -379,6 +379,22 @@ static uint8_t OnCmdSET_NONE(void)
     return 1;
 }
 
+static uint8_t OnCmdNFO_ADF(void)
+{
+    switch (command.details)
+    {
+    case detLCK: FillCmd();  FillUint16(IsVcoLocked()); FillNewLine(); break;
+    default: return 0;
+    }
+    return 1;
+}
+
+static uint8_t OnCmdRST(void)
+{
+    FillResultPM(resOk);
+    return 1;
+}
+
 // Unsupported functions in V2.x
 #define OnCmdREG_LMK()      0
 #define OnCmdREG_LMX()      0
@@ -388,6 +404,13 @@ static uint8_t OnCmdSET_NONE(void)
 #define OnCmdSET_IOS()      0
 #define OnCmdSET_VCO()      0
 #define OnCmdSET_LMK()      0
-
 #define OnCmdSET_GPS()      0
 #define OnCmdSET_STS()      0
+
+#define OnCmdNFO_IOS()      0
+#define OnCmdNFO_GPS()      0
+#define OnCmdNFO_VCO()      0
+#define OnCmdNFO_LMK()      0
+#define OnCmdNFO_STS()      0
+
+

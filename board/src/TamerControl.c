@@ -67,8 +67,8 @@
 #define den_bit                 21
 #define den         ((uint32_t)1 << den_bit)
 
-void SetLMK(void);
-uint8_t SetLMX2531(uint8_t tuneOnly);
+static void SetLMK(void);
+static uint8_t SetLMX2531(uint8_t tuneOnly);
 
 
 #ifndef NO_VERSION
@@ -667,7 +667,7 @@ static void InitLMX2531(void)
 #endif
 }
 
-static void InitLMK(void)
+void InitLMK(void)
 {
     // Enable LMK01000
     LmkGoeSet();
@@ -675,9 +675,6 @@ static void InitLMK(void)
 
     LMK0X0XX_WRITE(0x80000100);
 }
-
-
-
 
 
 inline static void SetLMX2531_R7(uint16_t fosc)
@@ -894,16 +891,13 @@ static void SetLMK(void)
 #define DDR_OSC     DDRD
 #define PORT_OSC    PORTD
 
-static void SetOscillatorMode(uint8_t mode)
+void SetOscillatorMode(uint8_t mode)
 {
     DDR_OSC |= (1 << ENABLE_OSC);
 
-    if (mode)
-    {
+    if (mode) {
         PORT_OSC |= (1 << ENABLE_OSC);
-    }
-    else
-    {
+    } else {
         PORT_OSC &= ~(1 << ENABLE_OSC);
     }
 }
@@ -1061,18 +1055,11 @@ static uint8_t OnCmdSET_VCO(void)
     switch (command.details)
     {
 #ifndef VCO_FIXED
-        case detMIN:
-            VCO_MIN = command.u16data[0];
-            break;
-        case detMAX:
-            VCO_MAX = command.u16data[0];
-            break;
-        case detKBIT:
-            VCO_Kbit = command.u16data[0];
-            break;
+    case detMIN:   VCO_MIN = command.u16data[0];   break;
+    case detMAX:   VCO_MAX = command.u16data[0];   break;
+    case detKBIT:  VCO_Kbit = command.u16data[0];  break;
 #endif
-        default:
-            return 0;
+    default:       return 0;
     }
 
     FillResultPM(resOk);
@@ -1083,16 +1070,11 @@ static uint8_t OnCmdSET_LMK(void)
 {
     switch (command.details)
     {
-        case detPORTS:
-            LMK_OutMask = command.data[0];
-            break;
-
-        default:
-            return 0;
+    case detPORTS:  LMK_OutMask = command.data[0];  break;
+    default:        return 0;
     }
 
     SetLMK();
-
     FillResultPM(resOk);
     return 1;
 }
@@ -1102,10 +1084,10 @@ static uint8_t OnCmdSET_GPS(void)
 #ifdef PRESENT_GPS
     switch (command.details)
     {
-        case detSYN:    UpdateOSCValue(); break;
-        case detAUTO:   AutoUpdateGps = command.data[0]; break;
-        default:
-            return 0;
+    case detSYN:    UpdateOSCValue(); break;
+    case detAUTO:   AutoUpdateGps = command.data[0]; break;
+    default:
+        return 0;
     }
 
     FillResultPM(resOk);
@@ -1158,135 +1140,98 @@ static uint8_t OnCmdNFO_GPS(void)
 #ifdef PRESENT_GPS
     switch (command.details)
     {
-        case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillNewLine(); return 1;
-        case detKBIT:     FillCmd();  FillUint16(PPS_skipped);      FillNewLine(); return 1;
-        case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillNewLine(); return 1;
-        case detR01:      FillCmd();  FillUint16(Count1PPS);        FillNewLine(); return 1;
-        case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillNewLine(); return 1;
-        case detR03:      FillCmd();  FillUint32(FilteredVal);      FillNewLine(); return 1;
-        case detMAX:      FillCmd();  FillUint32(ddd);              FillNewLine(); return 1;
-        case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillNewLine(); return 1;
-        case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillNewLine(); return 1;
-        default: return 0;
+    case detDIVIDERS: FillCmd();  FillUint16(GpsSync_divider);  FillNewLine(); return 1;
+    case detKBT:      FillCmd();  FillUint16(PPS_skipped);      FillNewLine(); return 1;
+    case detR00:      FillCmd();  FillUint32(CounterHHValue);   FillNewLine(); return 1;
+    case detR01:      FillCmd();  FillUint16(Count1PPS);        FillNewLine(); return 1;
+    case detR02:      FillCmd();  FillUint32(LastOCPVal);       FillNewLine(); return 1;
+    case detR03:      FillCmd();  FillUint32(FilteredVal);      FillNewLine(); return 1;
+    case detMAX:      FillCmd();  FillUint32(ddd);              FillNewLine(); return 1;
+    case detAUTO:     FillCmd();  FillUint16(AutoUpdateGps);    FillNewLine(); return 1;
+    case detMIN:      FillCmd();  FillUint32(LastAutoUpd);      FillNewLine(); return 1;
+    default: return 0;
     }
 #endif
     return 0;
 }
 
-uint8_t ProcessCommand(void)
+static uint8_t OnCmdNFO_VCO(void)
 {
-#ifndef NO_CMDINFO
-        case cmdINFO:
-        {
-            switch (command.type)
-            {
-                case trgNONE:
-                {
-                    switch (command.details)
-                    {
-                        case detOUT:   FillCmd();  FillUint32(Fout);      FillNewLine(); break;
-                        case detOSC:   FillCmd();  FillUint32(Fosc);      FillNewLine(); break;
-                        case detAUTO:  FillCmd();  FillUint16(AutoFreq);  FillNewLine(); break;
-                        default: return 0;
-                    }
-                    return 1;
-                }
-
-                case trgVCO:
-                {
-                    switch (command.details)
-                    {
-                        case detMIN:   FillCmd();  FillUint16(VCO_MIN);   FillNewLine(); break;
-                        case detMAX:   FillCmd();  FillUint16(VCO_MAX);   FillNewLine(); break;
-                        case detKBIT:  FillCmd();  FillUint16(VCO_Kbit);  FillNewLine(); break;
+    switch (command.details)
+    {
+    case detMIN:   FillCmd();  FillUint16(VCO_MIN);   FillNewLine(); break;
+    case detMAX:   FillCmd();  FillUint16(VCO_MAX);   FillNewLine(); break;
+    case detKBT:   FillCmd();  FillUint16(VCO_Kbit);  FillNewLine(); break;
 #ifdef DEBUG_REGS
-                        case detR00:   FillCmd();  FillUint32(tmp_r0);      FillNewLine(); break;
-                        case detR01:   FillCmd();  FillUint32(tmp_r1);      FillNewLine(); break;
-                        case detR02:   FillCmd();  FillUint32(tmp_r2);      FillNewLine(); break;
-                        case detR03:   FillCmd();  FillUint32(tmp_r3);      FillNewLine(); break;
-                        case detEN:    FillCmd();  FillUint32(tmp_lmk);     FillNewLine(); break;
+    case detR00:   FillCmd();  FillUint32(tmp_r0);    FillNewLine(); break;
+    case detR01:   FillCmd();  FillUint32(tmp_r1);    FillNewLine(); break;
+    case detR02:   FillCmd();  FillUint32(tmp_r2);    FillNewLine(); break;
+    case detR03:   FillCmd();  FillUint32(tmp_r3);    FillNewLine(); break;
+    case detEN:    FillCmd();  FillUint32(tmp_lmk);   FillNewLine(); break;
 #endif
 #ifdef SELF_TESTING
-                        case detLCK:   FillCmd();  FillUint32(IsVcoLocked() ? 1 : 0);     FillNewLine(); break;
+    case detLCK:   FillCmd();  FillUint32(IsVcoLocked() ? 1 : 0);     FillNewLine(); break;
 #endif //SELF_TESTING
-                        default: return 0;
-                    }
-                    return 1;
-                }
-
-                case trgLMK:
-                {
-                    switch (command.details)
-                    {
-                        case detPORTS:    FillCmd();  FillUint16(LMK_OutMask);  FillNewLine(); break;
-                        case detDIVIDERS: FillCmd();  FillUint16(LMK_devider);  FillNewLine(); break;
-                        default: return 0;
-                    }
-                    return 1;
-                }
-
-#ifdef PRESENT_DAC12
-                case trgDAC:  FillCmd();  FillUint16(DacValue);  FillNewLine(); return 1;
-#endif
-#ifdef SELF_TESTING
-                case trgSTS:
-                {
-                    switch (command.details)
-                    {
-                        case detMAX: FillCmd();   FillUint32(SelfMax);  FillNewLine(); break;
-                        case detMIN: FillCmd();   FillUint32(SelfMin);  FillNewLine(); break;
-                        case detR01: { int32_t tmp; cli(); tmp = SelfMax - SelfMin; sei(); FillCmd(); FillUint32(tmp);  FillNewLine(); break; }
-
-                        case detR02: FillCmd(); FillUint32(SelfToOutputFreq(SelfMax));  FillNewLine(); break;
-                        case detR03: FillCmd(); FillUint32(SelfToOutputFreq(SelfMin));  FillNewLine(); break;
-
-                        default: return 0;
-                    }
-                    return 1;
-                }
-#endif
-                default:
-                  return 0;
-            }
-
-            return 0;
-        }
-#endif
-        case cmdRESET:
-        {
-            InitLMX2531();
-            InitLMK();
-            FillResultPM(resOk);
-            return 1;
-        }
-
-#ifndef NO_HWINFO
-        case cmdHWINFO:
-            LoadHwInfo();
-            return 1;
-#endif
-
-#ifndef NO_VERSION
-        case cmdVERSION:
-            FillResultPM(resVersion);
-            return 1;
-#endif
-
-#ifndef NO_CMDEELOAD
-        case cmdLOAD_EEPROM:
-            LoadEEPROM();
-            FillResultPM(resOk);
-            return 1;
-#endif
-
-        case cmdSTORE_EEPROM:
-            StoreEEPROM();
-            FillResultPM(resOk);
-            return 1;
-
-        default:
-            return 0;
-
+    default: return 0;
     }
-	return 0;
+    return 1;
 }
+
+static uint8_t OnCmdNFO_LMK(void)
+{
+    switch (command.details)
+    {
+    case detPORTS:    FillCmd();  FillUint16(LMK_OutMask);  FillNewLine(); break;
+    case detDIVIDERS: FillCmd();  FillUint16(LMK_devider);  FillNewLine(); break;
+    default: return 0;
+    }
+    return 1;
+}
+
+static uint8_t OnCmdNFO_STS(void)
+{
+#ifdef SELF_TESTING
+    switch (command.details)
+    {
+    case detMAX: FillCmd();   FillUint32(SelfMax);  FillNewLine(); return 1;
+    case detMIN: FillCmd();   FillUint32(SelfMin);  FillNewLine(); return 1;
+    case detR01: { int32_t tmp; cli(); tmp = SelfMax - SelfMin; sei(); FillCmd(); FillUint32(tmp);  FillNewLine(); return 1; }
+
+    case detR02: FillCmd(); FillUint32(SelfToOutputFreq(SelfMax));  FillNewLine(); return 1;
+    case detR03: FillCmd(); FillUint32(SelfToOutputFreq(SelfMin));  FillNewLine(); return 1;
+
+    default: return 0;
+    }
+#endif
+    return 0;
+}
+
+static uint8_t OnCmdRST(void)
+{
+    InitLMX2531();
+    InitLMK();
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdLDE(void)
+{
+    LoadEEPROM();
+    FillResultPM(resOk);
+    return 1;
+}
+
+static uint8_t OnCmdSTE(void)
+{
+    StoreEEPROM();
+    FillResultPM(resOk);
+    return 1;
+}
+
+// Unsupported functions in V1.x
+#define OnCmdREG_PLD()   0
+#define OnCmdPIN_ADF()   0
+#define OnCmdNFO_ADF()   0
+#define OnCmdREG_JTG()   0
+#define OnCmdREG_ADF()   0
+

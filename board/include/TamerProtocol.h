@@ -143,6 +143,7 @@ uint8_t ParseCommand(void);
 
 void FillNewLine(void);
 void FillResultPM(const uint8_t* res);
+void FillResultNoNewLinePM(const uint8_t *res);
 void FillCmd(void);
 void FillUint32(uint32_t val);
 

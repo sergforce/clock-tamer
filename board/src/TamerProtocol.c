@@ -261,7 +261,7 @@ uint8_t ParseCommand(void)
     return 0;
 }
 
-static void FillResultNoNewLinePM(const uint8_t *res)
+void FillResultNoNewLinePM(const uint8_t *res)
 {
     uint8_t byte;
     while ((byte = pgm_read_byte(res++)))
