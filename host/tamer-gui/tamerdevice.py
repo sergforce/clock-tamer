@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # td.py
@@ -24,7 +24,6 @@ else:
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, path)
         except WindowsError:
             raise IterationError
-    
         for i in itertools.count():
             try:
                 val = winreg.EnumValue(key, i)
@@ -33,7 +32,7 @@ else:
                     yield str(val[1])
             except EnvironmentError:
                 break
-        
+
 import time
 from ctypes import cdll, c_int, POINTER
 
@@ -42,14 +41,12 @@ try:
     serial_found = True
 except:
     print("Install pyserial")
-    
 
 
 if sys.platform != 'win32':
     defUsbDevice = "/dev/ttyACM0"
 else:
     defUsbDevice = [ "\\\\.\\" + i for i in enumerate_tamer_ports() ] # "\\\\.\\COM18"
-
 
 
 class UsbDevice(object):
@@ -64,8 +61,6 @@ class UsbDevice(object):
         else:
             self.devname = devname
         self.dev = serial.Serial(self.devname, 115200, timeout=1)
-            
-            
         self.retries=0
         self.max_retries=1
 
@@ -81,7 +76,8 @@ class UsbDevice(object):
     def enterGpsMode(self):
         ''' Leaves command mode and enables GPS data passing from the GPS module to a host'''
         string = "%%%"
-        self.dev.write(string + "\r\n")
+        ostr = string + "\r\n"
+        self.dev.write(bytearray(ostr, 'utf-8'))
         self.dev.readline()
         self.dev.flushInput()
         print("CMD='%s' NORET" % (string, ))
@@ -90,7 +86,8 @@ class UsbDevice(object):
     def leaveGpsMode(self):
         ''' Disables GPS data passing from the GPS module to a host and returns to command mode. '''
         string = "%"
-        self.dev.write(string + "\r\n")
+        ostr = string + "\r\n"
+        self.dev.write(bytearray(ostr, 'utf-8'))
         self.dev.readline()
         self.dev.flushInput()
         print("CMD='%s' NORET" % (string, ))
@@ -101,12 +98,17 @@ class UsbDevice(object):
         string = head + cmd
         res = ""
         print("GPS SEND: '%s'" % string)
-
+        ostr = string + "\r\n"
         self.dev.flushInput()
-        self.dev.write(string + "\r\n")
+        self.dev.write(bytearray(ostr, 'utf-8'))
 
         for j in xrange(maxcnt):
           res = self.dev.readline()
+          try:
+            res = res.decode('utf-8')
+          except:
+            res = ""
+
           if len(res) > 0:
             res = re.sub("^\s+", "", res)
             res = re.sub("\s+$", "", res)
@@ -131,9 +133,14 @@ class UsbDevice(object):
             string = string + "," + str(det)
         if (val != None):
             string = string + "," + str(val)
-
-        self.dev.write(string + "\r\n")
+        ostr = string + "\r\n"
+        self.dev.write(bytearray(ostr, 'utf-8'))
         res = self.dev.readline()
+        try:
+          res = res.decode('utf-8')
+        except:
+          res = ""
+
         res = re.sub("^\s+", "", res)
         res = re.sub("\s+$", "", res)
         if (not shouldBeAnswer) and len(res) == 0:

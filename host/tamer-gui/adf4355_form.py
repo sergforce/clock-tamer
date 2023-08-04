@@ -1,25 +1,22 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys
 import time
 import re
 
-from PyQt4 import QtCore, QtGui, uic
+from PyQt5 import QtCore, QtWidgets, uic
 
-#from adf4355_ui import *
 from adf4355_regs import *
 
-class Adf4355(QtGui.QWidget):
+class Adf4355(QtWidgets.QWidget):
     def __init__(self, func = None):
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
         #self.obj = Ui_Dialog()
         #self.obj.setupUi(self)
         self.obj = uic.loadUi("adf4355.ui")
         self.obj.show()
-        
         self.func = func
-        
         self.N = 1.0
         self.VCO = 1.0
         self.pfd = 1.0
@@ -39,7 +36,7 @@ class Adf4355(QtGui.QWidget):
         self.reg[11] = REG11_RESERVED
         self.reg[12] = 12
 
-        self.all_changed()        
+        self.all_changed()
         def ui_change(func, uilist):
             for i in uilist:
                 try:    i.currentIndexChanged['QString'].connect(func)
@@ -77,12 +74,12 @@ class Adf4355(QtGui.QWidget):
 
         self.obj.r12_uis = [ self.obj.r12_phase_rsync ]
         ui_change(self.r12_changed, self.obj.r12_uis)
-        
+
         self.obj.f_vco_out.textChanged['QString'].connect(self.vco_changed)
         self.obj.f_div_out.currentIndexChanged['QString'].connect(self.calc_fout)
-        
+
         self.obj.f_manual_reg.stateChanged['int'].connect(self.switch_manual_reg)
-        
+
         # Update calculations        
         self.vco_changed()
         self.obj.r10_adc_div.valueChanged['QString'].connect(self.adc_clock_changed)
@@ -95,7 +92,7 @@ class Adf4355(QtGui.QWidget):
                      self.obj.reg8, self.obj.reg9, self.obj.reg10, self.obj.reg11,
                      self.obj.reg12 ]
         for i in self.edr: i.setReadOnly(True)
-        
+
         #Tune Logic
         self.obj.f_auto.stateChanged['int'].connect(self.switch_auto_mode)
         self.obj.f_ref.valueChanged['QString'].connect(self.pfd_changed)
@@ -120,7 +117,7 @@ class Adf4355(QtGui.QWidget):
                    self.obj.f_pfd, self.obj.f_div_out, self.obj.f_vco_out, self.obj.f_rf_out ]
         for f in frames:
             f.setEnabled(not self.obj.f_manual_reg.isChecked())
-        
+
         if self.obj.f_manual_reg.isChecked():
             for i in range(13):
                 self.edr[i].setReadOnly(False)
@@ -129,8 +126,7 @@ class Adf4355(QtGui.QWidget):
             for i in range(13):
                 self.edr[i].setReadOnly(True)
                 self.edr[i].textChanged['QString'].disconnect(self.set_manual_reg_edit)
-          
-        
+
     def set_manual_reg_edit(self):
         for i in range(13):
             try:
@@ -140,8 +136,7 @@ class Adf4355(QtGui.QWidget):
                 self.edr[i].setStyleSheet("")
             except:
                 self.edr[i].setStyleSheet("QLineEdit { background-color: red; }")
-        
-        
+
     def save_regs(self):
         filename = QtGui.QFileDialog.getSaveFileName(self, "Save registers to file", "out.regs", "Register settings *.regs (*.regs)")
         if len(filename) > 0:
@@ -183,7 +178,6 @@ class Adf4355(QtGui.QWidget):
         self.obj.r3_phase.setValue((new_regs[3] >> REG3_PHASE_SHIFT) & REG3_PHASE_MASK)
         #REG4
         self.obj.r4_muxout.setCurrentIndex((new_regs[4] >> REG4_MUXOUT_SHIFT) & REG4_MUXOUT_MASK)
-        
         self.obj.f_x2.setChecked((new_regs[4] >> REG4_REF_DBL_SHIFT) & 1)
         self.obj.f_div2.setChecked((new_regs[4] >> REG4_REF_DIV_SHIFT) & 1)
         self.obj.f_r_cnt.setValue((new_regs[4] >> REG4_R_SHIFT) & REG4_R_MASK)
@@ -196,7 +190,6 @@ class Adf4355(QtGui.QWidget):
         self.obj.r4_cp_state.setCurrentIndex((new_regs[4] >> REG4_CP_3STATE_SHIFT) & 1)
         self.obj.r4_counter_rst.setCurrentIndex((new_regs[4] >> REG4_CNTR_RESET) & 1)
         #REG5
-        
         #REG6
         self.obj.r6_feedback.setCurrentIndex((new_regs[6] >> REG6_FB_SEL_SHIFT) & 1)
         self.obj.r6_mtld.setCurrentIndex((new_regs[6] >> REG6_MLTD_SHIFT) & 1)
@@ -215,7 +208,6 @@ class Adf4355(QtGui.QWidget):
         self.obj.r7_frac_n.setCurrentIndex((new_regs[7] >> REG7_FRAC_N_PREC_SHIFT) & REG7_FRAC_N_PREC_MASK)
         self.obj.r7_ld.setCurrentIndex((new_regs[7] >> REG7_LD_MODE_SHIFT) & 1)
         #REG8
-        
         #REG9
         self.obj.r9_vco_div.setValue((new_regs[9] >> REG9_VCO_BAND_SHIFT) & REG9_VCO_BAND_MASK)
         self.obj.r9_to.setValue((new_regs[9] >> REG9_TIMEOUT_SHIFT) & REG9_TIMEOUT_MASK)
@@ -226,10 +218,8 @@ class Adf4355(QtGui.QWidget):
         self.obj.r10_adc_conv.setCurrentIndex((new_regs[10] >> REG10_ADC_CONV_SHIFT) & 1)
         self.obj.r10_adc_en.setCurrentIndex((new_regs[10] >> REG10_ADC_EN_SHIFT) & 1)
         #REG11
-        
         #REG12
         self.obj.r12_phase_rsync.setValue((new_regs[12] >> REG12_RESYNC_CLOCK_SHIFT) & REG12_RESYNC_CLOCK_MASK)
-                
         self.reg = new_regs
         regs = [ self.obj.reg0, self.obj.reg1, self.obj.reg2, self.obj.reg3,
                  self.obj.reg4, self.obj.reg5, self.obj.reg6, self.obj.reg7,
@@ -237,7 +227,6 @@ class Adf4355(QtGui.QWidget):
                  self.obj.reg12 ]
         for i,r in enumerate(regs):
             r.setText("x%08x" % self.reg[i])
-        
 
     def set_freq_regs(self):
         self.func([self.reg[4] | (1<<REG4_CNTR_RESET),
@@ -250,7 +239,7 @@ class Adf4355(QtGui.QWidget):
 
     def set_regs(self):
         self.func([ i for i in reversed(self.reg) ])
-        
+
     def all_changed(self):
         self.r0_changed()
         self.r1_changed()
@@ -292,7 +281,7 @@ class Adf4355(QtGui.QWidget):
             self.calc_fout()
         except ValueError:
             self.obj.f_vco_out.setStyleSheet("QLineEdit { background-color: red; }")
-     
+
     def mul_changed(self):
         self.N = (((float(self.obj.f_frac2.value()) / float(self.obj.f_mod2.value()) +
                     self.obj.f_frac1.value()) / 16777216.0) + self.obj.f_int.value())
@@ -310,7 +299,7 @@ class Adf4355(QtGui.QWidget):
             self.obj.f_pfd.setStyleSheet("QLineEdit { background-color: red; }")
         else:
             self.obj.f_pfd.setStyleSheet("")
-	    self.mul_changed()
+            self.mul_changed()
         self.adc_clock_changed()
 
     def adc_clock_changed(self):
@@ -353,9 +342,9 @@ class Adf4355(QtGui.QWidget):
 
     def r4_changed(self):
         reg = (((self.obj.r4_muxout.currentIndex() & REG4_MUXOUT_MASK) << REG4_MUXOUT_SHIFT) |
-	       ((1 if self.obj.f_x2.isChecked() else 0) << REG4_REF_DBL_SHIFT) |
-	       ((1 if self.obj.f_div2.isChecked() else 0) << REG4_REF_DIV_SHIFT) |
-	       ((self.obj.f_r_cnt.value() & REG4_R_MASK) << REG4_R_SHIFT) |
+               ((1 if self.obj.f_x2.isChecked() else 0) << REG4_REF_DBL_SHIFT) |
+               ((1 if self.obj.f_div2.isChecked() else 0) << REG4_REF_DIV_SHIFT) |
+               ((self.obj.f_r_cnt.value() & REG4_R_MASK) << REG4_R_SHIFT) |
                ((self.obj.r4_double_buf.currentIndex() & 1) << REG4_DBL_BUFF_SHIFT) |
                ((self.obj.r4_cp_curr.currentIndex() & REG4_CURRENT_MASK) << REG4_CURRENT_SHIFT) |
                ((self.obj.r4_refin.currentIndex() & 1) << REG4_REF_MODE_SHIFT) |
@@ -419,7 +408,7 @@ class Adf4355(QtGui.QWidget):
 
 
 if __name__ == '__main__':
-      app = QtGui.QApplication(sys.argv)
+      app = QtWidgets.QApplication(sys.argv)
       qb = Adf4355()
       #qb.show()
 

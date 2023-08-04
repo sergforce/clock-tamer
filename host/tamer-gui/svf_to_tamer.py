@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -13,7 +13,7 @@ class svf_to_tamer:
     def __init__(self, input_filename, verbose = False):
         self.cmds = []
         self.freq = 0.0
-        
+
         # RE to parse
         commet = re.compile('^\!.*')
         freq   = re.compile('^FREQUENCY\s+([0-9E+.]+)\s+HZ\s*;')
@@ -24,7 +24,7 @@ class svf_to_tamer:
         sir    = re.compile('^SIR\s+(\d+)\s+TDI\s+\(([0-9a-fA-F]+)\)\s*;')
         runtest= re.compile('^RUNTEST(?:\s+IDLE)?\s+(\d+)\s+TCK(?:\s+ENDSTATE\s+IDLE)?\s*;')
         sdr    = re.compile('^SDR\s+(\d+)\s+TDI\s+\(([0-9a-fA-F]+)\)(?:\s+TDO\s+\(([0-9a-fA-F]+)\)(?:\s+MASK\s+\(FFFF\))?)?\s*;')
-        
+
         with open(input_filename, 'r') as f:
             for no,l in enumerate(f.readlines()):
                 # remove newline
@@ -101,4 +101,3 @@ class svf_to_tamer:
                 raise SyntaxError('SVF error in line %d' % no)
 
 
-                

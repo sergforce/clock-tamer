@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
 # tb.py
@@ -6,14 +6,10 @@
 import sys
 import time
 import re
-#from PyQt4 import QtGui, QtCore, QtXml
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtXml import *
-#from Numeric import *
-
-
+from PyQt5.QtCore import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtXml import *
 
 from tamer_basic_ui import *
 from tamerdevice import *
@@ -27,9 +23,9 @@ tamer_unknown    = ("unknown", "unknown", "unknown", "unknown", "unknown", "unkn
 
 from adf4355_form import *
 
-class MainWindow(QtGui.QWidget):
+class MainWindow(QtWidgets.QWidget):
     def __init__(self, device=None):
-        QtGui.QWidget.__init__(self)
+        QtWidgets.QWidget.__init__(self)
         self.obj = Ui_Basic()
         self.obj.setupUi(self)
         self.dev = device
@@ -40,19 +36,26 @@ class MainWindow(QtGui.QWidget):
         spl = self.ParseHWI()
 
         self.timer = QTimer(self)
-        self.connect(self.timer,        QtCore.SIGNAL('timeout()'), self.onTimer)
+        self.timer.timeout.connect(self.onTimer)
+        #self.connect(self.timer,        QtCore.SIGNAL('timeout()'), self.onTimer)
 
         self.ReadAll()
 
-        self.connect(self.obj.btStore,  QtCore.SIGNAL('clicked()'), self.onStoreEeprom)
-        self.connect(self.obj.btLoad,   QtCore.SIGNAL('clicked()'), self.onLoadEeprom)
-        self.connect(self.obj.btSet,    QtCore.SIGNAL('clicked()'), self.onSet)
-        self.connect(self.obj.btGet,    QtCore.SIGNAL('clicked()'), self.onGet)
-        self.connect(self.obj.btCPLD,   QtCore.SIGNAL('clicked()'), self.onCPLD)
+        self.obj.btStore.clicked.connect(self.onStoreEeprom)
+        self.obj.btLoad.clicked.connect(self.onLoadEeprom)
+        self.obj.btSet.clicked.connect(self.onSet)
+        self.obj.btGet.clicked.connect(self.onGet)
+        self.obj.btCPLD.clicked.connect(self.onCPLD)
+
+        #self.connect(self.obj.btStore,  QtCore.SIGNAL('clicked()'), self.onStoreEeprom)
+        #self.connect(self.obj.btLoad,   QtCore.SIGNAL('clicked()'), self.onLoadEeprom)
+        #self.connect(self.obj.btSet,    QtCore.SIGNAL('clicked()'), self.onSet)
+        #self.connect(self.obj.btGet,    QtCore.SIGNAL('clicked()'), self.onGet)
+        #self.connect(self.obj.btCPLD,   QtCore.SIGNAL('clicked()'), self.onCPLD)
 
         if spl != None:
             spl.finish(self)
-            
+
         self.adf = Adf4355(self.write_adf)
         self.adf.obj.b_save_ee.setEnabled(True)
         self.adf.obj.b_load_ee.setEnabled(True)
@@ -64,7 +67,7 @@ class MainWindow(QtGui.QWidget):
         self.adf.process_load(regs)
         # Load OSC
         self.adf.obj.f_ref.setValue(float(self.dev.getOsc()) / 1000000)
-            
+
     def write_ee_adf(self):
         for i in self.adf.reg:
             self.dev.storeEepromADF4355Reg(i)
@@ -73,21 +76,20 @@ class MainWindow(QtGui.QWidget):
         for i in d:
             data = self.dev.setAdf(i)
             print("Reg: %x => %s" % (i, data))
-        
-        
+
+
     def onTimer(self):
         self.onGet()
-        
+
     def onCPLD(self):
         import svf_to_tamer
         from time import sleep
-        
-        filename = QtGui.QFileDialog.getOpenFileName(self, "Load CPLD firmware", "*.svf", "SVF *.svf (*.svf)")
+
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, "Load CPLD firmware", "*.svf", "SVF *.svf (*.svf)")
         if len(filename) > 0:
                 pixmap = QtGui.QPixmap(480, 320)
                 pixmap.fill(QtGui.QColor(20,200,20))
                 splash = QtGui.QSplashScreen(pixmap)
-                
                 progressBar = QtGui.QProgressBar(splash)
                 progressBar.setGeometry(splash.width()/10, 8*splash.height()/10,
                                         8*splash.width()/10, splash.height()/10)
@@ -105,25 +107,22 @@ class MainWindow(QtGui.QWidget):
                     p = float(100*i)/len(cmds)
                     progressBar.setValue(p)
                     print("%02.1f%%: CMD: %s => %d; EXPECT: %s" % (p, cmd, val, exp))
-                    
                     # usb transaction fails on big delays
                     cnt = 1
                     if cmd == "RUN":
                         if int(val) > 30000:
                             cnt = val / 30000
                             val = 30000
-                            
                         ##elif int(val) < 100:
                         ##    val = 100
                     for j in range(cnt):
                         ret = self.dev.jtagCmd(cmd, val)
                     if cmd != "RUN":
                         rval = (ret & 0xffff)
-                        if exp is not None and rval != exp:                  
+                        if exp is not None and rval != exp:
                             raise ValueError("Expected %x, got %x" % (exp, ret))
                     elif ret != "OK":
                         raise ValueError("FAILED RUN")
-                       
             #except Exception, e:
             #    print("Can't parse CPLD image: %s", e)
                 print ("Done!")
@@ -147,7 +146,7 @@ class MainWindow(QtGui.QWidget):
 
         vals = str(dataVer).split(" ")
         self.ver = vals[1].split("=")[1]
-	self.vernum = float(self.ver)
+        self.vernum = float(self.ver)
         print("Tamer version: %s" % self.ver)
 
         vals = str(data).split(" ")
@@ -157,7 +156,7 @@ class MainWindow(QtGui.QWidget):
         self.obj.cbOutMode.setVisible(self.vctcxo)
 
         if self.vernum >= 2:
-	    self.obj.groupBox.setVisible(False)
+            self.obj.groupBox.setVisible(False)
             self.obj.cbOscDisable.setEnabled(False)
         else:
             self.obj.btCPLD.setVisible(False)
@@ -201,8 +200,8 @@ class MainWindow(QtGui.QWidget):
                     gpsid = self.dev.checkGps()
                     if gpsid == True:
                         break
-		    else:
-			print("GPS NOT PRESENT")
+                    else:
+                        print("GPS NOT PRESENT")
                 except:
                     pass
 
@@ -290,7 +289,7 @@ class MainWindow(QtGui.QWidget):
         data = self.dev.getAut()
         self.obj.cbAutoStart.setChecked(data)
 
-	if self.vernum < 2:
+        if self.vernum < 2:
             data = self.dev.getIntOscState()
             if data is None:
                 self.obj.cbOscDisable.setEnabled(False)
@@ -379,7 +378,7 @@ class MainWindow(QtGui.QWidget):
 
 if __name__ == '__main__':
       noCloseMainForm = False
-      app = QtGui.QApplication(sys.argv)
+      app = QtWidgets.QApplication(sys.argv)
       dev = TamerDevice()
       qb = MainWindow(dev)
 #      if qb.error == 1:
